@@ -23,28 +23,21 @@ endef
 
 
 
-APP 	:= DisasterGauntlet.exe
-#CMMFLAG := -Wall -pedantic -ggdb3
-CMMFLAG := -O2
+APP 	:= RandysEngine.exe
+CMMFLAG := -Wall -pedantic -ggdb3
+#CMMFLAG := -O3
 #ADDSAN  := -fsanitize=address
 CCFLAGS := $(CMMFLAG) -std=c++17
 CFLAGS	:= $(CMMFLAG)
 MKDIR	:= mkdir -p
-PTHREAD := -pthread
 SRC  	:= src
 OBJ 	:= obj
 LIBDIR  := lib
 # para que busque la librería en la carpeta lib del proyecto, no del sistema
 # si hay una igual en el sistema cogerá esa porque tiene preferencia
-LIBSFMOD:= -L$(LIBDIR) -lfmod -lfmodstudio
-LIBSGRH := -lglew32 -lassimp -lglfw3 -lopengl32 -limm32
-LIBS 	:= -lBulletCollision -lBullet3Common -lBulletDynamics -lLinearMath $(LIBSGRH) $(LIBSFMOD)
-#DIRECTORIOS DE INCLUDES DE LIBRERIAS ESTÁTICAS
-INCRNDM := -I$(LIBDIR)/randomyEngine
-#DIRECTORIOS DE INCLUDES DE LIBRERIAS DINÁMICAS
-INCFMOD := -I$(LIBDIR)/fmod/
-INCDIRS := -I$(LIBDIR) $(INCRNDM) $(INCFMOD) $(INCPYBULLET)
-PATHS   := 
+LIBS 	:= -L$(LIBDIR)
+#DIRECTORIOS DE INCLUDES DE LIBRERIAS
+INCDIRS := -I$(LIBDIR)
 
 # todos los .cpp dentro de src (con -iname no importa si el nombre tiene mayus)
 ALLCPPS := $(shell find src/ -type f -iname *.cpp)
@@ -52,8 +45,7 @@ ALLCPPS := $(shell find src/ -type f -iname *.cpp)
 ALLCS 	:= $(shell find src/ -type f -iname *.c)
 # todos los .a dentro de lib (con -iname no importa si el nombre tiene mayus)
 ALLSTATIC:= $(shell find lib/ -type f -iname "*.a")
-# todos los .so dentro de subdirectorios de lib
-ALLDYNAMICFMODSTUDIO:= $(shell find $(LIBDIR) -type f -iname *.so)
+
 ALLOBJ	:= $(foreach F,$(ALLCPPS) $(ALLCS),$(call C20,$(F)))
 
 # compiladores (recomendado utilizar varios)
@@ -72,7 +64,7 @@ OBJSUBDIRS := $(patsubst $(SRC)%,$(OBJ)%,$(SUBDIRS))
 $(APP) : $(OBJSUBDIRS) $(ALLOBJ)
 # y entonces se ejecutan estos comandos
 #incluimos tambien los ficheros .a, ya que están precompilados
-	$(CC) $(PTHREAD) -o $(APP) $(ALLOBJ) $(ALLSTATIC) $(PATHS) $(LIBS) $(ADDSAN)
+	$(CC) -static -static-libgcc -static-libstdc++ -o $(APP) $(ALLOBJ) $(ALLSTATIC) $(PATHS) $(LIBS) $(ADDSAN)
 
 #GENERATE RULES FOR ALL OBJECTS
 $(foreach F,$(ALLCPPS),$(eval $(call COMPILER,$(CC),$(call C20,$(F)),$(F),$(call C2H,$(F)),$(CCFLAGS) $(INCDIRS))))
@@ -80,9 +72,6 @@ $(foreach F,$(ALLCS),$(eval $(call COMPILER,$( C),$(call C20,$(F)),$(F),$(call C
 
 ##$(OBJ)/%.o : $(SRC)/%.cpp
 ##	$(CC) -o $(patsubst $(SRC)%,$(OBJ)%,$@) -c $^ $(CCFLAGS)
-
-
-
 
 ## CLEAN RULES
 clean:
