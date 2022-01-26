@@ -1,8 +1,7 @@
 
-#include <cstdio>
-#include <vector>
-#include <memory>
-#include <string>
+#include <iostream>
+
+#include "utils/memoryPool/mem_Pool.hpp"
 
 /*
 class Layer_Hierarchy{
@@ -46,8 +45,9 @@ class Layer_Hierarchy{
 
 int main(){
 
+    Mempool poolilla;
 
-    printf("Hola mundo\n");
+    std::cout << poolilla.value << std::endl;
 
     return 0;
 }
