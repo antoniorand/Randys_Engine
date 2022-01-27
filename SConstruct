@@ -1,16 +1,14 @@
+###library list
+libraries = []
+pathToLibraries=['./lib']
+
 env = Environment(
-    CPPATH='',
+    CPPATH=['lib'],
     CPPDEFINES = [],
-    SCONS_CXX_STANDARD='c++20'
+    SCONS_CXX_STANDARD='c++20',
+    LIBS = libraries, LIBPATH=pathToLibraries
 )
 
-###Lista de librerias
-libraries = []
-pathToLibraries=['.']
 
-app = env.Program(target= 'randysEngine',source = 'src/main.cpp', LIBS = libraries, LIBPATH=pathToLibraries)
+app = env.Program(target= 'randysEngine',source = 'src/main.cpp', )
 #Library(target= 'randysEngine',source = src_files)
-
-for item in app:
-    for child in item.all_children():
-        print(child)
