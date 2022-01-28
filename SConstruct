@@ -1,14 +1,12 @@
 ###library list
-libraries = []
+libraries = ['irrlicht']
 pathToLibraries=['./lib']
 
 env = Environment(
-    CPPATH=['lib'],
-    CPPDEFINES = [],
+    CPPPATH=['lib/','./src/utils/'],
     SCONS_CXX_STANDARD='c++20',
-    LIBS = libraries, LIBPATH=pathToLibraries
 )
 
 
-app = env.Program(target= 'randysEngine',source = 'src/main.cpp', )
+app = env.Program(target= 'randysEngine',source = 'src/main.cpp',LIBS = libraries, LIBPATH=pathToLibraries )
 #Library(target= 'randysEngine',source = src_files)

@@ -1,4 +1,16 @@
-#include "mem_Pool.cpp"
+#include "mem_Pool.hpp"
 
-//Implementacion basada en la implementacion de Misha Shalem: https://youtu.be/l14Zkx5OXr4 
 
+Randys_Engine::CMemoryPool::CMemoryPool(
+    const std::size_t& sInitialMemoryPoolSize,
+    const std::size_t& sMemoryChunkSize,
+    const std::size_t& sMinimalMemorySizeToAllocate,
+    bool bSetMemoryData) 
+    : MemoryChunkSize{sMemoryChunkSize},
+      MinimalMemoryToAllocate{sMinimalMemorySizeToAllocate},
+      MemoryChunkCount{0},
+      SetMemoryData{bSetMemoryData}
+    {
+        Randys_Engine::CMemoryPool::AllocateMemory(sInitialMemoryPoolSize);
+
+    }
