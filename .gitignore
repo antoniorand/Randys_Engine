@@ -1,4 +1,5 @@
 *.exe
 .vscode/
 obj/
+lib/*.dll
 .sconsign.dblite
