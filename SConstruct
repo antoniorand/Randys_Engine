@@ -11,7 +11,7 @@ debug = ARGUMENTS.get('debug',0)
 if debug == 0:
     env.Append(CCFLAGS='-O3 -std=c++20')
 else:
-    env.Append(CCFLAGS='-ggdb3 -std=c++20 -Wall -Wpedantic -Wconversion -fsanitize=undefined')
+    env.Append(CCFLAGS='-ggdb3 -std=c++20 -Wall -Wpedantic -Wconversion')
 
 
 app = env.Program(target= 'randysEngine',source = 'src/main.cpp',LIBS = libraries, LIBPATH=pathToLibraries )
