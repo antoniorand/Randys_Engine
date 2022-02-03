@@ -3,3 +3,4 @@
 obj/
 lib/*.dll
 .sconsign.dblite
+*.o
