@@ -3,6 +3,8 @@
 #include <cstddef>
 #include <memory>
 #include <cstring>
+#include <assert.h>
+#include <iostream>
 
 //Based on the implementation of Misha Shalem during CppCon 2020
 //https://youtu.be/l14Zkx5OXr4
@@ -14,11 +16,9 @@ namespace RandysEngine{
         //Classes
 
         class Bucket{
-
             //Finds n free contiguous blocks in the ledger 
             //and return the first blocks index or blockcount on failure
             std::size_t find_contiguous_blocks(std::size_t n) const noexcept;
-
             //Marks n blocks in the ledger as "in-use" starting at 'index'
             void set_blocks_in_use(std::size_t index,std::size_t n) noexcept;
             //Marks n blocks in the ledger as "free" starting at 'index'
@@ -83,6 +83,11 @@ namespace RandysEngine{
         template<>
         struct bucket_descriptors<1>{
             using type = std::tuple<bucket_cfg16,bucket_cfg32,bucket_cfg1024> ;
+        };
+
+        template<>
+        struct bucket_descriptors<2>{
+            using type = std::tuple<bucket_cfg16> ;
         };
 
         /////////////////////////////////////////////////////////////////////

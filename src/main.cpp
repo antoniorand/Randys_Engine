@@ -2,24 +2,18 @@
 #include <memoryPool.hpp>
 #include <iostream>
 
-struct Ejemplo{
-
-    unsigned int hola{1};
-    int hey{1};
-
-    Ejemplo() = default;
-
-};
-
+#define CHECK_BIT_REVERSED(var,pos) (((uint8_t)var) & (0x40 >> pos))
 
 int main(){ 
 
-    auto& poolilla = RandysEngine::Pool::get_instance<1>();
+    //auto& poolilla = RandysEngine::Pool::get_instance<2>();
 
-    std::cout << poolilla.size() << std::endl;
-    std::cout << poolilla.at(0).blockSize << " " << poolilla.at(0).blockCount << std::endl;
-    std::cout << poolilla.at(1).blockSize << " " << poolilla.at(1).blockCount << std::endl;
-    std::cout << poolilla.at(2).blockSize << " " << poolilla.at(2).blockCount << std::endl;
+    //auto ptr1 = poolilla.at(0).allocate(3);
+    //auto ptr2 = poolilla.at(0).allocate(3);
+    //auto ptr3 = poolilla.at(0).allocate(3);
+    //auto ptr4 = poolilla.at(0).allocate(3);
+    //auto ptr5 = poolilla.at(0).allocate(3);
+
 
     return 0;
 }
