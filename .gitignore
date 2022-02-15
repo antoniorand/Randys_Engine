@@ -5,3 +5,4 @@ lib/*.dll
 .sconsign.dblite
 *.o
 *.stackdump
+.dll

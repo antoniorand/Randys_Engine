@@ -17,13 +17,16 @@ env = Environment(
     CPPPATH=['lib/','./src/utils/']
 )
 
-optimize = ARGUMENTS.get('optimize',0)
+#env.Replace(CXX = 'mingw-w64-gcc')
+
+optimize = ARGUMENTS.get('release',0)
 
 if optimize == 1:
     env.Append(CCFLAGS='-O3 -std=c++20')
 else:
     env.Append(CCFLAGS='-ggdb3 -std=c++20 -Wall -Wpedantic -Wconversion')
 
+env.Append(LINKFLAGS='-static -static-libgcc -static-libstdc++')
 
 app = env.Program(target= 'randysEngine',source = AllSources('./src', '*.cpp*'),LIBS = libraries, LIBPATH=pathToLibraries )
 #Library(target= 'randysEngine',source = src_files)

@@ -1,5 +1,4 @@
 #pragma once
-
 #include <cstddef>
 #include <memory>
 #include <cstring>
@@ -34,7 +33,7 @@ namespace RandysEngine{
                 const std::size_t blockCount;
 
                 Bucket(std::size_t e_block_size, std::size_t e_block_count);
-                ~Bucket() = default;
+
                 //Test if pointer belongs to bucket
                 bool belongs(void * ptr) const noexcept;
                 //Returns nullptr if failed
