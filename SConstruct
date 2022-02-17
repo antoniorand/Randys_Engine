@@ -1,5 +1,5 @@
 ###library list
-libraries = ['irrlicht']
+libraries = ['']
 pathToLibraries=['./lib']
 
 ##Reference: https://stackoverflow.com/questions/26342109/scons-build-all-sources-files-in-all-directories
@@ -19,12 +19,24 @@ env = Environment(
 
 #env.Replace(CXX = 'mingw-w64-gcc')
 
-optimize = ARGUMENTS.get('release',0)
+optimize = ARGUMENTS.get('optimize',0)
 
-if optimize == 1:
+if int(optimize):
     env.Append(CCFLAGS='-O3 -std=c++20')
 else:
-    env.Append(CCFLAGS='-ggdb3 -std=c++20 -Wall -Wpedantic -Wconversion')
+    env.Append(CCFLAGS='-g -std=c++20 -Wall -Wpedantic -Wconversion')
+
+asan = ARGUMENTS.get('clang-sanitize',0)
+
+clang = ARGUMENTS.get('clang',0)
+
+if int(clang):
+    env.Replace(CC= "clang", CXX="clang++")
+
+if int(asan):
+    env.Replace(CC= "clang", CXX="clang++")
+    env.Replace(CCFLAGS='-O3 -std=c++20 ')
+    env.Append(CCFLAGS='-fsanitize=address', LINKFLAGS='-fsanitize=address -fno-omit-frame-pointer')
 
 env.Append(LINKFLAGS='-static -static-libgcc -static-libstdc++')
 
