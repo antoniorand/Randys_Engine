@@ -8,20 +8,62 @@ namespace RandysEngine{
 
     namespace SlotMap{
 
+        struct Slot{
+            std::size_t Id;
+            std::size_t Gen;
+            Slot() = default;
+        };
+
         //We will be using the std::allocator by default
-        template<class Type, class Allocator = std::allocator<Type>>
+        template<class Type, std::size_t Capacity,class Allocator = std::allocator<Type>>
         class SlotMap{
-            std::size_t* Indices;
-            std::size_t *Data;
-            std::size_t Free_list_head;
-            std::size_t Free_list_tail;
-            std::size_t capacity;
-            std::size_t current_size;
-            std::size_t* Erase = nullptr;
-            Allocator alloc{};
+
+            Slot*           Indices = nullptr;
+            Type*           Data = nullptr;
+            std::size_t     Free_list_head{0};
+            std::size_t     Current_size;
+            std::size_t*    Erase = nullptr;
+            Allocator       alloc{};
             public:
 
-            SlotMap(std::size_t e_capacity);
+                SlotMap(std::size_t e_capacity);
+                ~SlotMap();
+
+                //Tengo que aplicar el perfecto forwarding TO-DO
+
+                template<class... Args>
+                [[nodiscard]] Slot emplace_back(Args... input);
+                template<class... Args>
+                [[nodiscard]] Slot emplace_back(Type&& input);
+
+                
+                void swap(SlotMap<Type,Capacity,Allocator>& other) noexcept;
+
+                constexpr void clear() noexcept;
+
+                constexpr void erase(std::size_t pos);
+                
+                constexpr void erase(std::size_t initial, std::size_t final);
+
+                const std::size_t current_size() const noexcept{
+                    return current_size;
+                }
+
+                const std::size_t max_capacity() const noexcept{
+                    return Capacity;
+                }
+
+                constexpr bool operator==(const SlotMap<Type,Capacity,Allocator>&other) const;
+
+                constexpr bool operator!=(const SlotMap<Type,Capacity,Allocator>&other) const;
+
+                constexpr bool operator<(const SlotMap<Type,Capacity,Allocator>&other) const;
+
+                constexpr bool operator<=(const SlotMap<Type,Capacity,Allocator>&other) const;
+
+                constexpr bool operator>(const SlotMap<Type,Capacity,Allocator>&other) const;
+
+                constexpr bool operator>=(const SlotMap<Type,Capacity,Allocator>&other) const;
 
         };
     };
