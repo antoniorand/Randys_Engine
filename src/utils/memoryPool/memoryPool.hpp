@@ -4,6 +4,7 @@
 #include <cstring>
 #include <assert.h>
 #include <iostream>
+#include <memory_resource>
 
 //Based on the implementation of Misha Shalem during CppCon 2020
 //https://youtu.be/l14Zkx5OXr4
@@ -41,17 +42,6 @@ namespace RandysEngine{
                 void deallocate (void* ptr,std::size_t bytes) noexcept;
         };
 
-        struct info {
-            std::size_t index{0}; //which bucket?
-            std::size_t block_count{0}; //how many blocks would the allocation take from the bucket?
-            std::size_t waste{0}; //How much memory would be wasted
-
-            bool operator<(const info&other) const noexcept{
-                //condition                    result if true                    result if false
-                return(waste == other.waste) ? block_count < other.block_count : waste < other.waste;
-            }
-        };
-
         //Metaprogramming and configurations
 
 
@@ -63,7 +53,10 @@ namespace RandysEngine{
         ////////////////////////////////////////////
         //We can define some bucket configurations//
         ////////////////////////////////////////////
-        struct bucket_cfg16{
+        /////////////////////////////////////////////////////
+        //Example on how to define your own specializations//
+        /////////////////////////////////////////////////////
+        /*struct bucket_cfg16{
             static constexpr std::size_t BlockSize = 16;
             static constexpr std::size_t BlockCount = 10000;
         };
@@ -76,18 +69,41 @@ namespace RandysEngine{
         struct bucket_cfg1024{
             static constexpr std::size_t BlockSize = 1024;
             static constexpr std::size_t BlockCount = 50000;
+        };*/
+
+        //In a L1 cache of size of 256kbs
+        //You can store up to 15 blocks of the following
+        //blocksize and blockcount
+        struct bucket_L1_256kbs{
+            static constexpr std::size_t BlockSize = 16;
+            //1 + ((blockCount-1)/8); 128 ledger size
+            static constexpr std::size_t BlockCount = 1024;
         };
+
         //Define an specialization of our previous descriptor, not empty
         //We use a combination of the previous buckets we created
-        template<>
+        /*template<>
         struct bucket_descriptors<1>{
             using type = std::tuple<bucket_cfg16,bucket_cfg32,bucket_cfg1024> ;
         };
 
         template<>
         struct bucket_descriptors<2>{
-            using type = std::tuple<bucket_cfg16> ;
+            using type = std::tuple<bucket_cfg16,bucket_cfg16,bucket_cfg16> ;
+        };*/
+
+        template<>
+        struct bucket_descriptors<0>{
+            using type = std::tuple<
+                bucket_L1_256kbs,bucket_L1_256kbs,bucket_L1_256kbs,
+                bucket_L1_256kbs,bucket_L1_256kbs,bucket_L1_256kbs,
+                bucket_L1_256kbs,bucket_L1_256kbs,bucket_L1_256kbs,
+                bucket_L1_256kbs,bucket_L1_256kbs,bucket_L1_256kbs,
+                bucket_L1_256kbs,bucket_L1_256kbs,bucket_L1_256kbs
+            >;
         };
+
+        
 
         /////////////////////////////////////////////////////////////////////
         //The purpose of the previous descriptor is creating/////////////////
@@ -129,8 +145,197 @@ namespace RandysEngine{
             return get_instance<id>(std::make_index_sequence<bucket_count<id>>());
         }
 
+        template<std::size_t id> //Is there a specialization ofr this id??
+        constexpr bool is_defined() noexcept{
+            return bucket_count <id>!=0;
+        }
 
+        template<std::size_t id>
+        bool initialize() noexcept{
+            (void) get_instance<id>();
+            return is_defined<id>();
+        }
 
+        /////////////////////////
+        //Memory Pool Functions//
+        /////////////////////////
+
+        struct info {
+            std::size_t index{0}; //which bucket?
+            std::size_t block_count{0}; //how many blocks would the allocation take from the bucket?
+            std::size_t waste{0}; //How much memory would be wasted
+
+            bool operator<(const info&other) const noexcept{
+                //condition                    result if true                    result if false
+                return(waste == other.waste) ? block_count < other.block_count : waste < other.waste;
+            }
+        };
+
+        template<std::size_t id>
+        [[nodiscard]] void * allocate(std::size_t bytes){
+
+            auto & pool = get_instance<id>();
+
+            std::array<info,bucket_count<id>> deltas;
+            std::size_t index = 0;
+
+            for(const auto& bucket : pool){
+                deltas[index].index = index;
+                if(bucket.blockSize >= bytes){
+                    deltas[index].waste = bucket.blockSize-bytes;
+                    deltas[index].block_count = 1;
+                }
+                else{
+                    const auto n = 1 + ((bytes - 1) /bucket.blockSize);
+                    const auto storage_required = n * bucket.blockSize;
+                    deltas[index].waste = storage_required - bytes;
+                    deltas[index].block_count = n;
+                }
+                ++index;
+
+                std::sort(deltas.begin(),deltas.end());
+
+                for(const auto & d : deltas){
+                    if(auto ptr = pool[d.index].allocate(bytes);ptr != nullptr)
+                        return ptr;
+                }
+
+                throw std::bad_alloc();
+            }
+            return(nullptr);
+        }
+
+        template<std::size_t id>
+        void deallocate(void* ptr, std::size_t bytes) noexcept{
+            auto & pool = get_instance<id>();
+
+            for(auto & bucket  : pool){
+
+                if(bucket.belongs(ptr)){
+                    bucket.deallocate(ptr,bytes);
+                    return;
+                }
+
+            }
+        }
+
+        /////////////////////////
+        //Static Pool allocator//
+        /////////////////////////
+
+        //Very similar implementation to std::pmr::polymorphic_allocator
+        //https://docs.w3cub.com/cpp/header/memory_resource
+
+        template<typename T = std::uint8_t, std::size_t id =0>
+        class Static_pool_allocator{
+            public:
+
+                ////////
+                using value_type = T;
+                ////////
+
+                template<typename U>
+                struct rebind{ using other = Static_pool_allocator<U,id>;};
+
+                Static_pool_allocator() noexcept : m_upstream_resource{std::pmr::get_default_resource()}{}
+                Static_pool_allocator(std::pmr::memory_resource * res) noexcept : m_upstream_resource{res}{}
+                
+                template<typename U>
+                Static_pool_allocator(const Static_pool_allocator<U,id> & other) noexcept
+                    : m_upstream_resource{other.upstream_resource()}{}
+
+                template<typename U>
+                Static_pool_allocator & operator=(const Static_pool_allocator<U,id> & other) noexcept{
+                    m_upstream_resource = other.upstream_resource();
+                }
+
+                template<typename U>
+                constexpr bool operator== (const Static_pool_allocator<U,id>& other) noexcept{
+                    return (this.m_upstream_resource == other.m_upstream_resource);
+                }
+
+                template<typename U>
+                constexpr bool operator!= (const Static_pool_allocator<U,id>& other) noexcept{
+                    return (this.m_upstream_resource != other.m_upstream_resource);
+                }
+
+                // member functions
+                [[nodiscard]] T* allocate(size_t n){
+                    if constexpr (Pool::is_defined<id>()){
+                        return static_cast<T*>(Pool::allocate<id>(sizeof(T)*n));
+                    }
+                    else if(m_upstream_resource != nullptr){
+                        return static_cast<T*>(m_upstream_resource->allocate(sizeof(T)*n,alignof(T)));
+                    }  else{
+                        throw std::bad_alloc();
+                    }
+                }   
+                void deallocate(T* p, size_t n){
+                    if constexpr (Pool::is_defined<id>()){
+                        Pool::deallocate<id>(p,n);
+                    }
+                    else if(m_upstream_resource != nullptr){
+                        m_upstream_resource->deallocate(p,n,alignof(T));
+                    }
+                }
+                
+                [[nodiscard]] void* allocate_bytes(size_t nbytes, size_t alignment = alignof(max_align_t)){
+                    if constexpr (Pool::is_defined<id>()){
+                        return static_cast<T*>(Pool::allocate<id>(nbytes));
+                    }
+                    else if(m_upstream_resource != nullptr){
+                        return static_cast<T*>(m_upstream_resource->allocate(nbytes,alignment));
+                    }  else{
+                        throw std::bad_alloc();
+                    }
+                }
+                void deallocate_bytes(void* p, size_t nbytes, size_t alignment = alignof(max_align_t)){
+                    if constexpr (Pool::is_defined<id>()){
+                        Pool::deallocate<id>(p,nbytes);
+                    }
+                    else if(m_upstream_resource != nullptr){
+                        m_upstream_resource->deallocate(p,nbytes,alignment);
+                    }
+                }
+                [[nodiscard]] T* allocate_object(size_t n = 1){
+                    return(static_cast<T*>(this->allocate(n)));
+                }
+                void deallocate_object(T* p, size_t n = 1){
+                    this->deallocate(p,n);
+                }
+                template<class... CtorArgs> T* new_object(CtorArgs&&... ctor_args){
+                    T* devolver = static_cast<T*>(
+                        this->allocate_object()
+                    );
+                    return(construct(devolver,ctor_args...));
+                }
+                void delete_object(T* p){
+                    destroy(p);
+                    this->deallocate_object(p);
+                }
+
+                template<class... Args>
+                void construct(T* p, Args&&... args){
+                    new ((void*)p) T (args...);
+                }
+                
+                void destroy(T* p){
+                    (p)->~T();
+                }
+
+                /*polymorphic_allocator select_on_container_copy_construction() const;*/
+
+                static bool initialize_memory_pool() noexcept 
+                    {return Pool::initialize<id>();};
+
+                std::pmr::memory_resource * upstream_resource() const noexcept{
+                    return m_upstream_resource;
+                }
+
+            private:
+                std::pmr::memory_resource * m_upstream_resource;
+
+        };
     };
 
 }
