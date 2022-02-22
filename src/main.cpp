@@ -3,6 +3,7 @@
 
 /////
 #include <memoryPool/memoryPool.hpp>
+#include <slotmap/slotmap.hpp>
 #include <vector>
 #include <iostream>
 
@@ -17,25 +18,12 @@ struct Estructura{
     }
 };
 
-using VectorPruebas = std::vector<Estructura,RandysEngine::Pool::Static_pool_allocator<Estructura,0>>;
+
+//using Alloc_Pool = RandysEngine::SlotMap::SlotMap<Estructura,RandysEngine::Pool::Static_pool_allocator<Estructura,0>>;
 
 int main(){
 
-
-    std::cout << "Tam de struct: " << sizeof(Estructura) << std::endl;
-
-    auto pruebas = VectorPruebas();
-
-    pruebas.reserve(10);
-
-    pruebas.push_back({2,2,2,2});
-    pruebas.push_back({3,3,3,3});
-    pruebas.push_back({4,4,4,4});
-    pruebas.push_back({5,5,5,5});
-
-    for(unsigned int i = 0; i < pruebas.size();i++){
-        pruebas.at(i).printValuesSum();
-    }
-
+    RandysEngine::SlotMap::SlotMap<Estructura> prueba = RandysEngine::SlotMap::SlotMap<Estructura>(100);
+  
     return 0;
 }

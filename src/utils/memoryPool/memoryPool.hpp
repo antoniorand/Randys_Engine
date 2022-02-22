@@ -4,7 +4,13 @@
 #include <cstring>
 #include <assert.h>
 #include <iostream>
-#include <memory_resource>
+#ifdef __clang__
+    #include <experimental/memory_resource>
+#else
+    #include <memory_resource>
+#endif
+
+
 
 //Based on the implementation of Misha Shalem during CppCon 2020
 //https://youtu.be/l14Zkx5OXr4
@@ -236,9 +242,13 @@ namespace RandysEngine{
 
                 template<typename U>
                 struct rebind{ using other = Static_pool_allocator<U,id>;};
-
+#ifdef __clang__
+                Static_pool_allocator() noexcept : m_upstream_resource{std::experimental::pmr::get_default_resource()}{}
+                Static_pool_allocator(std::experimental::pmr::memory_resource * res) noexcept : m_upstream_resource{res}{}
+#else
                 Static_pool_allocator() noexcept : m_upstream_resource{std::pmr::get_default_resource()}{}
                 Static_pool_allocator(std::pmr::memory_resource * res) noexcept : m_upstream_resource{res}{}
+#endif              
                 
                 template<typename U>
                 Static_pool_allocator(const Static_pool_allocator<U,id> & other) noexcept
@@ -251,12 +261,12 @@ namespace RandysEngine{
 
                 template<typename U>
                 constexpr bool operator== (const Static_pool_allocator<U,id>& other) noexcept{
-                    return (this.m_upstream_resource == other.m_upstream_resource);
+                    return (this->m_upstream_resource == other.m_upstream_resource);
                 }
 
                 template<typename U>
                 constexpr bool operator!= (const Static_pool_allocator<U,id>& other) noexcept{
-                    return (this.m_upstream_resource != other.m_upstream_resource);
+                    return (this->m_upstream_resource != other.m_upstream_resource);
                 }
 
                 // member functions
@@ -327,13 +337,22 @@ namespace RandysEngine{
 
                 static bool initialize_memory_pool() noexcept 
                     {return Pool::initialize<id>();};
-
+#ifdef __clang__
+                std::experimental::pmr::memory_resource * upstream_resource() const noexcept{
+                    return m_upstream_resource;
+                }
+#else
                 std::pmr::memory_resource * upstream_resource() const noexcept{
                     return m_upstream_resource;
                 }
+#endif 
 
             private:
+#ifdef __clang__
+                std::experimental::pmr::memory_resource * m_upstream_resource;
+#else
                 std::pmr::memory_resource * m_upstream_resource;
+#endif 
 
         };
     };
