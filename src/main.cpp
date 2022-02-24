@@ -23,7 +23,7 @@ struct Estructura{
 
 int main(){
 
-    RandysEngine::SlotMap::SlotMap<Estructura> prueba = RandysEngine::SlotMap::SlotMap<Estructura>(100);
+    RandysEngine::SlotMap::SlotMap<Estructura,10> prueba = RandysEngine::SlotMap::SlotMap<Estructura,10>();
   
     return 0;
 }
