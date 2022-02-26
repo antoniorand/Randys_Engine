@@ -96,6 +96,8 @@ namespace RandysEngine{
                     Data = Alloc.allocate(Capacity);
                     freelist_init();
                 }
+                constexpr explicit SlotMap(const SlotMap<Type,Capacity,Allocator>& other) = delete;
+
                 constexpr ~SlotMap(){
                     Alloc.deallocate(Data,Capacity);
                 }                
@@ -123,17 +125,6 @@ namespace RandysEngine{
                     return(this->push_back(Value_Type{input...}));
                 }
 
-                /*
-                    Type*                         Data = nullptr;
-                    Index_Type                    Free_list_head{0};
-                    //Index_Type                    Free_list_tail{Capacity-1};
-                    Index_Type                    Size{0};
-                    Gen_Type                      Generation{0};
-                    Allocator                     Alloc{};
-                    IndicesArray                  Indices;
-                    EraseArray                    Erase;
-                
-                */
                 void swap(SlotMap<Type,Capacity,Allocator>& other) noexcept{
                     {
                         Type* aux = other.Data;
@@ -142,8 +133,8 @@ namespace RandysEngine{
                     }
                     {
                         Index_Type aux = other.Free_list_head;
-                        other.Data = this->Free_list_head;
-                        this->Data = aux;
+                        other.Free_list_head = this->Free_list_head;
+                        this->Free_list_head = aux;
                     }
                     {
                         Gen_Type aux = other.Generation;
@@ -186,23 +177,23 @@ namespace RandysEngine{
                     return Capacity;
                 }
 
-                constexpr bool operator==(const SlotMap<Type,Capacity,Allocator>&other) const;
+                constexpr bool operator==(const SlotMap<Type,Capacity,Allocator>&other) const = delete;
 
-                constexpr bool operator!=(const SlotMap<Type,Capacity,Allocator>&other) const;
+                constexpr bool operator!=(const SlotMap<Type,Capacity,Allocator>&other) const = delete;
 
-                constexpr bool operator<(const SlotMap<Type,Capacity,Allocator>&other) const;
+                constexpr bool operator<(const SlotMap<Type,Capacity,Allocator>&other) const = delete;
 
-                constexpr bool operator<=(const SlotMap<Type,Capacity,Allocator>&other) const;
+                constexpr bool operator<=(const SlotMap<Type,Capacity,Allocator>&other) const = delete;
 
-                constexpr bool operator>(const SlotMap<Type,Capacity,Allocator>&other) const;
+                constexpr bool operator>(const SlotMap<Type,Capacity,Allocator>&other) const = delete;
 
-                constexpr bool operator>=(const SlotMap<Type,Capacity,Allocator>&other) const;
+                constexpr bool operator>=(const SlotMap<Type,Capacity,Allocator>&other) const = delete;
 
-                void printIndices(){
+                /*void printIndices(){
                     for(unsigned int i = 0; i< Capacity;i++){
                         std::cout << "Indice nº" << i << ": Id " <<Indices[i].Id << " Gen " << Indices[i].Gen << std::endl;
                     }
-                }
+                }*/
                 
                 Type* atPosition(std::uint32_t input){
                     Type* devolver = nullptr;
@@ -222,7 +213,7 @@ namespace RandysEngine{
                     return(devolver);
                 }
 
-                constexpr Index_Type getFreeList(){return Free_list_head;};
+                //constexpr Index_Type getFreeList(){return Free_list_head;};
 
         };
     };
