@@ -14,7 +14,7 @@ def AllSources(node='.', pattern='*'):
     return result
 
 env = Environment(
-    CPPPATH=['lib/','./src/utils/']
+    CPPPATH=['lib/','./src/']
 )
 
 #env.Replace(CXX = 'mingw-w64-gcc')
