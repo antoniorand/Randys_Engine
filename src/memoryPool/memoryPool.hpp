@@ -24,11 +24,11 @@ namespace RandysEngine{
         class Bucket{
             //Finds n free contiguous blocks in the ledger 
             //and return the first blocks index or blockcount on failure
-            std::size_t find_contiguous_blocks(std::size_t n) const noexcept;
+            std::uint32_t find_contiguous_blocks(std::uint32_t n) const noexcept;
             //Marks n blocks in the ledger as "in-use" starting at 'index'
-            void set_blocks_in_use(std::size_t index,std::size_t n) noexcept;
+            void set_blocks_in_use(std::uint32_t index,std::uint32_t n) noexcept;
             //Marks n blocks in the ledger as "free" starting at 'index'
-            void set_blocks_in_free(std::size_t index,std::size_t n) noexcept;
+            void set_blocks_in_free(std::uint32_t index,std::uint32_t n) noexcept;
 
             //Actual memory for allocations
             std::unique_ptr<std::byte[]> m_data;
@@ -36,23 +36,23 @@ namespace RandysEngine{
             std::unique_ptr<std::byte[]> m_ledger;
 
             public:
-                const std::size_t blockSize;
-                const std::size_t blockCount;
+                const std::uint32_t blockSize;
+                const std::uint32_t blockCount;
 
-                Bucket(std::size_t e_block_size, std::size_t e_block_count);
+                Bucket(std::uint32_t e_block_size, std::uint32_t e_block_count);
 
                 //Test if pointer belongs to bucket
                 bool belongs(void * ptr) const noexcept;
                 //Returns nullptr if failed
-                [[nodiscard]] void* allocate(std::size_t bytes) noexcept;
-                void deallocate (void* ptr,std::size_t bytes) noexcept;
+                [[nodiscard]] void* allocate(std::uint32_t bytes) noexcept;
+                void deallocate (void* ptr,std::uint32_t bytes) noexcept;
         };
 
         //Metaprogramming and configurations
 
 
         //We create a generic bucket descriptor, empty by default
-        template<std::size_t id>
+        template<std::uint32_t id>
         struct bucket_descriptors{
             using type = std::tuple<>;
         };
@@ -63,27 +63,27 @@ namespace RandysEngine{
         //Example on how to define your own specializations//
         /////////////////////////////////////////////////////
         /*struct bucket_cfg16{
-            static constexpr std::size_t BlockSize = 16;
-            static constexpr std::size_t BlockCount = 10000;
+            static constexpr std::uint32_t BlockSize = 16;
+            static constexpr std::uint32_t BlockCount = 10000;
         };
 
         struct bucket_cfg32{
-            static constexpr std::size_t BlockSize = 32;
-            static constexpr std::size_t BlockCount = 10000;
+            static constexpr std::uint32_t BlockSize = 32;
+            static constexpr std::uint32_t BlockCount = 10000;
         };
 
         struct bucket_cfg1024{
-            static constexpr std::size_t BlockSize = 1024;
-            static constexpr std::size_t BlockCount = 50000;
+            static constexpr std::uint32_t BlockSize = 1024;
+            static constexpr std::uint32_t BlockCount = 50000;
         };*/
 
         //In a L1 cache of size of 256kbs
         //You can store up to 15 blocks of the following
         //blocksize and blockcount
         struct bucket_L1_256kbs{
-            static constexpr std::size_t BlockSize = 16;
+            static constexpr std::uint32_t BlockSize = 16;
             //1 + ((blockCount-1)/8); 128 ledger size
-            static constexpr std::size_t BlockCount = 1024;
+            static constexpr std::uint32_t BlockCount = 1024;
         };
 
         //Define an specialization of our previous descriptor, not empty
@@ -117,46 +117,46 @@ namespace RandysEngine{
         /////////////////////////////////////////////////////////////////////
 
         //The type of our specialization
-        template<std::size_t id>
+        template<std::uint32_t id>
         using bucket_descriptors_t = typename bucket_descriptors<id>::type;
 
         //The number of buckets we are creating in our specialization
-        template<std::size_t id>
-        static constexpr std::size_t bucket_count = std::tuple_size<bucket_descriptors_t<id>>::value;
+        template<std::uint32_t id>
+        static constexpr std::uint32_t bucket_count = std::tuple_size<bucket_descriptors_t<id>>::value;
 
         //Our pool implemented in our specialization
-        template<std::size_t id>
+        template<std::uint32_t id>
         using pool_type = std::array<Bucket, bucket_count<id>>;
 
         //Black magic, apparently WIP
-        template<std::size_t id, std::size_t Idx>
+        template<std::uint32_t id, std::uint32_t Idx>
         struct get_size :
-            std::integral_constant<std::size_t,
+            std::integral_constant<std::uint32_t,
                 std::tuple_element_t<Idx,bucket_descriptors_t<id>>::BlockSize>{};
         //Black magic, apparently WIP
-        template<std::size_t id, std::size_t Idx>
+        template<std::uint32_t id, std::uint32_t Idx>
         struct get_count :
-            std::integral_constant<std::size_t,
+            std::integral_constant<std::uint32_t,
                 std::tuple_element_t<Idx,bucket_descriptors_t<id>>::BlockCount>{};
 
         //We create
-        template<std::size_t id, std::size_t... Idx>
+        template<std::uint32_t id, std::uint32_t... Idx>
         auto & get_instance(std::index_sequence<Idx...>) noexcept{
             static pool_type<id> instance{{{get_size<id,Idx>::value,get_count<id,Idx>::value} ...}};
             return instance;
         }
 
-        template<std::size_t id>
+        template<std::uint32_t id>
         auto & get_instance() noexcept{
             return get_instance<id>(std::make_index_sequence<bucket_count<id>>());
         }
 
-        template<std::size_t id> //Is there a specialization ofr this id??
+        template<std::uint32_t id> //Is there a specialization ofr this id??
         constexpr bool is_defined() noexcept{
             return bucket_count <id>!=0;
         }
 
-        template<std::size_t id>
+        template<std::uint32_t id>
         bool initialize() noexcept{
             (void) get_instance<id>();
             return is_defined<id>();
@@ -167,9 +167,9 @@ namespace RandysEngine{
         /////////////////////////
 
         struct info {
-            std::size_t index{0}; //which bucket?
-            std::size_t block_count{0}; //how many blocks would the allocation take from the bucket?
-            std::size_t waste{0}; //How much memory would be wasted
+            std::uint32_t index{0}; //which bucket?
+            std::uint32_t block_count{0}; //how many blocks would the allocation take from the bucket?
+            std::uint32_t waste{0}; //How much memory would be wasted
 
             bool operator<(const info&other) const noexcept{
                 //condition                    result if true                    result if false
@@ -177,13 +177,13 @@ namespace RandysEngine{
             }
         };
 
-        template<std::size_t id>
-        [[nodiscard]] void * allocate(std::size_t bytes){
+        template<std::uint32_t id>
+        [[nodiscard]] void * allocate(std::uint32_t bytes){
 
             auto & pool = get_instance<id>();
 
             std::array<info,bucket_count<id>> deltas;
-            std::size_t index = 0;
+            std::uint32_t index = 0;
 
             for(const auto& bucket : pool){
                 deltas[index].index = index;
@@ -211,8 +211,8 @@ namespace RandysEngine{
             return(nullptr);
         }
 
-        template<std::size_t id>
-        void deallocate(void* ptr, std::size_t bytes) noexcept{
+        template<std::uint32_t id>
+        void deallocate(void* ptr, std::uint32_t bytes) noexcept{
             auto & pool = get_instance<id>();
 
             for(auto & bucket  : pool){
@@ -232,7 +232,7 @@ namespace RandysEngine{
         //Very similar implementation to std::pmr::polymorphic_allocator
         //https://docs.w3cub.com/cpp/header/memory_resource
 
-        template<typename T = std::uint8_t, std::size_t id =0>
+        template<typename T = std::uint8_t, std::uint32_t id =0>
         class Static_pool_allocator{
             public:
 

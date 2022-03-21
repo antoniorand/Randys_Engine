@@ -2,7 +2,7 @@
 #define CHECK_BIT_REVERSED(var,pos) (((uint8_t)var) & (0x80 >> pos))
 #define SET_BIT_REVERSED  (var,pos) (((uint8_t)var) | (0x80 >> pos))  
 
-RandysEngine::Pool::Bucket::Bucket(std::size_t e_block_size, std::size_t e_block_count) : 
+RandysEngine::Pool::Bucket::Bucket(std::uint32_t e_block_size, std::uint32_t e_block_count) : 
     blockSize{e_block_size}, blockCount{e_block_count}{
 
     //The number of blocks we are reserving
@@ -28,14 +28,14 @@ bool RandysEngine::Pool::Bucket::belongs(void * ptr) const noexcept{
 
 }
 
-std::size_t RandysEngine::Pool::Bucket::find_contiguous_blocks(std::size_t n) const noexcept{
+std::uint32_t RandysEngine::Pool::Bucket::find_contiguous_blocks(std::uint32_t n) const noexcept{
     //for every block in the ledger
-    std::size_t devolver = blockCount;
-    for(std::size_t i = 0; i < (blockSize-n+1);i++){
+    std::uint32_t devolver = blockCount;
+    for(std::uint32_t i = 0; i < (blockSize-n+1);i++){
         //We have initial 0 blocks contiguous
-        std::size_t countingBlocks = 0;
+        std::uint32_t countingBlocks = 0;
         //for every contiguous block
-        for(std::size_t j = 0; j < n; j++){
+        for(std::uint32_t j = 0; j < n; j++){
             //We need the byte that is in the position of the block divide by 8
             //Example: we need the 13th block which is located at the second byte,
             // 13/8 is 1, therefore the second byte
@@ -56,11 +56,11 @@ std::size_t RandysEngine::Pool::Bucket::find_contiguous_blocks(std::size_t n) co
     return devolver;
 };
 
-void RandysEngine::Pool::Bucket::set_blocks_in_use(std::size_t index,std::size_t n) noexcept{
+void RandysEngine::Pool::Bucket::set_blocks_in_use(std::uint32_t index,std::uint32_t n) noexcept{
     //Before calling this function, we are 100% sure that the blocks
     //we are about to set are ***FREE***
     //don't worry about any error to much tbh
-    for(std::size_t j = 0; j < n; j++){
+    for(std::uint32_t j = 0; j < n; j++){
         //We need to get the byte by the index
         //Also we need the REFERENCE not a copy, dumbass
         std::byte& byteToRetrieve = m_ledger.operator[]((index+j)/8);
@@ -70,7 +70,7 @@ void RandysEngine::Pool::Bucket::set_blocks_in_use(std::size_t index,std::size_t
 
 }
 
-void* RandysEngine::Pool::Bucket::allocate(std::size_t bytes) noexcept{
+void* RandysEngine::Pool::Bucket::allocate(std::uint32_t bytes) noexcept{
     
     void* devolver = nullptr;
     
@@ -86,11 +86,11 @@ void* RandysEngine::Pool::Bucket::allocate(std::size_t bytes) noexcept{
     return devolver;
 }
 
-void RandysEngine::Pool::Bucket::set_blocks_in_free(std::size_t index,std::size_t n) noexcept{
+void RandysEngine::Pool::Bucket::set_blocks_in_free(std::uint32_t index,std::uint32_t n) noexcept{
     //Before calling this function, we are 100% sure that the blocks
     //we are about to set are ***USED***
     //don't worry about any error to much tbh
-    for(std::size_t j = 0; j < n; j++){
+    for(std::uint32_t j = 0; j < n; j++){
         //We need to get the byte by the index
         //Also we need the REFERENCE not a copy, dumbass
         std::byte& byteToRetrieve = m_ledger.operator[]((index+j)/8);
@@ -100,10 +100,10 @@ void RandysEngine::Pool::Bucket::set_blocks_in_free(std::size_t index,std::size_
 
 }
 
-void RandysEngine::Pool::Bucket::deallocate(void * ptr, std::size_t bytes) noexcept {
+void RandysEngine::Pool::Bucket::deallocate(void * ptr, std::uint32_t bytes) noexcept {
 
     const auto p = static_cast<const std::byte *>(ptr);
-    const std::size_t dist = static_cast<std::size_t>(p - m_data.get());
+    const std::uint32_t dist = static_cast<std::uint32_t>(p - m_data.get());
     //Calculate block index from pointer distance
     const auto index = dist/blockSize;
     //Calculate the required number of blocks;
