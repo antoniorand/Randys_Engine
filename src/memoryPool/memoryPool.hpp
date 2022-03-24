@@ -52,7 +52,7 @@ namespace RandysEngine{
 
 
         //We create a generic bucket descriptor, empty by default
-        template<std::uint32_t id>
+        template<std::size_t id>
         struct bucket_descriptors{
             using type = std::tuple<>;
         };
@@ -117,46 +117,45 @@ namespace RandysEngine{
         /////////////////////////////////////////////////////////////////////
 
         //The type of our specialization
-        template<std::uint32_t id>
+        template<std::size_t id>
         using bucket_descriptors_t = typename bucket_descriptors<id>::type;
 
         //The number of buckets we are creating in our specialization
-        template<std::uint32_t id>
+        template<std::size_t id>
         static constexpr std::uint32_t bucket_count = std::tuple_size<bucket_descriptors_t<id>>::value;
 
         //Our pool implemented in our specialization
-        template<std::uint32_t id>
+        template<std::size_t id>
         using pool_type = std::array<Bucket, bucket_count<id>>;
 
-        //Black magic, apparently WIP
-        template<std::uint32_t id, std::uint32_t Idx>
+        template<std::size_t id, std::size_t Idx>
         struct get_size :
-            std::integral_constant<std::uint32_t,
+            std::integral_constant<std::size_t,
                 std::tuple_element_t<Idx,bucket_descriptors_t<id>>::BlockSize>{};
-        //Black magic, apparently WIP
-        template<std::uint32_t id, std::uint32_t Idx>
+
+        template<std::size_t id, std::size_t Idx>
         struct get_count :
-            std::integral_constant<std::uint32_t,
+            std::integral_constant<std::size_t,
                 std::tuple_element_t<Idx,bucket_descriptors_t<id>>::BlockCount>{};
 
-        //We create
-        template<std::uint32_t id, std::uint32_t... Idx>
+        //We create an instance of the memory pool at the initialization of the program
+        template<std::size_t id, std::size_t... Idx>
         auto & get_instance(std::index_sequence<Idx...>) noexcept{
             static pool_type<id> instance{{{get_size<id,Idx>::value,get_count<id,Idx>::value} ...}};
             return instance;
         }
 
-        template<std::uint32_t id>
+        template<std::size_t id>
         auto & get_instance() noexcept{
             return get_instance<id>(std::make_index_sequence<bucket_count<id>>());
         }
 
-        template<std::uint32_t id> //Is there a specialization ofr this id??
+        template<std::size_t id> //Is there a specialization ofr this id??
         constexpr bool is_defined() noexcept{
             return bucket_count <id>!=0;
         }
 
-        template<std::uint32_t id>
+        template<std::size_t id>
         bool initialize() noexcept{
             (void) get_instance<id>();
             return is_defined<id>();
@@ -179,7 +178,6 @@ namespace RandysEngine{
 
         template<std::uint32_t id>
         [[nodiscard]] void * allocate(std::uint32_t bytes){
-
             auto & pool = get_instance<id>();
 
             std::array<info,bucket_count<id>> deltas;
@@ -232,7 +230,7 @@ namespace RandysEngine{
         //Very similar implementation to std::pmr::polymorphic_allocator
         //https://docs.w3cub.com/cpp/header/memory_resource
 
-        template<typename T = std::uint8_t, std::uint32_t id =0>
+        template<typename T = std::uint8_t, std::size_t id =0>
         class Static_pool_allocator{
             public:
 
@@ -270,7 +268,7 @@ namespace RandysEngine{
                 }
 
                 // member functions
-                [[nodiscard]] T* allocate(size_t n){
+                [[nodiscard]] T* allocate(std::uint32_t n){
                     if constexpr (Pool::is_defined<id>()){
                         return static_cast<T*>(Pool::allocate<id>(sizeof(T)*n));
                     }
@@ -280,7 +278,7 @@ namespace RandysEngine{
                         throw std::bad_alloc();
                     }
                 }   
-                void deallocate(T* p, size_t n){
+                void deallocate(T* p, std::uint32_t n){
                     if constexpr (Pool::is_defined<id>()){
                         Pool::deallocate<id>(p,n);
                     }
@@ -289,7 +287,8 @@ namespace RandysEngine{
                     }
                 }
                 
-                [[nodiscard]] void* allocate_bytes(size_t nbytes, size_t alignment = alignof(max_align_t)){
+                [[nodiscard]] void* allocate_bytes(std::uint32_t nbytes, size_t alignment = alignof(max_align_t)){
+                    
                     if constexpr (Pool::is_defined<id>()){
                         return static_cast<T*>(Pool::allocate<id>(nbytes));
                     }
@@ -299,7 +298,7 @@ namespace RandysEngine{
                         throw std::bad_alloc();
                     }
                 }
-                void deallocate_bytes(void* p, size_t nbytes, size_t alignment = alignof(max_align_t)){
+                void deallocate_bytes(void* p, std::uint32_t nbytes, size_t alignment = alignof(max_align_t)){
                     if constexpr (Pool::is_defined<id>()){
                         Pool::deallocate<id>(p,nbytes);
                     }

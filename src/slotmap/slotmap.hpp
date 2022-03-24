@@ -14,43 +14,123 @@ namespace RandysEngine{
 
     namespace SlotMap{
 
-        //We will be using the std::allocator by default
-        template<class Type, std::uint32_t Capacity = 100,class Allocator = std::allocator<Type>>
+        //We will be using the std::allocator by default, 
+        //but you can use other allocs as well as the defined by your
+        
+        template<class Type,class DATA_ALLOC = std::allocator<Type>>
         class SlotMap{
             /////
-            private:
-                using Value_Type    = Type;
-                using Index_Type    = std::uint32_t;
-                using Id_Type       = Index_Type;
-                using Gen_Type      = Index_Type;
             public:
+                //Type of the Index to be stored
+                using Index_Type    = std::uint32_t;
+
+            private:
+
+                //Some configurations must be provided
+
+                //Type of the value to be stored
+                using Value_Type    = Type;
+
+                //Type of the Id to be stored
+                using Id_Type       = Index_Type;
+
+                //Type of the Generation to be stored
+                using Gen_Type      = std::uint64_t;
+
+            public:
+                //Type of the key to be returned and stored
                 using Key           = struct{Id_Type Id;Gen_Type Gen;};
             private:
-                using IndicesArray  = std::array<Key,Capacity>;
-                using EraseArray    = std::array<Index_Type,Capacity>;
-            //using INDICES_ALLOC = typename std::allocator_traits<Allocator>::template rebind_alloc<std::pair<Slot,std::size_t>>;
-            //using ERASE_ALLOC   = typename std::allocator_traits<Allocator>::template rebind_alloc<std::size_t>;
+
+                //Type of the data array
+                using TypeArray     = Type*;
+
+                //Type of the indices array (each of the indices are made of a key)
+                using IndicesArray  = Key*;
+
+                //Type of the erase array
+                using EraseArray    = Index_Type*;
+
+                //Rebinding of the allocator provided
+                using INDICES_ALLOC = typename std::allocator_traits<DATA_ALLOC>::template rebind_alloc<Key>;
+                
+                //Rebinding of the allocator provided to erase type
+                using ERASE_ALLOC   = typename std::allocator_traits<DATA_ALLOC>::template rebind_alloc<Index_Type>;
             /////
-            Type*                         Data = nullptr;
+
+            //Array of data to be stored by the allocator
+            TypeArray                     Data = nullptr;
+
+            //Index that indicates which is the next free element
             Index_Type                    Free_list_head{0};
-            //Index_Type                    Free_list_tail{Capacity-1};
+
+            //Index that indicates the number of elements currently stored by the slotmap
             Index_Type                    Size{0};
+
+            //Index that indicates the number of max elements stored by the slotmap
+            Index_Type                    Capacity;
+
+            //Array of Erase elements
+            EraseArray                    Erase = nullptr;
+
+            //Current generation that is right now in the Slot_Map
             Gen_Type                      Generation{0};
-            Allocator                     Alloc{};
-            IndicesArray                  Indices;
-            EraseArray                    Erase;
-            
+
+            //Index of indices that are currently stored by the slotmap
+            IndicesArray                  Indices = nullptr;
+
+            //Data allocator
+            DATA_ALLOC d_alloc{};
+
+            //Indices allocator
+            INDICES_ALLOC i_alloc{};
+
+            //Erase allocator
+            ERASE_ALLOC e_alloc{};
+
+            //Initialization of the freelist.
+            //There is no need to delete the data stored in the slotmap since
+            //the data is initialized beforehand
             constexpr void freelist_init() noexcept{
-                for(Index_Type i = 0; i < Indices.size();i++){
+
+                //Reset all of the indices, we don't care about the gen_type
+                for(Index_Type i = 0; i < Capacity;i++){
                     Indices[i].Id = i+1;
                 }
+                //Put freelist to zero
                 Free_list_head = 0;
             }
 
             [[nodiscard]] constexpr Index_Type allocate() {
                 
-                if(Size >= Capacity) throw std::runtime_error("Can't allocate in Slot_Map");
-                assert(Free_list_head< Capacity);
+                if(Size >= Capacity) {
+                    //Increment data, index and erase array by 100 and copy data
+
+                    Index_Type newCapacity = Capacity+128;
+
+                    //Allocate new memory
+                    TypeArray newData = d_alloc.allocate(newCapacity);
+                    IndicesArray newIndices = i_alloc.allocate(newCapacity);
+                    EraseArray newErase = e_alloc.allocate(newCapacity);    
+
+                    //Copy new memory from old memory
+                    memcpy(newData,Data,sizeof(Value_Type)*Capacity);
+                    memcpy(newIndices,Indices,sizeof(Key)*Capacity);
+                    memcpy(newErase,Erase,sizeof(Index_Type)*Capacity);
+
+                    //Dealloc old memory
+                    d_alloc.deallocate(Data,Capacity);
+                    i_alloc.deallocate(Indices,Capacity);
+                    e_alloc.deallocate(Erase,Capacity);
+
+                    //Replace pointers
+                    Data = newData;   
+                    Indices = newIndices;
+                    Erase = newErase;  
+                    Capacity = newCapacity;
+                }
+
+                //TODO
 
                 //Reserve
                 auto slotid = Free_list_head;
@@ -68,6 +148,9 @@ namespace RandysEngine{
             }
 
             constexpr void free(Key key) noexcept{
+
+                //TODO
+
                 assert(isValid(key));
 
                 auto& slot = Indices[key.Id]; 
@@ -91,18 +174,31 @@ namespace RandysEngine{
             }
 
             public:
-
-                constexpr explicit SlotMap(){
-                    Data = Alloc.allocate(Capacity);
+                //Initializing the SlotMap and reserve new Data
+                constexpr explicit SlotMap(Index_Type e_capacity = 128) : Capacity {e_capacity}{
+                    
+                    Data = d_alloc.allocate(Capacity);
+                    Indices = i_alloc.allocate(Capacity);
+                    Erase = e_alloc.allocate(Capacity);   
                     freelist_init();
                 }
-                constexpr explicit SlotMap(const SlotMap<Type,Capacity,Allocator>& other) = delete;
 
+                //Constructor de copia borrado
+                template<class Type_External,class Allocator_External>
+                constexpr explicit SlotMap(const SlotMap<Type_External,Allocator_External>& other) = delete;
+
+                //Destructing the SlotMap
                 constexpr ~SlotMap(){
-                    Alloc.deallocate(Data,Capacity);
+                    d_alloc.deallocate(Data,Capacity);
+                    i_alloc.deallocate(Indices,Capacity);
+                    e_alloc.deallocate(Erase,Capacity);  
                 }                
+
                 //Push a new value into the last free position of slotmap
                 [[nodiscard]] Key push_back(Value_Type&& input){
+
+                    //TODO
+                    
                     //Allocate a new slot and return the position of the slot (not the data)
                     auto reservedId = allocate();
                     //get the reserved slot
@@ -125,32 +221,68 @@ namespace RandysEngine{
                     return(this->push_back(Value_Type{input...}));
                 }
 
-                void swap(SlotMap<Type,Capacity,Allocator>& other) noexcept{
-                    {
-                        Type* aux = other.Data;
-                        other.Data = this->Data;
-                        this->Data = aux;
-                    }
-                    {
-                        Index_Type aux = other.Free_list_head;
-                        other.Free_list_head = this->Free_list_head;
-                        this->Free_list_head = aux;
-                    }
-                    {
-                        Gen_Type aux = other.Generation;
-                        other.Generation = this->Generation;
-                        this->Generation = aux;
-                    }
-                    {
-                        Allocator aux = other.Alloc;
-                        other.Alloc = this->Alloc;
-                        this->Alloc = aux;
-                    }
-                    std::swap(Indices,other.Indices);
+                void swap(SlotMap<Value_Type,DATA_ALLOC>& other) noexcept{
+                    std::swap(Data,other.Data);
+                    std::swap(Free_list_head,other.Free_list_head);
+                    std::swap(Size,other.Size);
+                    std::swap(Capacity,other.Capacity);
                     std::swap(Erase,other.Erase);
+                    std::swap(Generation,other.Generation);
+                    std::swap(Indices,other.Indices);                    
                 }
 
                 constexpr void clear() noexcept{ freelist_init();}
+
+                constexpr bool resize(Index_Type newCapacity) {
+                    bool devolver = true;
+                    if(newCapacity <= Capacity){
+                        devolver = false;
+                    }
+                    else{
+
+                        //Allocate new memory
+                        TypeArray newData = d_alloc.allocate(newCapacity);
+                        IndicesArray newIndices = i_alloc.allocate(newCapacity);
+                        EraseArray newErase = e_alloc.allocate(newCapacity);    
+
+                        //Copy new memory from old memory
+                        memcpy(newData,Data,sizeof(Value_Type)*Capacity);
+                        memcpy(newIndices,Indices,sizeof(Key)*Capacity);
+                        memcpy(newErase,Erase,sizeof(Index_Type)*Capacity);
+
+                        //Dealloc old memory
+                        d_alloc.deallocate(Data,Capacity);
+                        i_alloc.deallocate(Indices,Capacity);
+                        e_alloc.deallocate(Erase,Capacity);
+
+                        //Replace pointers
+                        Data = newData;   
+                        Indices = newIndices;
+                        Erase = newErase;
+                        Capacity = newCapacity;
+                    }
+                    return(devolver);
+                }
+
+                constexpr void clear_and_resize(Index_Type newCapacity){
+
+                    //Allocate new memory
+                    TypeArray newData = d_alloc.allocate(newCapacity);
+                    IndicesArray newIndices = i_alloc.allocate(newCapacity);
+                    EraseArray newErase = e_alloc.allocate(newCapacity);    
+
+                    //Dealloc old memory
+                    d_alloc.deallocate(Data,Capacity);
+                    i_alloc.deallocate(Indices,Capacity);
+                    e_alloc.deallocate(Erase,Capacity);
+
+                    //Replace pointers
+                    Data = newData;   
+                    Indices = newIndices;
+                    Erase = newErase;
+                    Capacity = newCapacity;    
+                    clear();
+                }
 
                 constexpr bool erase(Key key) noexcept{
                     bool devolver = isValid(key);
@@ -177,17 +309,26 @@ namespace RandysEngine{
                     return Capacity;
                 }
 
-                constexpr bool operator==(const SlotMap<Type,Capacity,Allocator>&other) const = delete;
+                template<class Type_External,class Allocator_External>
+                constexpr bool operator=(const SlotMap<Type_External,Allocator_External>&other) const = delete;
 
-                constexpr bool operator!=(const SlotMap<Type,Capacity,Allocator>&other) const = delete;
+                template<class Type_External,class Allocator_External>
+                constexpr bool operator==(const SlotMap<Type_External,Allocator_External>&other) const = delete;
 
-                constexpr bool operator<(const SlotMap<Type,Capacity,Allocator>&other) const = delete;
+                template<class Type_External,class Allocator_External>
+                constexpr bool operator!=(const SlotMap<Type_External,Allocator_External>&other) const = delete;
 
-                constexpr bool operator<=(const SlotMap<Type,Capacity,Allocator>&other) const = delete;
+                template<class Type_External,class Allocator_External>
+                constexpr bool operator<(const SlotMap<Type_External,Allocator_External>&other) const = delete;
 
-                constexpr bool operator>(const SlotMap<Type,Capacity,Allocator>&other) const = delete;
+                template<class Type_External,class Allocator_External>
+                constexpr bool operator<=(const SlotMap<Type_External,Allocator_External>&other) const = delete;
 
-                constexpr bool operator>=(const SlotMap<Type,Capacity,Allocator>&other) const = delete;
+                template<class Type_External,class Allocator_External>
+                constexpr bool operator>(const SlotMap<Type_External,Allocator_External>&other) const = delete;
+
+                template<class Type_External,class Allocator_External>
+                constexpr bool operator>=(const SlotMap<Type_External,Allocator_External>&other) const = delete;
 
                 /*void printIndices(){
                     for(unsigned int i = 0; i< Capacity;i++){
