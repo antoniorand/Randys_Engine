@@ -73,9 +73,6 @@ namespace RandysEngine{
             //Array of Erase elements
             EraseArray                    Erase = nullptr;
 
-            //Current generation that is right now in the Slot_Map
-            Gen_Type                      Generation{0};
-
             //Index of indices that are currently stored by the slotmap
             IndicesArray                  Indices = nullptr;
 
@@ -87,6 +84,9 @@ namespace RandysEngine{
 
             //Erase allocator
             ERASE_ALLOC e_alloc{};
+
+            //Current generation that is right now in the Slot_Map
+            Gen_Type                      Generation{0};
 
             //Initialization of the freelist.
             //There is no need to delete the data stored in the slotmap since
@@ -104,8 +104,8 @@ namespace RandysEngine{
             [[nodiscard]] constexpr Index_Type allocate() {
                 
                 if(Size >= Capacity) {
-                    //Increment data, index and erase array by 100 and copy data
 
+                    //Increment data, index and erase array by 100 and copy data
                     Index_Type newCapacity = Capacity+128;
 
                     //Allocate new memory
@@ -130,15 +130,16 @@ namespace RandysEngine{
                     Capacity = newCapacity;
                 }
 
-                //TODO
-
-                //Reserve
+                //Get a slot from the position specified in the freelist
                 auto slotid = Free_list_head;
+                //Now the freelist head is the position that points the old free slot
                 Free_list_head = Indices[slotid].Id;
 
-                //Init slot
+                //Get the slot
                 auto& slot = Indices[slotid];
+                //The new id will be size
                 slot.Id = Size;
+                //we add the current gen
                 slot.Gen = Generation;
 
                 //update space and generation
@@ -149,11 +150,13 @@ namespace RandysEngine{
 
             constexpr void free(Key key) noexcept{
 
-                //TODO
+                //we look if the key is valid
+                //is unimportant in this specific implementation
+                //assert(isValid(key));
 
-                assert(isValid(key));
-
-                auto& slot = Indices[key.Id]; 
+                //get the slot specified in the key
+                auto& slot = Indices[key.Id];
+                //Get the index to the data array
                 auto dataid = slot.Id;//save id of data slot to check if it is last or not
 
                 //Update freelist
@@ -176,7 +179,7 @@ namespace RandysEngine{
             public:
                 //Initializing the SlotMap and reserve new Data
                 constexpr explicit SlotMap(Index_Type e_capacity = 128) : Capacity {e_capacity}{
-                    
+
                     Data = d_alloc.allocate(Capacity);
                     Indices = i_alloc.allocate(Capacity);
                     Erase = e_alloc.allocate(Capacity);   
@@ -196,8 +199,6 @@ namespace RandysEngine{
 
                 //Push a new value into the last free position of slotmap
                 [[nodiscard]] Key push_back(Value_Type&& input){
-
-                    //TODO
                     
                     //Allocate a new slot and return the position of the slot (not the data)
                     auto reservedId = allocate();
@@ -205,10 +206,28 @@ namespace RandysEngine{
                     auto key = Indices[reservedId];
 
                     //move data
-                    Data[key.Id] = std::move(input);
+                    Data[key.Id] = std::forward<Value_Type>(input);
                     Erase[key.Id] = reservedId;
 
+                    //We change the id of the key to be returned
+                    //This is because in the slotmap, the key should point to the index to the array data
+                    //but the key outside should point to the index of the indices data
                     key.Id = reservedId;                    
+
+                    //EXAMPLE
+                    /*
+                        I push back a new element, it is reserved in the 10th position of the index,
+                        but it will become the 42nd element in the data array.
+
+                        So in the indices array, the key value would be like [41,156]
+                        and the key to be returned is going to be [10,156]
+
+                        So you would tell the slotmap "I want the tenth element please"
+                        And the slotmap will see that the 10th element is going to be stored in the forty first
+                        element in the data array, so you will be returned the pointer to the forty first
+                        but the user won't need to know all of this :) this explanation is just for debugging
+                    */
+
                     return{key};
                 }
 
@@ -287,7 +306,7 @@ namespace RandysEngine{
                 constexpr bool erase(Key key) noexcept{
                     bool devolver = isValid(key);
                     if(devolver){
-                        free(key);
+                        this->free(key);
                     }
                     return devolver;
                 }
