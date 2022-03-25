@@ -13,23 +13,21 @@ struct Estructura{
     int x, y;
 };
 
+struct Estructura2{
+    int x,y,z,w;
+    uint32_t a,b,c,d;
+};
+
 using DATA_ALLOC = RandysEngine::Pool::Static_pool_allocator<Estructura,10>;
-using SlotmapEstandar = RandysEngine::SlotMap::SlotMap<Estructura>;
-using SlotmapMemoryPool = RandysEngine::SlotMap::SlotMap<Estructura, DATA_ALLOC>;
+using SlotmapEstandar = RandysEngine::SlotMap<Estructura>;
+using SlotmapMemoryPool = RandysEngine::SlotMap<Estructura, DATA_ALLOC>;
+using SlotmapMemoryPool2 = RandysEngine::SlotMap<Estructura2, DATA_ALLOC>;
 
 int main(){
 
     SlotmapMemoryPool slotmap = SlotmapMemoryPool(5000);
 
-    auto key1 = slotmap.push_back({2,3});
-    Estructura objeto{4,5};
-    auto key2 = slotmap.push_back(objeto);
-    auto valor = slotmap.atPosition(key1);
-    auto valor2= slotmap.atPosition(key2);
-    std::cout << "Valor x: " << valor->x << " \nValor y: " << valor->y << std::endl;
-    std::cout << "Valor x: " << valor2->x << " \nValor y: " << valor2->y << std::endl;
-    slotmap.erase(key1);
-    slotmap.clear();
+    std::cout << sizeof(SlotmapMemoryPool) << " " << sizeof(SlotmapMemoryPool2) << std::endl;
     
     /*glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

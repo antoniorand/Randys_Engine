@@ -1,7 +1,7 @@
 //Source: http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2017/p0661r0.pdf
 
 #pragma once
-#include <memoryPool/memoryPool.hpp>
+#include "../memoryPool/memoryPool.hpp"
 
 #include <cstddef>
 #include <memory>
@@ -11,8 +11,6 @@
 
 
 namespace RandysEngine{
-
-    namespace SlotMap{
 
         //We will be using the std::allocator by default, 
         //but you can use other allocs as well as the defined by your
@@ -376,6 +374,6 @@ namespace RandysEngine{
                 //constexpr Index_Type getFreeList(){return Free_list_head;};
 
         };
-    };
+    
 
 }
