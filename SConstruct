@@ -32,6 +32,7 @@ clang = ARGUMENTS.get('clang',0)
 
 if int(clang):
     env.Replace(CC= "clang", CXX="clang++")
+    env.Append(CCFLAGS = " ")
 
 if int(asan):
     env.Replace(CC= "clang", CXX="clang++")
