@@ -1,5 +1,5 @@
 ###library list
-libraries = ['glfw3','-lgdi32']
+libraries = ['glfw3','gdi32']
 pathToLibraries=['./lib']
 
 ##Reference: https://stackoverflow.com/questions/26342109/scons-build-all-sources-files-in-all-directories
@@ -32,7 +32,7 @@ clang = ARGUMENTS.get('clang',0)
 
 if int(clang):
     env.Replace(CC= "clang", CXX="clang++")
-    env.Append(CCFLAGS = " ")
+    #libraries.append('stdc++fs')
 
 if int(asan):
     env.Replace(CC= "clang", CXX="clang++")

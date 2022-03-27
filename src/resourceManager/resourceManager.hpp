@@ -14,17 +14,23 @@ namespace RandysEngine{
 
         std::map<Pool::MapKey,void*,Pool::MapAllocator> stored_slotmaps{};
 
+        template<typename Resource_Stored>
+        Resource_Stored* initializeSlotMap();
+
         public:
 
             ResourceManager(){};
             ~ResourceManager(){};
 
             template<typename Resource_Stored>
-            std::uint32_t addResource(){
-
+            [[nodiscard]] std::uint32_t addResource(){
+                //The resource id to be stored
                 std::uint32_t devolver = nextID_Resource++;
-                std::cout << "Id del recurso: " << devolver << std::endl;
-                std::cout << "Id del tipo de recurso: " << Resource_Stored::typeId << std::endl;
+                /*Resource_Stored* recurso = initializeSlotMap<Resource_Stored>();
+                //std::cout << "Id del recurso: " << devolver << std::endl;
+                //std::cout << "Id del tipo de recurso: " << Resource_Stored::typeId << std::endl;
+                void* toBeStored = static_cast<void*>(recurso);
+                //stored_slotmaps.emplace(std::make_pair<Resource_Stored::typeId,devolver>);*/
 
                 return devolver;
             }

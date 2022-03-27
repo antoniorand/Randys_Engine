@@ -13,11 +13,11 @@
 
 int main(){
 
-    RandysEngine::ResourceManager gestor{};
+    /*RandysEngine::ResourceManager gestor{};
 
-    gestor.addResource<RandysEngine::Model>();
-    gestor.addResource<RandysEngine::Mesh>();
-    gestor.addResource<RandysEngine::Vertex>();
+    auto uno = gestor.addResource<RandysEngine::Model>();
+    auto dos = gestor.addResource<RandysEngine::Mesh>();
+    auto tres = gestor.addResource<RandysEngine::Vertex>();*/
 
     /*glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);

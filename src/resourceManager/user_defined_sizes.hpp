@@ -2,6 +2,7 @@
 #include <cstdint>
 #include "../memoryPool/user_defined_descriptor.hpp"
 #include "../resources/model_related.hpp"
+#include "../slotmap/slotmap.hpp"
 
 namespace RandysEngine{
     
