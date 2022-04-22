@@ -1,27 +1,28 @@
 
 //////
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
+
 /////
 #include <memoryPool/memoryPool.hpp>
-#include <memoryPool/user_defined_descriptor.hpp>
 #include <slotmap/slotmap.hpp>
-#include <resourceManager/resourceManager.hpp>
+//#include <resourceManager/resourceManager.hpp>
 #include <vector>
 #include <iostream>
+#include <memory>
 
+struct Data{
+    static inline int a {0};
+
+    int x{a++}, y{a++}, z{a++};
+};
+
+using AllocData = RandysEngine::Pool::Static_pool_allocator<Data,2000>;
+using Slotmap = RandysEngine::SlotMap<Data,AllocData>;
 
 int main(){
 
-    /*RandysEngine::ResourceManager gestor{};
+    Slotmap map{1000};
+    
+    
 
-    auto uno = gestor.addResource<RandysEngine::Model>();
-    auto dos = gestor.addResource<RandysEngine::Mesh>();
-    auto tres = gestor.addResource<RandysEngine::Vertex>();*/
-
-    /*glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);*/
-    //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    return 0;
 }

@@ -103,7 +103,7 @@ namespace RandysEngine{
                 
                 if(Size >= Capacity) {
 
-                    //Increment data, index and erase array by 100 and copy data
+                    //Increment data, index and erase array by 128 and copy data
                     Index_Type newCapacity = Capacity+128;
 
                     //Allocate new memory

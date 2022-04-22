@@ -4,11 +4,7 @@
 #include <cstring>
 #include <assert.h>
 #include <iostream>
-#ifdef __clang__
-    #include <experimental/memory_resource>
-#else
-    #include <memory_resource>
-#endif
+#include <vector>
 
 
 
@@ -52,120 +48,55 @@ namespace RandysEngine{
 
 
         //We create a generic bucket descriptor, empty by default
-        template<std::size_t id>
+        /*template<std::size_t id>
         struct bucket_descriptors{
             using type = std::tuple<>;
-        };
-        ////////////////////////////////////////////
-        //We can define some bucket configurations//
-        ////////////////////////////////////////////
-        /////////////////////////////////////////////////////
-        //Example on how to define your own specializations//
-        /////////////////////////////////////////////////////
-        /*struct bucket_cfg16{
-            static constexpr std::uint32_t BlockSize = 16;
-            static constexpr std::uint32_t BlockCount = 10000;
-        };
-
-        struct bucket_cfg32{
-            static constexpr std::uint32_t BlockSize = 32;
-            static constexpr std::uint32_t BlockCount = 10000;
-        };
-
-        struct bucket_cfg1024{
-            static constexpr std::uint32_t BlockSize = 1024;
-            static constexpr std::uint32_t BlockCount = 50000;
         };*/
 
-        //In a L1 cache of size of 256kbs
-        //You can store up to 15 blocks of the following
-        //blocksize and blockcount
-        struct bucket_L1_256kbs{
-            static constexpr std::uint32_t BlockSize = 16;
-            //1 + ((blockCount-1)/8); 128 ledger size
-            static constexpr std::uint32_t BlockCount = 1024;
+        //descriptor for types
+        template<typename T,std::uint32_t MAXBLOCK_TYPE>
+        struct type_bucket_descriptor{
+            static constexpr std::uint32_t BlockSize = sizeof(T);
+            static constexpr std::uint32_t BlockCount = MAXBLOCK_TYPE;
         };
+       
 
-        //Define an specialization of our previous descriptor, not empty
-        //We use a combination of the previous buckets we created
-        /*template<>
-        struct bucket_descriptors<1>{
-            using type = std::tuple<bucket_cfg16,bucket_cfg32,bucket_cfg1024> ;
-        };
-
-        template<>
-        struct bucket_descriptors<2>{
-            using type = std::tuple<bucket_cfg16,bucket_cfg16,bucket_cfg16> ;
-        };*/
-
-        template<>
-        struct bucket_descriptors<0>{
-            using type = std::tuple<
-                bucket_L1_256kbs,bucket_L1_256kbs,bucket_L1_256kbs,
-                bucket_L1_256kbs,bucket_L1_256kbs,bucket_L1_256kbs,
-                bucket_L1_256kbs,bucket_L1_256kbs,bucket_L1_256kbs,
-                bucket_L1_256kbs,bucket_L1_256kbs,bucket_L1_256kbs,
-                bucket_L1_256kbs,bucket_L1_256kbs,bucket_L1_256kbs
-            >;
-        };
-
-        
-
-        /////////////////////////////////////////////////////////////////////
-        //The purpose of the previous descriptor is creating/////////////////
-        //an array of size 3 that has these configurations in each position//
-        /////////////////////////////////////////////////////////////////////
-
-        //The type of our specialization
-        template<std::size_t id>
-        using bucket_descriptors_t = typename bucket_descriptors<id>::type;
-
-        //The number of buckets we are creating in our specialization
-        template<std::size_t id>
-        static constexpr std::uint32_t bucket_count = std::tuple_size<bucket_descriptors_t<id>>::value;
 
         //Our pool implemented in our specialization
-        template<std::size_t id>
-        using pool_type = std::array<Bucket, bucket_count<id>>;
+        template<typename T>
+        //using pool_type = std::array<Bucket, bucket_count<id>>;
+        using pool_type = std::vector<Bucket>;
 
-        template<std::size_t id, std::size_t Idx>
-        struct get_size :
-            std::integral_constant<std::size_t,
-                std::tuple_element_t<Idx,bucket_descriptors_t<id>>::BlockSize>{};
-
-        template<std::size_t id, std::size_t Idx>
-        struct get_count :
-            std::integral_constant<std::size_t,
-                std::tuple_element_t<Idx,bucket_descriptors_t<id>>::BlockCount>{};
 
         //We create an instance of the memory pool at the initialization of the program
-        template<std::size_t id, std::size_t... Idx>
-        auto & get_instance(std::index_sequence<Idx...>) noexcept{
-            static pool_type<id> instance{{{get_size<id,Idx>::value,get_count<id,Idx>::value} ...}};
+        template<typename T, std::uint32_t MAXBLOCK_TYPE = 10000>
+        auto & get_instance() noexcept{
+            static pool_type<T> instance;
+            if(instance.capacity() == 0){
+                instance.reserve(10);
+                instance.emplace_back(
+                    type_bucket_descriptor<T,MAXBLOCK_TYPE>::BlockSize,
+                    type_bucket_descriptor<T,MAXBLOCK_TYPE>::BlockCount);
+            }
             return instance;
         }
 
-        template<std::size_t id>
-        auto & get_instance() noexcept{
-            return get_instance<id>(std::make_index_sequence<bucket_count<id>>());
-        }
-
-        template<std::size_t id> //Is there a specialization ofr this id??
+        /*template<std::size_t id> //Is there a specialization ofr this id??
         constexpr bool is_defined() noexcept{
             return bucket_count <id>!=0;
-        }
+        }*/
 
-        template<std::size_t id>
+        /*template<std::size_t id>
         bool initialize() noexcept{
             (void) get_instance<id>();
             return is_defined<id>();
-        }
+        }*/
 
         /////////////////////////
         //Memory Pool Functions//
         /////////////////////////
 
-        struct info {
+        /*struct info {
             std::uint32_t index{0}; //which bucket?
             std::uint32_t block_count{0}; //how many blocks would the allocation take from the bucket?
             std::uint32_t waste{0}; //How much memory would be wasted
@@ -174,13 +105,15 @@ namespace RandysEngine{
                 //condition                    result if true                    result if false
                 return(waste == other.waste) ? block_count < other.block_count : waste < other.waste;
             }
-        };
+        };*/
 
-        template<std::uint32_t id>
+        template<typename T, std::uint32_t MAXBLOCK_TYPE = 10000>
         [[nodiscard]] void * allocate(std::uint32_t bytes){
-            auto & pool = get_instance<id>();
+            //Get reference to instance of pool
+            auto & pool = get_instance<T,MAXBLOCK_TYPE>();
 
-            std::array<info,bucket_count<id>> deltas;
+            //get array of size of bucket count
+            /*std::array<info,bucket_count<id>> deltas;
             std::uint32_t index = 0;
 
             for(const auto& bucket : pool){
@@ -196,22 +129,27 @@ namespace RandysEngine{
                     deltas[index].block_count = n;
                 }
                 ++index;
-
-                std::sort(deltas.begin(),deltas.end());
-
-                for(const auto & d : deltas){
-                    if(auto ptr = pool[d.index].allocate(bytes);ptr != nullptr)
-                        return ptr;
-                }
-
-                throw std::bad_alloc();
             }
+            
+            std::sort(deltas.begin(),deltas.end());*/
+
+            for(auto& bucket : pool){
+                if(auto ptr = bucket.allocate(bytes);ptr != nullptr)
+                    return ptr;
+            }
+            pool.emplace_back(type_bucket_descriptor<T,MAXBLOCK_TYPE>::BlockSize,
+                type_bucket_descriptor<T,MAXBLOCK_TYPE>::BlockCount);
+
+            if(auto ptr = pool.back().allocate(bytes);ptr != nullptr)
+                return ptr;
+    
+    
             return(nullptr);
         }
 
-        template<std::uint32_t id>
-        void deallocate(void* ptr, std::uint32_t bytes) noexcept{
-            auto & pool = get_instance<id>();
+        template<typename T, std::uint32_t MAXBLOCK_TYPE = 10000>
+        void deallocate(T* ptr, std::uint32_t bytes) noexcept{
+            auto & pool = get_instance<T,MAXBLOCK_TYPE>();
 
             for(auto & bucket  : pool){
 
@@ -230,7 +168,7 @@ namespace RandysEngine{
         //Very similar implementation to std::pmr::polymorphic_allocator
         //https://docs.w3cub.com/cpp/header/memory_resource
 
-        template<typename T = std::uint8_t, std::size_t id =0>
+        template<typename T, std::uint32_t MAXBLOCK_TYPE = 10000>
         class Static_pool_allocator{
             public:
 
@@ -239,77 +177,47 @@ namespace RandysEngine{
                 ////////
 
                 template<typename U>
-                struct rebind{ using other = Static_pool_allocator<U,id>;};
-#ifdef __clang__
-                Static_pool_allocator() noexcept : m_upstream_resource{std::experimental::pmr::get_default_resource()}{}
-                Static_pool_allocator(std::experimental::pmr::memory_resource * res) noexcept : m_upstream_resource{res}{}
-#else
-                Static_pool_allocator() noexcept : m_upstream_resource{std::pmr::get_default_resource()}{}
-                Static_pool_allocator(std::pmr::memory_resource * res) noexcept : m_upstream_resource{res}{}
-#endif              
+                struct rebind{ using other = Static_pool_allocator<U,MAXBLOCK_TYPE>;};
+
+                Static_pool_allocator(){}; 
                 
                 template<typename U>
-                Static_pool_allocator(const Static_pool_allocator<U,id> & other) noexcept
-                    : m_upstream_resource{other.upstream_resource()}{}
+                Static_pool_allocator(const Static_pool_allocator<U,MAXBLOCK_TYPE> & other) noexcept{}
 
-                template<typename U>
-                Static_pool_allocator & operator=(const Static_pool_allocator<U,id> & other) noexcept{
-                    m_upstream_resource = other.upstream_resource();
-                }
-
-                template<typename U>
-                constexpr bool operator== (const Static_pool_allocator<U,id>& other) noexcept{
-                    return (this->m_upstream_resource == other.m_upstream_resource);
-                }
-
-                template<typename U>
-                constexpr bool operator!= (const Static_pool_allocator<U,id>& other) noexcept{
-                    return (this->m_upstream_resource != other.m_upstream_resource);
-                }
+                template<typename U, std::uint32_t MAXBLOCK_TYPE_OTHER = 10000>
+                Static_pool_allocator & operator=(const Static_pool_allocator<U,MAXBLOCK_TYPE_OTHER> & other) noexcept{}
 
                 // member functions
                 [[nodiscard]] T* allocate(std::uint32_t n){
-                    if constexpr (Pool::is_defined<id>()){
-                        return static_cast<T*>(Pool::allocate<id>(sizeof(T)*n));
-                    }
-                    else if(m_upstream_resource != nullptr){
-                        return static_cast<T*>(m_upstream_resource->allocate(sizeof(T)*n,alignof(T)));
-                    }  else{
+                    if(n >= MAXBLOCK_TYPE)
                         throw std::bad_alloc();
-                    }
+                    return static_cast<T*>(Pool::allocate<T,MAXBLOCK_TYPE>(sizeof(T)*n));
                 }   
                 void deallocate(T* p, std::uint32_t n){
-                    if constexpr (Pool::is_defined<id>()){
-                        Pool::deallocate<id>(p,n);
-                    }
-                    else if(m_upstream_resource != nullptr){
-                        m_upstream_resource->deallocate(p,n,alignof(T));
-                    }
+                    if(n >= MAXBLOCK_TYPE)
+                        throw std::bad_alloc();
+                    Pool::deallocate<T,MAXBLOCK_TYPE>(p,n);
                 }
                 
-                [[nodiscard]] void* allocate_bytes(std::uint32_t nbytes, size_t alignment = alignof(max_align_t)){
-                    
-                    if constexpr (Pool::is_defined<id>()){
-                        return static_cast<T*>(Pool::allocate<id>(nbytes));
-                    }
-                    else if(m_upstream_resource != nullptr){
-                        return static_cast<T*>(m_upstream_resource->allocate(nbytes,alignment));
-                    }  else{
+                [[nodiscard]] void* allocate_bytes(std::uint32_t nbytes){
+                    if(nbytes/sizeof(T) >= MAXBLOCK_TYPE)
                         throw std::bad_alloc();
-                    }
+                    return static_cast<T*>(Pool::allocate<T,MAXBLOCK_TYPE>(nbytes));
+
                 }
-                void deallocate_bytes(void* p, std::uint32_t nbytes, size_t alignment = alignof(max_align_t)){
-                    if constexpr (Pool::is_defined<id>()){
-                        Pool::deallocate<id>(p,nbytes);
-                    }
-                    else if(m_upstream_resource != nullptr){
-                        m_upstream_resource->deallocate(p,nbytes,alignment);
-                    }
+                void deallocate_bytes(void* p, std::uint32_t nbytes){
+                    if(nbytes/sizeof(T) >= MAXBLOCK_TYPE)
+                        throw std::bad_alloc();
+                    Pool::deallocate<T,MAXBLOCK_TYPE>(p,nbytes);
                 }
                 [[nodiscard]] T* allocate_object(size_t n = 1){
+                    if(n >= MAXBLOCK_TYPE)
+                        throw std::bad_alloc();
                     return(static_cast<T*>(this->allocate(n)));
                 }
                 void deallocate_object(T* p, size_t n = 1){
+                    if(n >= MAXBLOCK_TYPE)
+                        throw std::bad_alloc();
                     this->deallocate(p,n);
                 }
                 template<class... CtorArgs> T* new_object(CtorArgs&&... ctor_args){
@@ -331,27 +239,6 @@ namespace RandysEngine{
                 void destroy(T* p){
                     (p)->~T();
                 }
-
-                /*polymorphic_allocator select_on_container_copy_construction() const;*/
-
-                static bool initialize_memory_pool() noexcept 
-                    {return Pool::initialize<id>();};
-#ifdef __clang__
-                std::experimental::pmr::memory_resource * upstream_resource() const noexcept{
-                    return m_upstream_resource;
-                }
-#else
-                std::pmr::memory_resource * upstream_resource() const noexcept{
-                    return m_upstream_resource;
-                }
-#endif 
-
-            private:
-#ifdef __clang__
-                std::experimental::pmr::memory_resource * m_upstream_resource;
-#else
-                std::pmr::memory_resource * m_upstream_resource;
-#endif 
 
         };
     };

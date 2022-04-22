@@ -2,7 +2,9 @@
 .vscode/
 obj/
 lib/*.dll
+lib/libglw3.a
+*.a
 .sconsign.dblite
 *.o
 *.stackdump
-.dll
+*.dll
