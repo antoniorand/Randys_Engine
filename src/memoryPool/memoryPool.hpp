@@ -111,6 +111,7 @@ namespace RandysEngine{
         [[nodiscard]] void * allocate(std::uint32_t bytes){
             //Get reference to instance of pool
             auto & pool = get_instance<T,MAXBLOCK_TYPE>();
+            void* devolver = nullptr;
 
             //get array of size of bucket count
             /*std::array<info,bucket_count<id>> deltas;
@@ -134,17 +135,18 @@ namespace RandysEngine{
             std::sort(deltas.begin(),deltas.end());*/
 
             for(auto& bucket : pool){
-                if(auto ptr = bucket.allocate(bytes);ptr != nullptr)
-                    return ptr;
+                devolver = bucket.allocate(bytes);
+                if(devolver)
+                    break;
             }
-            pool.emplace_back(type_bucket_descriptor<T,MAXBLOCK_TYPE>::BlockSize,
-                type_bucket_descriptor<T,MAXBLOCK_TYPE>::BlockCount);
-
-            if(auto ptr = pool.back().allocate(bytes);ptr != nullptr)
-                return ptr;
+            if(!devolver){
+                pool.emplace_back(type_bucket_descriptor<T,MAXBLOCK_TYPE>::BlockSize,
+                    type_bucket_descriptor<T,MAXBLOCK_TYPE>::BlockCount);
+                devolver = pool.back().allocate(bytes);
+            }
+   
     
-    
-            return(nullptr);
+            return(devolver);
         }
 
         template<typename T, std::uint32_t MAXBLOCK_TYPE = 10000>
@@ -189,6 +191,7 @@ namespace RandysEngine{
 
                 // member functions
                 [[nodiscard]] T* allocate(std::uint32_t n){
+                    //std::cout << "Tipo del allocator: " << typeid(value_type).hash_code() << std::endl;
                     if(n >= MAXBLOCK_TYPE)
                         throw std::bad_alloc();
                     return static_cast<T*>(Pool::allocate<T,MAXBLOCK_TYPE>(sizeof(T)*n));

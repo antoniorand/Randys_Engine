@@ -12,61 +12,55 @@
 
 namespace RandysEngine{
 
+    namespace SlotMap{
+
+         //Type of the Index to be stored
+        using SlotMap_Index_Type    = std::uint32_t;
+        //Type of the Id to be stored
+        using SlotMap_Id_Type       = SlotMap_Index_Type;
+
+        //Type of the Generation to be stored
+        using SlotMap_Gen_Type      = std::uint64_t;
+        //Type of the key to be returned and stored
+        using SlotMap_Key = struct{RandysEngine::SlotMap::SlotMap_Id_Type Id;RandysEngine::SlotMap::SlotMap_Gen_Type Gen;};
+
         //We will be using the std::allocator by default, 
-        //but you can use other allocs as well as the defined by your
+        //but you can use other allocs as well as the defined by you
         
         template<class Type,class DATA_ALLOC = std::allocator<Type>>
         class SlotMap{
-            /////
-            public:
-                //Type of the Index to be stored
-                using Index_Type    = std::uint32_t;
-
-            private:
 
                 //Some configurations must be provided
 
                 //Type of the value to be stored
                 using Value_Type    = Type;
-
-                //Type of the Id to be stored
-                using Id_Type       = Index_Type;
-
-                //Type of the Generation to be stored
-                using Gen_Type      = std::uint64_t;
-
-            public:
-                //Type of the key to be returned and stored
-                using Key           = struct{Id_Type Id;Gen_Type Gen;};
-            private:
-
                 //Type of the data array
                 using TypeArray     = Type*;
 
                 //Type of the indices array (each of the indices are made of a key)
-                using IndicesArray  = Key*;
+                using IndicesArray  = SlotMap_Key*;
 
                 //Type of the erase array
-                using EraseArray    = Index_Type*;
+                using EraseArray    = SlotMap_Index_Type*;
 
                 //Rebinding of the allocator provided
-                using INDICES_ALLOC = typename std::allocator_traits<DATA_ALLOC>::template rebind_alloc<Key>;
+                using INDICES_ALLOC = typename std::allocator_traits<DATA_ALLOC>::template rebind_alloc<SlotMap_Key>;
                 
                 //Rebinding of the allocator provided to erase type
-                using ERASE_ALLOC   = typename std::allocator_traits<DATA_ALLOC>::template rebind_alloc<Index_Type>;
+                using ERASE_ALLOC   = typename std::allocator_traits<DATA_ALLOC>::template rebind_alloc<SlotMap_Index_Type>;
             /////
 
             //Array of data to be stored by the allocator
             TypeArray                     Data = nullptr;
 
             //Index that indicates which is the next free element
-            Index_Type                    Free_list_head{0};
+            SlotMap_Index_Type                    Free_list_head{0};
 
             //Index that indicates the number of elements currently stored by the slotmap
-            Index_Type                    Size{0};
+            SlotMap_Index_Type                    Size{0};
 
             //Index that indicates the number of max elements stored by the slotmap
-            Index_Type                    Capacity;
+            SlotMap_Index_Type                    Capacity;
 
             //Array of Erase elements
             EraseArray                    Erase = nullptr;
@@ -84,7 +78,7 @@ namespace RandysEngine{
             ERASE_ALLOC e_alloc{};
 
             //Current generation that is right now in the Slot_Map
-            Gen_Type                      Generation{0};
+            SlotMap_Gen_Type                      Generation{1};
 
             //Initialization of the freelist.
             //There is no need to delete the data stored in the slotmap since
@@ -92,19 +86,19 @@ namespace RandysEngine{
             constexpr void freelist_init() noexcept{
 
                 //Reset all of the indices, we don't care about the gen_type
-                for(Index_Type i = 0; i < Capacity;i++){
+                for(SlotMap_Index_Type i = 0; i < Capacity;i++){
                     Indices[i].Id = i+1;
                 }
                 //Put freelist to zero
                 Free_list_head = 0;
             }
 
-            [[nodiscard]] constexpr Index_Type allocate() {
+            [[nodiscard]] constexpr SlotMap_Index_Type allocate() {
                 
                 if(Size >= Capacity) {
 
                     //Increment data, index and erase array by 128 and copy data
-                    Index_Type newCapacity = Capacity+128;
+                    SlotMap_Index_Type newCapacity = Capacity+128;
 
                     //Allocate new memory
                     TypeArray newData = d_alloc.allocate(newCapacity);
@@ -113,8 +107,8 @@ namespace RandysEngine{
 
                     //Copy new memory from old memory
                     memcpy(newData,Data,sizeof(Value_Type)*Capacity);
-                    memcpy(newIndices,Indices,sizeof(Key)*Capacity);
-                    memcpy(newErase,Erase,sizeof(Index_Type)*Capacity);
+                    memcpy(newIndices,Indices,sizeof(SlotMap_Key)*Capacity);
+                    memcpy(newErase,Erase,sizeof(SlotMap_Index_Type)*Capacity);
 
                     //Dealloc old memory
                     d_alloc.deallocate(Data,Capacity);
@@ -146,7 +140,7 @@ namespace RandysEngine{
                 return slotid;
             }
 
-            constexpr void free(Key key) noexcept{
+            constexpr void free(SlotMap_Key key) noexcept{
 
                 //we look if the key is valid
                 //is unimportant in this specific implementation
@@ -176,7 +170,7 @@ namespace RandysEngine{
 
             public:
                 //Initializing the SlotMap and reserve new Data
-                constexpr explicit SlotMap(Index_Type e_capacity = 128) : Capacity {e_capacity}{
+                constexpr explicit SlotMap(SlotMap_Index_Type e_capacity = 128) : Capacity {e_capacity}{
 
                     Data = d_alloc.allocate(Capacity);
                     Indices = i_alloc.allocate(Capacity);
@@ -196,8 +190,7 @@ namespace RandysEngine{
                 }                
 
                 //Push a new value into the last free position of slotmap
-                [[nodiscard]] Key push_back(Value_Type&& input){
-                    
+                [[nodiscard]] SlotMap_Key push_back(Value_Type&& input){
                     //Allocate a new slot and return the position of the slot (not the data)
                     auto reservedId = allocate();
                     //get the reserved slot
@@ -225,16 +218,15 @@ namespace RandysEngine{
                         element in the data array, so you will be returned the pointer to the forty first
                         but the user won't need to know all of this :) this explanation is just for debugging
                     */
-
                     return{key};
                 }
 
-                [[nodiscard]] Key push_back(Value_Type const& input){
+                [[nodiscard]] SlotMap_Key push_back(Value_Type const& input){
                     return(this->push_back(Value_Type{input}));
                 }
 
                 template<class... Args>
-                [[nodiscard]] Key push_back(Args... input){
+                [[nodiscard]] SlotMap_Key push_back(Args... input){
                     return(this->push_back(Value_Type{input...}));
                 }
 
@@ -250,7 +242,7 @@ namespace RandysEngine{
 
                 constexpr void clear() noexcept{ freelist_init();}
 
-                constexpr bool resize(Index_Type newCapacity) {
+                constexpr bool resize(SlotMap_Index_Type newCapacity) {
                     bool devolver = true;
                     if(newCapacity <= Capacity){
                         devolver = false;
@@ -264,8 +256,8 @@ namespace RandysEngine{
 
                         //Copy new memory from old memory
                         memcpy(newData,Data,sizeof(Value_Type)*Capacity);
-                        memcpy(newIndices,Indices,sizeof(Key)*Capacity);
-                        memcpy(newErase,Erase,sizeof(Index_Type)*Capacity);
+                        memcpy(newIndices,Indices,sizeof(SlotMap_Key)*Capacity);
+                        memcpy(newErase,Erase,sizeof(SlotMap_Index_Type)*Capacity);
 
                         //Dealloc old memory
                         d_alloc.deallocate(Data,Capacity);
@@ -281,7 +273,7 @@ namespace RandysEngine{
                     return(devolver);
                 }
 
-                constexpr void clear_and_resize(Index_Type newCapacity){
+                constexpr void clear_and_resize(SlotMap_Index_Type newCapacity){
 
                     //Allocate new memory
                     TypeArray newData = d_alloc.allocate(newCapacity);
@@ -301,7 +293,7 @@ namespace RandysEngine{
                     clear();
                 }
 
-                constexpr bool erase(Key key) noexcept{
+                constexpr bool erase(SlotMap_Key key) noexcept{
                     bool devolver = isValid(key);
                     if(devolver){
                         this->free(key);
@@ -309,7 +301,7 @@ namespace RandysEngine{
                     return devolver;
                 }
 
-                [[nodiscard]] constexpr bool isValid(Key key) noexcept{
+                [[nodiscard]] constexpr bool isValid(SlotMap_Key key) noexcept{
                     bool devolver = true;
                     if(key.Id >= Capacity 
                     || Indices[key.Id].Gen != key.Gen)
@@ -361,7 +353,7 @@ namespace RandysEngine{
                     return (devolver);
                 }
 
-                Type* atPosition(Key input){
+                Type* atPosition(SlotMap_Key input){
                     Type* devolver = nullptr;
                     if(isValid(input)){
                         devolver = &Data[
@@ -374,6 +366,10 @@ namespace RandysEngine{
                 //constexpr Index_Type getFreeList(){return Free_list_head;};
 
         };
+
+    }
+
+       
     
 
 }

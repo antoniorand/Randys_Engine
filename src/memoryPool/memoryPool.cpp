@@ -31,7 +31,7 @@ bool RandysEngine::Pool::Bucket::belongs(void * ptr) const noexcept{
 std::uint32_t RandysEngine::Pool::Bucket::find_contiguous_blocks(std::uint32_t n) const noexcept{
     //for every block in the ledger
     std::uint32_t devolver = blockCount;
-    for(std::uint32_t i = 0; i < (blockSize-n+1);i++){
+    for(std::uint32_t i = 0; i < (blockCount-n+1);i++){
         //We have initial 0 blocks contiguous
         std::uint32_t countingBlocks = 0;
         //for every contiguous block
