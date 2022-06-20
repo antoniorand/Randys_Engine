@@ -1,46 +1,60 @@
 #pragma once
 #include <string>
 #include <cstdint>
+#include "../APIs/openglGLAD.hpp"
 namespace RandysEngine{
 
-    static inline std::uint32_t nextResourceId{0};
-
+    
+    struct Mesh;
     struct Vertex{
-         //This is not part of the resource interface but it will be stored as well
-
-        //The data to be stored in a vertex
-        std::uint32_t x,y,z;
-        static inline const std::uint32_t typeId {nextResourceId++};
+        float x, y, z;
     };
-    struct Normal{
-         //This is not part of the resource interface but it will be stored as well
+    struct Index;
 
-        //The data to be stored in a normal
-        std::uint32_t i,j,k;
-        static inline const std::uint32_t typeId {nextResourceId++};
-    };
-    struct TextureCoords{
-         //This is not part of the resource interface but it will be stored as well
+    struct MODEL_DATA_GL{
+        unsigned int VBO, VAO;
+        MODEL_DATA_GL(const Vertex* input, unsigned int i){
+            glGenVertexArrays(1, &VAO);
+            glGenBuffers(1, &VBO);
+            // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+            glBindVertexArray(VAO);
+            glBindBuffer(GL_ARRAY_BUFFER, VBO);
+            glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex), input, GL_STATIC_DRAW);
 
-        //The data to be stored in a Texture coordinate
-        std::uint32_t i,j;
-        static inline const std::uint32_t typeId {nextResourceId++};
-    };
-    struct Mesh{
-        //This is not part of the resource interface but it will be stored as well
-        std::uint32_t referenceToVerteces;
-        std::uint32_t referenceToNormals;
-        std::uint32_t referenceToCoordinateOfTextures;
-        static inline const std::uint32_t typeId {nextResourceId++};
+            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+            glEnableVertexAttribArray(0);
+
+            // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
+            glBindBuffer(GL_ARRAY_BUFFER, 0); 
+
+            // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
+            // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
+            glBindVertexArray(0); 
+
+        }
+        ~MODEL_DATA_GL(){
+            glDeleteVertexArrays(1, &VAO);
+            glDeleteBuffers(1, &VBO);
+        }
     };
 
+    template <typename API_DATA>
     struct Model{
-        //Common characteristics of resources
-        std::string resourceName;
-        bool loaded {false};
-        static inline const std::uint32_t typeId {nextResourceId++};
-        //Specific characteristics of Model Resources        
-        std::uint32_t referenceToMeshes;
-    };
+
+
+        API_DATA data;
+
+        Model(std::string name){
+
+        };
+        Model(){
+            Vertex left{-0.5f, -0.5f, 0.0f},
+                right{0.5f, -0.5f, 0.0f},
+                top{0.0f,  0.5f, 0.0f};
+        };
+        ~Model(){
+            
+        };
+    }
 
 };

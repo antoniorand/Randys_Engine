@@ -42,7 +42,7 @@ namespace RandysEngine{
 
         //slotmap allocator with a length of maximum items
         template<typename Resource_Stored>
-        using SlotMapAlloc = RandysEngine::Pool::Static_pool_allocator<Resource_Stored,slotmap_length<Resource_Stored>::value+1>;
+        using SlotMapAlloc = RandysEngine::Pool::Static_pool_allocator<Resource_Stored,4*(slotmap_length<Resource_Stored>::value+1)>;
             
         //slotmap type
         template<typename Resource_Stored>
