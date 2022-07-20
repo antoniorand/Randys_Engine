@@ -33,7 +33,7 @@ namespace RandysEngine{
                     devolver = false;
                 }
                 else{
-                    std::cout << "Draw KSybox with file " << skybox.skyboxFile << std::endl;
+                    std::cout << "Draw Skybox with file " << skybox.skyboxFile << std::endl;
                 }
                 return devolver;
             };

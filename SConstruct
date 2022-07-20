@@ -13,13 +13,29 @@ def AllSources(node='.', pattern='*'):
                if source.isfile()]
     return result
 
-env = Environment(
-    CPPPATH=['lib/']
-)
+env = Environment()
+
+nintendo3dsBuild = ARGUMENTS.get('3dsBuild',0)
+nintendo3dsClean = ARGUMENTS.get('3dsClean',0)
+
+if int(nintendo3dsBuild):
+    env.Execute('make')
+    Exit()
+if int(nintendo3dsClean):
+    env.Execute('make clean')
+    Exit()
+
+env.Append(CPPPATH= 'lib/')
+
+
 
 #env.Replace(CXX = 'mingw-w64-gcc')
 
 optimize = ARGUMENTS.get('optimize',0)
+
+
+
+
 
 if int(optimize):
     env.Append(CCFLAGS='-O3 -std=c++20')
