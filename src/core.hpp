@@ -5,6 +5,8 @@
 #include <iostream>
 #include <variant>
 #include <list>
+#include "APIs/GLAD/glad.h"
+#include <GLFW/glfw3.h>
 
 namespace RandysEngine{
 

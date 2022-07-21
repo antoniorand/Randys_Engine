@@ -1,5 +1,5 @@
 ###library list
-libraries = []
+libraries = ['glfw3','gdi32']
 pathToLibraries=['./lib']
 
 ##Reference: https://stackoverflow.com/questions/26342109/scons-build-all-sources-files-in-all-directories
@@ -32,9 +32,6 @@ env.Append(CPPPATH= 'lib/')
 #env.Replace(CXX = 'mingw-w64-gcc')
 
 optimize = ARGUMENTS.get('optimize',0)
-
-
-
 
 
 if int(optimize):
