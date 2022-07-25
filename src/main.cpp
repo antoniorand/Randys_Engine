@@ -1,4 +1,7 @@
+
+#ifndef __3DS__
 #include "core.hpp"
+
 
 constexpr double averageTick = 1/60.0;
 
@@ -46,7 +49,7 @@ int main(){
 
     ////////////////////////
 
-    //This is the 
+    //This is the vertex shader source code
     const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
     "void main()\n"
@@ -54,16 +57,18 @@ int main(){
     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
     "}\0";
 
+    //this is the vertex shader id number
     unsigned int vertexShader;
+    //create the shader
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
+    //let's compile it
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
     glCompileShader(vertexShader);
 
     int  success;
     char infoLog[512];
     glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-
+    //if the compilation was successful
     if(!success){
         glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
@@ -84,46 +89,66 @@ int main(){
     unsigned int shaderProgram;
     shaderProgram = glCreateProgram();
 
+    //we attach both  the vertex and the fragment shader
     glAttachShader(shaderProgram, vertexShader);
     glAttachShader(shaderProgram, fragmentShader);
+    //we link it to the shader program
     glLinkProgram(shaderProgram);
 
     glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
     if(!success) {
         glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
     }
+    //use the shader program
     glUseProgram(shaderProgram);
 
+    //delete the shaders since these are already linked
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
+    //Vertices of a square
     float vertices[] = {
          0.5f,  0.5f, 0.0f,  // top right
          0.5f, -0.5f, 0.0f,  // bottom right
         -0.5f, -0.5f, 0.0f,  // bottom left
         -0.5f,  0.5f, 0.0f   // top left 
     };
+    //indices from the first and second triangle
     unsigned int indices[] = {  // note that we start from 0!
         0, 1, 3,  // first Triangle
         1, 2, 3   // second Triangle
     };
 
+    //the vertex buffer object, vertex array object and element buffer object
     unsigned int VBO, VAO, EBO;
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);
 
+    //we bind the VAO
     glBindVertexArray(VAO);
 
+    //We bind the VBO buffer
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    //this is the data to copy into the buffer
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+    //now we bind the EBO
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    //this is the data to copy into the buffer
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
+    //vertex format
+    //first: location of the position vertex attribute (the first element in class or struct)
+    //second: size of the vertex attribute
+    //third: type of data, float in this case
+    //fourth: we want the data to be normalized?
+    //fifth: space between each vertex
+    //sixth: the offset of where the position data begins in the buffer. It starts in the firsr position, so 0
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0); 
 
+    //copy the vertices array in a buffer of opengl to use
     glBindBuffer(GL_ARRAY_BUFFER, 0); 
 
     glBindVertexArray(0); 
@@ -153,3 +178,15 @@ int main(){
 
     return 0;
 }
+
+#else
+
+    #include <3ds.h>
+
+    int main(){
+
+
+        return 0;
+    }
+
+#endif
