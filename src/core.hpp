@@ -5,8 +5,10 @@
 #include <iostream>
 #include <variant>
 #include <list>
-#include "APIs/GLAD/glad.h"
-#include <GLFW/glfw3.h>
+#ifndef __3DS__
+    #include "APIs/GLAD/glad.h"
+    #include <GLFW/glfw3.h>
+#endif
 
 namespace RandysEngine{
 
