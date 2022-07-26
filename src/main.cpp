@@ -1,214 +1,155 @@
-
-#ifndef __3DS__
-#include "core.hpp"
-
-
-constexpr double averageTick = 1/60.0;
-
-void framebuffer_size_callback(GLFWwindow* window, int width, int height){
-    glViewport(0, 0, width, height);
-} 
-
-
-void processInput(GLFWwindow *window){
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
-}
-
-int main(){
-
-    //Initialize GLFW (window context), we will work on opengl4
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 4);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    //glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-
-    //Create the window
-    GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
-    //If the window failed in it's creation
-    if (window == NULL){
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    //We make the current context
-    glfwMakeContextCurrent(window);
-
-    //We initialize GLAD, passing the opengl extension function from GLAD
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    } 
-
-    //We set the viewport size, which is the window into the 3D world
-    glViewport(0, 0, 800, 600);
-
-    //We set this callback to resize the viewport whenever we resize the window
-    void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-
-    ////////////////////////
-
-    //This is the vertex shader source code
-    const char *vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
-
-    //this is the vertex shader id number
-    unsigned int vertexShader;
-    //create the shader
-    vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    //let's compile it
-    glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-    glCompileShader(vertexShader);
-
-    int  success;
-    char infoLog[512];
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    //if the compilation was successful
-    if(!success){
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-    }
-
-    const char *fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "} \0";
-
-    unsigned int fragmentShader;
-    fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-    glCompileShader(fragmentShader);
-    
-    unsigned int shaderProgram;
-    shaderProgram = glCreateProgram();
-
-    //we attach both  the vertex and the fragment shader
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    //we link it to the shader program
-    glLinkProgram(shaderProgram);
-
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-    if(!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-    }
-    //use the shader program
-    glUseProgram(shaderProgram);
-
-    //delete the shaders since these are already linked
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
-    //Vertices of a square
-    float vertices[] = {
-         0.5f,  0.5f, 0.0f,  // top right
-         0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  // bottom left
-        -0.5f,  0.5f, 0.0f   // top left 
-    };
-    //indices from the first and second triangle
-    unsigned int indices[] = {  // note that we start from 0!
-        0, 1, 3,  // first Triangle
-        1, 2, 3   // second Triangle
-    };
-
-    //the vertex buffer object, vertex array object and element buffer object
-    unsigned int VBO, VAO, EBO;
-    glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
-
-    //we bind the VAO
-    glBindVertexArray(VAO);
-
-    //We bind the VBO buffer
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    //this is the data to copy into the buffer
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    //now we bind the EBO
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    //this is the data to copy into the buffer
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    //vertex format
-    //first: location of the position vertex attribute (the first element in class or struct)
-    //second: size of the vertex attribute
-    //third: type of data, float in this case
-    //fourth: we want the data to be normalized?
-    //fifth: space between each vertex
-    //sixth: the offset of where the position data begins in the buffer. It starts in the firsr position, so 0
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0); 
-
-    //copy the vertices array in a buffer of opengl to use
-    glBindBuffer(GL_ARRAY_BUFFER, 0); 
-
-    glBindVertexArray(0); 
-
-    while(!glfwWindowShouldClose(window)){
-        processInput(window);
-
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-
-        // draw our first triangle
-        glUseProgram(shaderProgram);
-        glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-        //glDrawArrays(GL_TRIANGLES, 0, 6);
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();    
-    }
-
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &VBO);
-    glDeleteBuffers(1, &EBO);
-    glDeleteProgram(shaderProgram);
-
-    glfwTerminate();
-
-    return 0;
-}
-
-#else
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <3ds.h>
+#include <citro3d.h>
+#include <string.h>
+#include "vshader_shbin.h"
 
-int main(int argc, char* argv[])
+#define CLEAR_COLOR 0x68B0D8FF
+
+#define DISPLAY_TRANSFER_FLAGS \
+	(GX_TRANSFER_FLIP_VERT(0) | GX_TRANSFER_OUT_TILED(0) | GX_TRANSFER_RAW_COPY(0) | \
+	GX_TRANSFER_IN_FORMAT(GX_TRANSFER_FMT_RGBA8) | GX_TRANSFER_OUT_FORMAT(GX_TRANSFER_FMT_RGB8) | \
+	GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO))
+
+typedef struct { float x, y, z; } vertex;
+
+static const vertex triangle1[] =
 {
-	gfxInitDefault();
-	consoleInit(GFX_TOP, NULL);
+	{ 300.0f, 200.0f, 0.5f},
+	{ 200.0f, 200.0f, 0.5f },
+	{ 100.0f, 40.0f, 0.5f }
+};
 
-	printf("Hello, world!\n");
+
+static const vertex triangle2[] =
+{
+	{ 100.0f, 40.0f, 0.5f},
+	{ 200.0f, 200.0f, 0.5f },
+	{ 300.0f, 200.0f, 0.5f }
+};
+
+#define vertex_list_count (sizeof(triangle1)/sizeof(triangle1[0]))
+
+static DVLB_s* vshader_dvlb;
+static shaderProgram_s program;
+static int uLoc_projection;
+static C3D_Mtx projection;
+
+static void* vbo_data;
+static void* vbo_data2;
+
+static void sceneInit(void)
+{
+	// Load the vertex shader, create a shader program and bind it
+	vshader_dvlb = DVLB_ParseFile((u32*)vshader_shbin, vshader_shbin_size);
+	shaderProgramInit(&program);
+	shaderProgramSetVsh(&program, &vshader_dvlb->DVLE[0]);
+	C3D_BindProgram(&program);
+
+	// Get the location of the uniforms
+	uLoc_projection = shaderInstanceGetUniformLocation(program.vertexShader, "projection");
+
+	// Configure attributes for use with the vertex shader
+	// Obtain the global attribute info
+	C3D_AttrInfo* attrInfo = C3D_GetAttrInfo();
+	//Resets and initializes attribute info structure
+	AttrInfo_Init(attrInfo);
+	//Defines an array of vertex attribute data
+	//Returns attribute index if successful
+	//The attribute is defined in the shader
+	AttrInfo_AddLoader(attrInfo, 0, GPU_FLOAT, 3); // v0=position
+	//Defines a fixed vertex attribute
+	//Returns attribute index if successful
+	//The attribute is defined in the shader
+	AttrInfo_AddFixed(attrInfo, 1); // v1=color
+
+	// Set the fixed attribute (color) to solid white
+	//It put the value '1' since is the '1' attribute ('0' is position)
+	C3D_FixedAttribSet(1, 1.0, 1.0, 1.0, 1.0);
+
+	// Compute the projection matrix
+	Mtx_OrthoTilt(&projection, 0.0, 400.0, 0.0, 240.0, 0.0, 1.0, true);
+
+	// Create the VBO (vertex buffer object)
+	vbo_data = linearAlloc(sizeof(triangle1));
+	memcpy(vbo_data, triangle1, sizeof(triangle1));
+
+	// Create the VBO (vertex buffer object)
+	vbo_data2 = linearAlloc(sizeof(triangle2));
+	memcpy(vbo_data2, triangle2, sizeof(triangle2));
+
+
+	// Configure buffers
+	//Get the global info structure
+	C3D_BufInfo* bufInfo = C3D_GetBufInfo();
+	//Initializes it
+	BufInfo_Init(bufInfo);
+	//adds a buffer to the vertex info structure
+	BufInfo_Add(bufInfo, vbo_data, sizeof(vertex), 1, 0x0);
+	//BufInfo_Add(bufInfo, vbo_data2, sizeof(vertex), 1, 0x0);
+
+	// Configure the first fragment shading substage to just pass through the vertex color
+	// See https://www.opengl.org/sdk/docs/man2/xhtml/glTexEnv.xml for more insight
+	C3D_TexEnv* env = C3D_GetTexEnv(0);
+	C3D_TexEnvInit(env);
+	C3D_TexEnvSrc(env, C3D_Both, GPU_PRIMARY_COLOR, (GPU_TEVSRC)0, (GPU_TEVSRC)0);
+	C3D_TexEnvFunc(env, C3D_Both, GPU_REPLACE);
+}
+
+static void sceneRender(void)
+{
+	// Update the uniforms
+	C3D_FVUnifMtx4x4(GPU_VERTEX_SHADER, uLoc_projection, &projection);
+
+	// Draw the VBO
+	C3D_DrawArrays(GPU_TRIANGLES, 0, vertex_list_count);
+}
+
+static void sceneExit(void)
+{
+	// Free the VBO
+	linearFree(vbo_data);
+
+	// Free the shader program
+	shaderProgramFree(&program);
+	DVLB_Free(vshader_dvlb);
+}
+
+int main()
+{
+	// Initialize graphics
+	gfxInitDefault();
+	C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
+
+	// Initialize the render target
+	C3D_RenderTarget* target = C3D_RenderTargetCreate(240, 400, GPU_RB_RGBA8, GPU_RB_DEPTH24_STENCIL8);
+	C3D_RenderTargetSetOutput(target, GFX_TOP, GFX_LEFT, DISPLAY_TRANSFER_FLAGS);
+
+	// Initialize the scene
+	sceneInit();
 
 	// Main loop
 	while (aptMainLoop())
 	{
-		gspWaitForVBlank();
-		gfxSwapBuffers();
 		hidScanInput();
 
-		// Your code goes here
+		// Respond to user input
 		u32 kDown = hidKeysDown();
 		if (kDown & KEY_START)
 			break; // break in order to return to hbmenu
+
+		// Render the scene
+		C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
+			C3D_RenderTargetClear(target, C3D_CLEAR_ALL, CLEAR_COLOR, 0);
+			C3D_FrameDrawOn(target);
+			sceneRender();
+		C3D_FrameEnd(0);
 	}
 
+	// Deinitialize the scene
+	sceneExit();
+
+	// Deinitialize graphics
+	C3D_Fini();
 	gfxExit();
 	return 0;
 }
-
-
-#endif
