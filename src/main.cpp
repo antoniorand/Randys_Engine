@@ -22,9 +22,9 @@ static const vertex triangle1[] =
 
 static const vertex triangle2[] =
 {
-	{ 100.0f, 40.0f, 0.5f},
-	{ 200.0f, 200.0f, 0.5f },
-	{ 300.0f, 200.0f, 0.5f }
+	{ 0.0f, 0.0f, 0.5f},
+	{ 10.0f, 10.0f, 0.5f },
+	{ 0.0f, 20.0f, 0.5f }
 };
 
 #define vertex_list_count (sizeof(triangle1)/sizeof(triangle1[0]))
@@ -77,16 +77,6 @@ static void sceneInit(void)
 	vbo_data2 = linearAlloc(sizeof(triangle2));
 	memcpy(vbo_data2, triangle2, sizeof(triangle2));
 
-
-	// Configure buffers
-	//Get the global info structure
-	C3D_BufInfo* bufInfo = C3D_GetBufInfo();
-	//Initializes it
-	BufInfo_Init(bufInfo);
-	//adds a buffer to the vertex info structure
-	BufInfo_Add(bufInfo, vbo_data, sizeof(vertex), 1, 0x0);
-	//BufInfo_Add(bufInfo, vbo_data2, sizeof(vertex), 1, 0x0);
-
 	// Configure the first fragment shading substage to just pass through the vertex color
 	// See https://www.opengl.org/sdk/docs/man2/xhtml/glTexEnv.xml for more insight
 	C3D_TexEnv* env = C3D_GetTexEnv(0);
@@ -100,6 +90,23 @@ static void sceneRender(void)
 	// Update the uniforms
 	C3D_FVUnifMtx4x4(GPU_VERTEX_SHADER, uLoc_projection, &projection);
 
+	// Configure buffers
+	//Get the global info structure
+	C3D_BufInfo* bufInfo = C3D_GetBufInfo();
+	//Initializes it
+	BufInfo_Init(bufInfo);
+	//adds a buffer to the vertex info structure
+	BufInfo_Add(bufInfo, vbo_data2, sizeof(vertex), 1, 0x0);
+
+	// Draw the VBO
+	C3D_DrawArrays(GPU_TRIANGLES, 0, vertex_list_count);
+
+	//Initializes it
+    C3D_BufInfo* bufInfo2 = C3D_GetBufInfo();
+	BufInfo_Init(bufInfo2);
+	//adds a buffer to the vertex info structure
+	BufInfo_Add(bufInfo2, vbo_data, sizeof(vertex), 1, 0x0);
+
 	// Draw the VBO
 	C3D_DrawArrays(GPU_TRIANGLES, 0, vertex_list_count);
 }
@@ -108,7 +115,7 @@ static void sceneExit(void)
 {
 	// Free the VBO
 	linearFree(vbo_data);
-
+    linearFree(vbo_data2);;
 	// Free the shader program
 	shaderProgramFree(&program);
 	DVLB_Free(vshader_dvlb);
