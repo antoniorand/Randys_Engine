@@ -2,6 +2,7 @@
 #include "interface.hpp"
 #include <string.h>
 #include <iostream>
+#include "../APIs/generic/shaderOpengl.hpp"
 namespace RandysEngine{
 
     class layer_skybox : public layer_interface{
