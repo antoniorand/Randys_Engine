@@ -27,7 +27,26 @@ namespace RandysEngine{
     
     //The rendering Engine by itself
     class Rendering_Engine{
-        
+
+#ifdef __3DS__
+    //3ds API wrapper
+#else
+    //opengl api wrapper
+
+        class OPENGL_API_INITIALIZER{
+
+            unsigned int width{400}, height{240};
+
+            GLFWwindow* window;
+
+            public:
+                OPENGL_API_INITIALIZER();
+                ~OPENGL_API_INITIALIZER();
+                void changeWindowSize(unsigned int e_width, unsigned int e_height);
+        };
+
+#endif
+
         //The Resource manager that stores data on the heap
         //with optimizations
         RandysEngine::ResourceManager ResourceManager;
