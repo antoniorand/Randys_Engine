@@ -114,6 +114,28 @@ namespace RandysEngine{
                 return devolver;
             }
 
+            //Get the layer number something of an specific layer.
+            //Example, if you have three GUI layers, and input 1, you will get the third GUI layer
+            template<typename Layer_type>
+            Layer_type* getLayer(std::size_t index_of_layer){
+                Layer_type* devolver = nullptr;
+                std::size_t counter = 0;
+                
+                auto itBegin = layers.begin();
+                auto itEnd = layers.end();
+                while(itBegin != itEnd){
+                    if(std::holds_alternative<Layer_type>(*itBegin)){
+                        if(counter == index_of_layer){
+                            devolver = &std::get<Layer_type>(*itBegin);
+                            break;
+                        }
+                        else counter++;
+                    }
+                    itBegin++;
+                }                
+                return devolver;
+            }
+
             //Run the frame, not only drawing it but interacting with it
             void runFrame();
     };

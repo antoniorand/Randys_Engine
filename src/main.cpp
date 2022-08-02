@@ -8,19 +8,23 @@ int main(){
 
 	RandysEngine::Rendering_Engine renderer;
 
-    renderer.addLayer<RandysEngine::layer_GUI>(1);
-    renderer.addLayer<RandysEngine::layer_GUI>(1);
-    renderer.addLayerBack<RandysEngine::layer_GUI>();
-    renderer.addLayerBack<RandysEngine::layer_GUI>();
+    renderer.addLayerBack<RandysEngine::layer_skybox>();
 
+    auto skybox = renderer.getLayer<RandysEngine::layer_skybox>(0);
+    skybox->changeTexture(
+        "resources/right.jpg",
+        "resources/left.jpg",
+        "resources/top.jpg",
+        "resources/bottom.jpg",
+        "resources/front.jpg",
+        "resources/back.jpg"
+    );
 
     renderer.runFrame();
 
-    std::cout << "//////\n";
+    char i;
 
-    renderer.deleteLayer<RandysEngine::layer_skybox>(0);
-
-    renderer.runFrame();
+    std::cin >> i; 
 
     return 0;
 

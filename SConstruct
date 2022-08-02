@@ -1,5 +1,5 @@
 
-libraries = ['glfw3','gdi32']
+libraries = ['glfw3','gdi32','soil','-lopengl32']
 pathToLibraries=['./lib']
 
 ##Reference: https://stackoverflow.com/questions/26342109/scons-build-all-sources-files-in-all-directories
