@@ -6,6 +6,7 @@
     #include "APIs/GLAD/glad.h"
     #include <GLFW/glfw3.h>
     #include "APIs/generic/cameraOpengl.hpp"
+    #include "APIs/wrappers/gl_wrapper.hpp"
 #endif
 
 #include "layers/layers.hpp"
@@ -37,17 +38,9 @@ namespace RandysEngine{
 #else
     //opengl api wrapper
 
-        class OPENGL_API_INITIALIZER{
+        gl_screen screen{};
 
-            unsigned int width{400}, height{240};
-
-            GLFWwindow* window;
-
-            public:
-                OPENGL_API_INITIALIZER();
-                ~OPENGL_API_INITIALIZER();
-                void changeWindowSize(unsigned int e_width, unsigned int e_height);
-        };
+        gl_initializer init{};
 
         Camera activeCamera{};
 

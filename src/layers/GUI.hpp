@@ -47,7 +47,7 @@ namespace RandysEngine{
             void deactivate() override{
                 activated = false;
             };
-            bool draw(Camera& activeCamera) override{
+            bool draw(Camera& activeCamera, ResourceManager& man) override{
                 bool devolver = true;
                 if(!activated){
                     std::cout << "Cannot draw deactivated layer\n";
