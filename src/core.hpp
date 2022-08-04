@@ -1,14 +1,18 @@
 #include "memoryPool/memoryPool.hpp"
 #include "memoryPool/memoryPool.hpp"
 #include "resourceManager/resourceManager.hpp"
+
+#ifndef __3DS__
+    #include "APIs/GLAD/glad.h"
+    #include <GLFW/glfw3.h>
+    #include "APIs/generic/cameraOpengl.hpp"
+#endif
+
 #include "layers/layers.hpp"
 #include <iostream>
 #include <variant>
 #include <list>
-#ifndef __3DS__
-    #include "APIs/GLAD/glad.h"
-    #include <GLFW/glfw3.h>
-#endif
+
 
 namespace RandysEngine{
 
@@ -44,6 +48,8 @@ namespace RandysEngine{
                 ~OPENGL_API_INITIALIZER();
                 void changeWindowSize(unsigned int e_width, unsigned int e_height);
         };
+
+        Camera activeCamera{};
 
 #endif
 
