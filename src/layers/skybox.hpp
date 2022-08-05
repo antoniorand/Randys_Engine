@@ -20,8 +20,9 @@ namespace RandysEngine{
         Shader skyboxShader{"shaders/skybox.vs", "shaders/skybox.fs"};
 
         bool loadTexture(){
+            
             bool devolver = true;
-            glGenTextures(1, &skybox.textureID);
+            /*glGenTextures(1, &skybox.textureID);
             glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.textureID);
 
             int width, height, nrChannels;
@@ -49,7 +50,7 @@ namespace RandysEngine{
             }
             else{
                 glDeleteTextures(1,&skybox.textureID);
-            }
+            }*/
 
             return devolver;
         }
@@ -104,7 +105,7 @@ namespace RandysEngine{
                     1.0f, -1.0f,  1.0f
                 };
 
-                //generate vertex array
+                /*//generate vertex array
                 glGenVertexArrays(1, &skybox.VAO);
                 //generate VBO
                 glGenBuffers(1, &skybox.VBO);
@@ -117,14 +118,14 @@ namespace RandysEngine{
                 glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);      
 
                 skyboxShader.use();
-                skyboxShader.setInt("skybox", 0);
+                skyboxShader.setInt("skybox", 0);*/
           
             };
             ~layer_skybox(){
                 //free memory
-                glDeleteVertexArrays(1, &skybox.VAO);
+                /*glDeleteVertexArrays(1, &skybox.VAO);
                 glDeleteBuffers(1, &skybox.VBO);
-                glDeleteTextures(1,&skybox.textureID);
+                glDeleteTextures(1,&skybox.textureID);*/
             };
 
             bool changeTexture(std::string right,std::string left,
@@ -132,7 +133,7 @@ namespace RandysEngine{
                                std::string front,std::string back){
 
                 //delete texture, if any
-                glDeleteTextures(1,&skybox.textureID);
+                //glDeleteTextures(1,&skybox.textureID);
                 //store the source files
                 skybox.skyboxFile[0] = right;
                 skybox.skyboxFile[1] = left;
@@ -160,7 +161,7 @@ namespace RandysEngine{
                 else{
                     // draw skybox as last
                     //glDepthFunc(GL_LEQUAL);  // change depth function so depth test passes when values are equal to depth buffer's content
-                    skyboxShader.use();
+                    /*skyboxShader.use();
                     auto view = glm::mat4(); 
                     auto projection = glm::mat4();
                     skyboxShader.setMat4("view", view);
@@ -172,6 +173,7 @@ namespace RandysEngine{
                     glDrawArrays(GL_TRIANGLES, 0, 36);
                     glBindVertexArray(0);
                     glDepthFunc(GL_LESS); // set depth function back to default
+                    */
                 }
                 return devolver;
             };
