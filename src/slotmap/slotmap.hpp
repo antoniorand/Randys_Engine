@@ -22,7 +22,10 @@ namespace RandysEngine{
         //Type of the Generation to be stored
         using SlotMap_Gen_Type      = std::uint64_t;
         //Type of the key to be returned and stored
-        using SlotMap_Key = struct{RandysEngine::SlotMap::SlotMap_Id_Type Id;RandysEngine::SlotMap::SlotMap_Gen_Type Gen;};
+        struct SlotMap_Key{
+            RandysEngine::SlotMap::SlotMap_Id_Type Id;
+            RandysEngine::SlotMap::SlotMap_Gen_Type Gen;
+        };
 
         //We will be using the std::allocator by default, 
         //but you can use other allocs as well as the defined by you
