@@ -8,7 +8,7 @@ namespace RandysEngine{
     constexpr std::size_t maxButtons = 10;
     constexpr std::size_t maxPictures = 10;
 
-    class layer_GUI : public layer_interface{
+    class layer_GUI : public layer_interface<layer_GUI>{
 
         struct ButtonData{
             std::string ButtonName = "";
@@ -31,7 +31,8 @@ namespace RandysEngine{
         bool activated {true};
 
         public:
-            layer_GUI(){};
+            layer_GUI(ResourceManager& resource_Manager) 
+                : layer_interface<layer_GUI>(resource_Manager){};
             ~layer_GUI(){};
             bool addButton(){
                 //TODO
@@ -41,13 +42,13 @@ namespace RandysEngine{
                 //TODO
                 return true;
             }
-            void activate() override{
+            void activate(){
                 activated = true;
             };
-            void deactivate() override{
+            void deactivate(){
                 activated = false;
             };
-            bool draw(Camera& activeCamera, ResourceManager& man) override{
+            bool draw(ResourceManager& man){
                 bool devolver = true;
                 if(!activated){
                     std::cout << "Cannot draw deactivated layer\n";
@@ -59,7 +60,7 @@ namespace RandysEngine{
                 }
                 return devolver;
             };
-            bool interact() override{
+            bool interact(){
                 std::cout << "Interact with " << buttons.size() << " buttons \n";
                 std::cout << "Interact with " << pictures.size() << " pictures \n";
                 return false;

@@ -9,13 +9,15 @@
 namespace RandysEngine{
     
     
+    
     class ResourceManager{
+
+        public:
 
         ///////////////////////
         //Types and constants//
         ///////////////////////
-        public:
-        
+            
         //id of the type
         using id_of_type = std::size_t;
         //index to the specific slotmap;
@@ -25,9 +27,10 @@ namespace RandysEngine{
 
         //The key to be returned
         using KeyId = std::tuple<id_of_type,id_of_slotmap,mapKeyValue>;
+
+
         private:
         
-
         /////////////////////
         //SlotMapList class//
         /////////////////////

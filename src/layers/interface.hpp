@@ -1,21 +1,29 @@
 #pragma once
 
 #ifndef __3DS__
-    #include "../APIs/generic/cameraOpengl.hpp"
 #endif
 
     #include "../resourceManager/resourceManager.hpp"
 
 namespace RandysEngine{
 
+    template<typename layer_type>
     class layer_interface{
         public:
-            layer_interface(){};
+            layer_interface(ResourceManager& man){};
             virtual ~layer_interface() {};
-            virtual void activate() = 0;
-            virtual void deactivate() = 0;
-            virtual bool draw(Camera& activeCamera, ResourceManager& man) = 0;
-            virtual bool interact() = 0;
+            void activate(){
+                static_cast<layer_type*>(this)->activate();
+            }
+            void deactivate(){
+                static_cast<layer_type*>(this)->deactivate();
+            }
+            bool draw(ResourceManager& man){
+                return static_cast<layer_type*>(this)->draw();
+            }
+            bool interact(){
+                return static_cast<layer_type*>(this)->interact();
+            }
     };
 
 }

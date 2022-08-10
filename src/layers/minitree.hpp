@@ -3,38 +3,64 @@
 #include <string.h>
 #include <variant>
 #include <iostream>
+#include <vector>
+#include "../resourceManager/entities.hpp"
+
 #ifndef __3DS__
     #include <glm/glm.hpp>
 #endif
 namespace RandysEngine{
-
+    
     constexpr std::size_t maxNodesMinitree = 16;
+    constexpr std::size_t maxCamerasMinitree = 16;
+    constexpr std::size_t maxModelsMinitree = 16;
+    constexpr std::size_t maxLightsMinitree = 16;
 
-    struct Model{int i;};
-    struct Light{int i;};
-    struct Camera{int i;};
+    class layer_minitree : public layer_interface<layer_minitree>{
 
-    struct layer_minitree : public layer_interface{
+        using VectorNodes = std::vector<
+                ResourceManager::KeyId,
+                RandysEngine::Pool::Static_pool_allocator<ResourceManager::KeyId,1024*4>
+                >;
 
-        std::array<Model,maxNodesMinitree> models;
-        std::array<Light,maxNodesMinitree> lights;
-        std::array<Camera,maxNodesMinitree> cameras;
+        using VectorModels = std::vector<
+                ResourceManager::KeyId,
+                RandysEngine::Pool::Static_pool_allocator<ResourceManager::KeyId,1024*4>
+                >;
 
-        
-        struct MinitreeNode{
-            std::variant<Model,Light,Camera> element;
+        using VectorLights = std::vector<
+                ResourceManager::KeyId,
+                RandysEngine::Pool::Static_pool_allocator<ResourceManager::KeyId,1024*4>
+                >;
 
-#ifndef __3DS__
-            
-#else
+        using VectorCameras = std::vector<
+                ResourceManager::KeyId,
+                RandysEngine::Pool::Static_pool_allocator<ResourceManager::KeyId,1024*4>
+                >;
 
-#endif
-        };
+        VectorNodes nodes;
+        VectorModels models;
+        VectorLights lights;
+        VectorCameras cameras;
+
+        ResourceManager::KeyId rootNode;
 
         bool activated {true};
 
         public:
-            layer_minitree(){};
+
+            layer_minitree(ResourceManager& resource_Manager) 
+
+                : layer_interface<layer_minitree>(resource_Manager){
+                nodes.reserve(maxNodesMinitree);
+                models.reserve(maxNodesMinitree);
+                lights.reserve(maxNodesMinitree);
+                cameras.reserve(maxNodesMinitree);
+                {
+                    MinitreeNode e_rootNode;
+
+                }
+            };
             ~layer_minitree(){};
             bool addButton(){
                 //TODO
@@ -44,13 +70,16 @@ namespace RandysEngine{
                 //TODO
                 return true;
             }
-            void activate() override{
+
+            bool addModel();
+
+            void activate(){
                 activated = true;
             };
-            void deactivate() override{
+            void deactivate(){
                 activated = false;
             };
-            bool draw() override{
+            bool draw(ResourceManager& man){
                 bool devolver = true;
                 if(!activated){
                     std::cout << "Cannot draw deactivated layer\n";
@@ -60,7 +89,7 @@ namespace RandysEngine{
                 }
                 return devolver;
             };
-            bool interact() override{
+            bool interact(){
                 return false;
             }
     };

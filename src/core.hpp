@@ -5,7 +5,6 @@
 #ifndef __3DS__
     #include "APIs/GLAD/glad.h"
     #include <GLFW/glfw3.h>
-    #include "APIs/generic/cameraOpengl.hpp"
     #include "APIs/wrappers/gl_wrapper.hpp"
 #endif
 
@@ -20,8 +19,9 @@ namespace RandysEngine{
     //The current layer types we are going to run
     using layerTypes = std::variant<
             RandysEngine::layer_skybox,
-            RandysEngine::layer_GUI
-            >;
+            RandysEngine::layer_GUI,
+            RandysEngine::layer_minitree
+        >;
     //the maximum number of layers
     constexpr std::size_t maxLayers = 10;
 
@@ -40,9 +40,8 @@ namespace RandysEngine{
 
         gl_screen screen{};
 
-        gl_initializer init{};
+        gl_main init{};
 
-        Camera activeCamera{};
 
 #endif
 
@@ -64,7 +63,7 @@ namespace RandysEngine{
                 bool devolver = false;
 
                 if(layers.size() < maxLayers){
-                    Layer_Type newLayer{args...};
+                    Layer_Type newLayer{ResourceManager,args...};
                     devolver = true;
                     //std::cout << "Inserting layer of type " << typeid(Layer_Type).name() << " in the back of the list\n"; 
                     layers.push_back(newLayer);
@@ -79,7 +78,7 @@ namespace RandysEngine{
                 bool devolver = false;
 
                 if(layers.size() != layers.max_size() && position <= layers.size()){
-                    Layer_Type newLayer{args...};
+                    Layer_Type newLayer{ResourceManager,args...};
                     auto itBegin = layers.begin();
                     for(unsigned int i = 0; i < position;i++)
                         itBegin++;

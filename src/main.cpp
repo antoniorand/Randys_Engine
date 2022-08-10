@@ -8,17 +8,11 @@ int main(){
 
 	RandysEngine::Rendering_Engine renderer;
 
-    renderer.addLayerBack<RandysEngine::layer_skybox>();
+    renderer.addLayerBack<RandysEngine::layer_minitree>();
 
-    auto skybox = renderer.getLayer<RandysEngine::layer_skybox>(0);
-    skybox->changeTexture(
-        "resources/right.jpg",
-        "resources/left.jpg",
-        "resources/top.jpg",
-        "resources/bottom.jpg",
-        "resources/front.jpg",
-        "resources/back.jpg"
-    );
+    auto& minitree = *renderer.getLayer<RandysEngine::layer_minitree>(0);
+
+    
 
     renderer.runFrame();
 

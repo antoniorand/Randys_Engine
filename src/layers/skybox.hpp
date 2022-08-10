@@ -2,12 +2,10 @@
 #include "interface.hpp"
 #include <string.h>
 #include <iostream>
-#include <SOIL/SOIL.h>
-#include "../APIs/generic/shaderOpengl.hpp"
 
 namespace RandysEngine{
 
-    class layer_skybox : public layer_interface{
+    class layer_skybox : public layer_interface<layer_skybox>{
 
         struct GraphicData{
             std::string skyboxFile[6];
@@ -17,7 +15,7 @@ namespace RandysEngine{
         GraphicData skybox {};
         bool activated {true};
 
-        Shader skyboxShader{"shaders/skybox.vs", "shaders/skybox.fs"};
+        //Shader skyboxShader{"shaders/skybox.vs", "shaders/skybox.fs"};
 
         bool loadTexture(){
             
@@ -29,7 +27,8 @@ namespace RandysEngine{
 
         public:
 
-            layer_skybox(){
+            layer_skybox(ResourceManager& resource_Manager) 
+                : layer_interface<layer_skybox>(resource_Manager){
 
                 //create a cube and store it in the heap
                 float skyboxVertices[108] = {
@@ -99,13 +98,13 @@ namespace RandysEngine{
 
             }
             
-            void activate() override{
+            void activate(){
                 activated = true;
             };
-            void deactivate() override{
+            void deactivate(){
                 activated = false;
             };
-            bool draw(Camera& activeCamera, ResourceManager& man) override{
+            bool draw(ResourceManager& man){
                 bool devolver = true;
                 if(!activated){
                     std::cout << "Cannot draw deactivated layer\n";
@@ -116,7 +115,7 @@ namespace RandysEngine{
                 }
                 return devolver;
             };
-            bool interact() override{
+            bool interact(){
                 std::cout << "Cannot interact with skybox layer\n";
                 return false;
             }

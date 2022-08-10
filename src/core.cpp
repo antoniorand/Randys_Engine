@@ -3,16 +3,14 @@
 namespace RandysEngine{
 
     struct draw_visitor{
-    
-        Camera& activeCamera;
 
         ResourceManager& manager;
 
-        draw_visitor(Camera& e, ResourceManager& m) : activeCamera{e}, manager{m}{}
+        draw_visitor(ResourceManager& m) : manager{m}{}
 
         template< typename T >
         void operator() ( T& value){
-            value.draw(activeCamera,manager);
+            value.draw(manager);
         }   
     };
     struct interact_visitor{
@@ -35,7 +33,7 @@ namespace RandysEngine{
             auto itEnd = layers.end();
 
             while(iterator != itEnd){
-                std::visit( draw_visitor{activeCamera,ResourceManager}, *iterator);
+                std::visit( draw_visitor{ResourceManager}, *iterator);
                 iterator++;
             }
         }
