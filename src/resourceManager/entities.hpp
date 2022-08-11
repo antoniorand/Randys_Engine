@@ -4,6 +4,12 @@
 
 namespace RandysEngine{
 
+    enum class entityType_enum{
+        model,
+        light,
+        camera
+    };
+
     struct Model_Entity{
 
         ResourceManager::KeyId mesh_resource;
@@ -32,26 +38,16 @@ namespace RandysEngine{
     };
 
     struct MinitreeNode{
-            
-            using VectorChildren = std::vector<
-                ResourceManager::KeyId,
-                RandysEngine::Pool::Static_pool_allocator<ResourceManager::KeyId,1024*4>
-                >;
+            static constexpr unsigned int maxChildren {4};
+            using VectorChildren = std::array<
+                std::tuple<ResourceManager::KeyId,bool>,maxChildren>;
 
-            static const unsigned int maxChildren {4};
-            
-            std::variant<
-                RandysEngine::Light_Entity,
-                RandysEngine::Model_Entity,
-                RandysEngine::Camera_Entity
-                > element;
+            SlotMap::SlotMap_Key entity;
+            entityType_enum type_entity;
 
             ResourceManager::KeyId parentNode;
             VectorChildren childNodes;
 
-            MinitreeNode(){
-                childNodes.reserve(maxChildren);
-            }
     };
 
 }

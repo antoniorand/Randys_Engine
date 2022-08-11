@@ -4,13 +4,9 @@ namespace RandysEngine{
 
     struct draw_visitor{
 
-        ResourceManager& manager;
-
-        draw_visitor(ResourceManager& m) : manager{m}{}
-
         template< typename T >
         void operator() ( T& value){
-            value.draw(manager);
+            value.draw();
         }   
     };
     struct interact_visitor{
@@ -33,7 +29,7 @@ namespace RandysEngine{
             auto itEnd = layers.end();
 
             while(iterator != itEnd){
-                std::visit( draw_visitor{ResourceManager}, *iterator);
+                std::visit( draw_visitor{}, *iterator);
                 iterator++;
             }
         }

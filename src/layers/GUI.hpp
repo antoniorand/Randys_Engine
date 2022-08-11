@@ -48,7 +48,7 @@ namespace RandysEngine{
             void deactivate(){
                 activated = false;
             };
-            bool draw(ResourceManager& man){
+            bool draw() const{
                 bool devolver = true;
                 if(!activated){
                     std::cout << "Cannot draw deactivated layer\n";
@@ -60,7 +60,7 @@ namespace RandysEngine{
                 }
                 return devolver;
             };
-            bool interact(){
+            bool interact() const{
                 std::cout << "Interact with " << buttons.size() << " buttons \n";
                 std::cout << "Interact with " << pictures.size() << " pictures \n";
                 return false;

@@ -109,9 +109,10 @@ namespace RandysEngine{
                     EraseArray newErase = e_alloc.allocate(newCapacity);    
 
                     //Copy new memory from old memory
-                    memcpy(newData,Data,sizeof(Value_Type)*Capacity);
-                    memcpy(newIndices,Indices,sizeof(SlotMap_Key)*Capacity);
-                    memcpy(newErase,Erase,sizeof(SlotMap_Index_Type)*Capacity);
+                    std::memcpy(newData,Data,sizeof(Value_Type)*Capacity);
+                    std::memcpy(newIndices,Indices,sizeof(SlotMap_Key)*Capacity);
+                    std::memcpy(newErase,Erase,sizeof(SlotMap_Index_Type)*Capacity);
+
 
                     //Dealloc old memory
                     d_alloc.deallocate(Data,Capacity);
@@ -153,12 +154,15 @@ namespace RandysEngine{
                 auto& slot = Indices[key.Id];
                 //Get the index to the data array
                 auto dataid = slot.Id;//save id of data slot to check if it is last or not
+                //Destroy the data in the specific place
+                auto& element = Data[slot.Id];
+                d_alloc.destroy(&element);
 
                 //Update freelist
                 slot.Id = Free_list_head;
                 slot.Gen = Generation;
                 Free_list_head = key.Id;
-
+                
                 //copy data to free slot?
                 if(dataid != Size-1){
                     //data slot is not last, copy last here
@@ -258,9 +262,9 @@ namespace RandysEngine{
                         EraseArray newErase = e_alloc.allocate(newCapacity);    
 
                         //Copy new memory from old memory
-                        memcpy(newData,Data,sizeof(Value_Type)*Capacity);
-                        memcpy(newIndices,Indices,sizeof(SlotMap_Key)*Capacity);
-                        memcpy(newErase,Erase,sizeof(SlotMap_Index_Type)*Capacity);
+                        std::memcpy(newData,Data,sizeof(Value_Type)*Capacity);
+                        std::memcpy(newIndices,Indices,sizeof(SlotMap_Key)*Capacity);
+                        std::memcpy(newErase,Erase,sizeof(SlotMap_Index_Type)*Capacity);
 
                         //Dealloc old memory
                         d_alloc.deallocate(Data,Capacity);

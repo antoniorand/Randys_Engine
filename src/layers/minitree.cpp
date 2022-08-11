@@ -6,7 +6,7 @@ namespace RandysEngine{
     bool layer_minitree::addModel(){
         bool devolver = true;
 
-        if(models.size() != models.capacity() && nodes.size()!= models.capacity()){
+        if(models.current_size() != models.max_capacity() && nodes.size()!= nodes.capacity()){
             RandysEngine::MinitreeNode node;
             
         }
