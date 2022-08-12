@@ -39,15 +39,16 @@ namespace RandysEngine{
 
     struct MinitreeNode{
             static constexpr unsigned int maxChildren {4};
-            using VectorChildren = std::array<
-                std::tuple<ResourceManager::KeyId,bool>,maxChildren>;
 
             SlotMap::SlotMap_Key entity;
             entityType_enum type_entity;
 
             ResourceManager::KeyId parentNode;
-            VectorChildren childNodes;
+            bool hasParent{false};
 
+            ////
+            std::array<ResourceManager::KeyId,maxChildren> childrenNodes{};
+            std::array<bool,maxChildren> hasChildren{};
     };
 
 }

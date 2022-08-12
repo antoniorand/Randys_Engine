@@ -109,7 +109,7 @@ namespace RandysEngine{
                     EraseArray newErase = e_alloc.allocate(newCapacity);    
 
                     //Copy new memory from old memory
-                    std::memcpy(newData,Data,sizeof(Value_Type)*Capacity);
+                    std::copy(Data,Data + sizeof(Value_Type)*newCapacity,newData);
                     std::memcpy(newIndices,Indices,sizeof(SlotMap_Key)*Capacity);
                     std::memcpy(newErase,Erase,sizeof(SlotMap_Index_Type)*Capacity);
 
@@ -267,7 +267,7 @@ namespace RandysEngine{
                         EraseArray newErase = e_alloc.allocate(newCapacity);    
 
                         //Copy new memory from old memory
-                        std::memcpy(newData,Data,sizeof(Value_Type)*Capacity);
+                        std::copy(Data,Data + sizeof(Value_Type)*newCapacity,newData);
                         std::memcpy(newIndices,Indices,sizeof(SlotMap_Key)*Capacity);
                         std::memcpy(newErase,Erase,sizeof(SlotMap_Index_Type)*Capacity);
 

@@ -14,6 +14,15 @@ namespace RandysEngine{
     struct gl_mesh_resource : mesh_resource_wrapper<gl_mesh_resource>{
         unsigned int VBO{0}, VAO{0};
         gl_mesh_resource(std::string file) noexcept;
+        gl_mesh_resource(const gl_mesh_resource& other) noexcept{
+            VBO = other.VBO;
+            VAO = other.VAO;
+        }
+        gl_mesh_resource& operator=(const gl_mesh_resource& other) noexcept{
+            VBO = other.VBO;
+            VAO = other.VAO;
+            return *this;
+        }
        ~gl_mesh_resource() noexcept;
         void draw() const noexcept;
     
