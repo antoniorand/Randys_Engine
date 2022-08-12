@@ -156,6 +156,7 @@ namespace RandysEngine{
                 auto dataid = slot.Id;//save id of data slot to check if it is last or not
                 //Destroy the data in the specific place
                 auto& element = Data[slot.Id];
+
                 d_alloc.destroy(&element);
 
                 //Update freelist
@@ -191,6 +192,10 @@ namespace RandysEngine{
 
                 //Destructing the SlotMap
                 constexpr ~SlotMap(){
+                    for(SlotMap_Index_Type i= 0; i < Capacity; i++){
+                        auto item =  this->atPosition(i);
+                        d_alloc.destroy(item);
+                    }
                     d_alloc.deallocate(Data,Capacity);
                     i_alloc.deallocate(Indices,Capacity);
                     e_alloc.deallocate(Erase,Capacity);  
@@ -352,7 +357,7 @@ namespace RandysEngine{
                     }
                 }*/
                 
-                Type* atPosition(std::uint32_t input){
+                Type* atPosition(SlotMap_Index_Type input){
                     Type* devolver = nullptr;
                     if(input < Size){
                         devolver = &Data[input];

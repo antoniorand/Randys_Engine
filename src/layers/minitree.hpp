@@ -57,7 +57,7 @@ namespace RandysEngine{
                 {
                     MinitreeNode e_rootNode;
                     gl_mesh_resource triangle{""};
-                    rootNode = man.reserveResource<MinitreeNode>(e_rootNode);
+                    //rootNode = man.reserveResource<MinitreeNode>(e_rootNode);
                     //triangle_Mesh = man.reserveResource<gl_mesh_resource>(triangle);
                 }
             };

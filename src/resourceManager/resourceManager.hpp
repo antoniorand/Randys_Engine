@@ -26,7 +26,11 @@ namespace RandysEngine{
         using mapKeyValue = SlotMap::SlotMap_Key;
 
         //The key to be returned
-        using KeyId = std::tuple<id_of_type,id_of_slotmap,mapKeyValue>;
+        struct KeyId{
+            id_of_type idType;
+            id_of_slotmap idSlotmap;
+            mapKeyValue value;
+        };
 
 
         private:
@@ -102,7 +106,7 @@ namespace RandysEngine{
                         if(certainSlotmap.current_size() < slotmap_length<Resource_Stored>::value){
                             auto key = certainSlotmap.push_back(resource);
                             //the key to be returned
-                            devolver = {std::make_tuple(typeid(Resource_Stored).hash_code(),counter, key)};
+                            devolver = {typeid(Resource_Stored).hash_code(),counter, key};
                             found = true;
                             break;
                         }
@@ -115,7 +119,7 @@ namespace RandysEngine{
                         //we pushback the new resource and get a key to the element
                         auto key = SlotMapList.back().push_back(resource);
                         //we get the key to the resource in the map
-                        devolver = {std::make_tuple(typeid(Resource_Stored).hash_code(),nextMap++, key)};
+                        devolver = {typeid(Resource_Stored).hash_code(),nextMap++, key};
                     }
                 }
 
@@ -127,15 +131,15 @@ namespace RandysEngine{
             Resource_Stored* getResource(const KeyId input){
                 Resource_Stored* devolver = nullptr;
                 //If this is the right resource type
-                if(std::get<0>(input) == typeid(Resource_Stored).hash_code()){
+                if(input.idType == typeid(Resource_Stored).hash_code()){
                     //get the list
                     auto& SlotMapList = getSlotMapList<Resource_Stored>();
                     id_of_slotmap counter = 0;
                     //look for the slotmap it's stored
                     for(auto& certainSlotmap : SlotMapList){
-                        if(counter == std::get<1>(input)){
+                        if(counter == input.idSlotmap){
                             //get the pointer
-                            devolver = certainSlotmap.atPosition(std::get<2>(input));
+                            devolver = certainSlotmap.atPosition(input.value);
                             break;
                         }
                     }
@@ -148,15 +152,15 @@ namespace RandysEngine{
             bool freeResource(KeyId input){
                 bool devolver = false;
                 //If this is the right resource type
-                if(std::get<0>(input) == typeid(Resource_Stored).hash_code()){
+                if(input.idType == typeid(Resource_Stored).hash_code()){
                     //get the list
                     auto& SlotMapList = getSlotMapList<Resource_Stored>();
                     id_of_slotmap counter = 0;
                     //look for the slotmap it's stored
                     for(auto& certainSlotmap : SlotMapList){
-                        if(counter == std::get<1>(input)){
+                        if(counter == input.idSlotmap){
                             //DELETEEEEE
-                            devolver = certainSlotmap.erase(std::get<2>(input));
+                            devolver = certainSlotmap.erase(input.value);
                             break;
                         }
                     }
