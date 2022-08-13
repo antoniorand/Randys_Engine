@@ -12,13 +12,11 @@ int main(){
 
     auto& minitree = *renderer.getLayer<RandysEngine::layer_minitree>(0);
 
-    
+    minitree.addModel();
 
-    renderer.runFrame();
-
-    char i;
-
-    std::cin >> i; 
+    while(renderer.isAppRunning()){
+        renderer.runFrame();
+    }
 
     return 0;
 

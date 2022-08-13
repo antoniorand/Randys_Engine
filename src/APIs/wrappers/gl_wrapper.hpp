@@ -65,13 +65,33 @@ namespace RandysEngine{
 
         void changeWindowSize(int e_width,int e_height);
 
-        void  swapBuffers(){
+        void swapBuffers(){
             // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
             // -------------------------------------------------------------------------------
             glfwSwapBuffers(window);
             glfwPollEvents();
         }
 
+        bool getInputPressed(KeyInput input) const{
+            bool devolver = false;
+            switch (input){
+                case KeyInput::exit :
+                    if(glfwGetKey(window,GLFW_KEY_ESCAPE) == GLFW_PRESS)
+                    devolver = true;
+                break;
+                default: 
+                break;
+            }
+            return devolver;
+        }
+
+        bool isAppRunning() const{
+            return !glfwWindowShouldClose(window);
+        }
+
+        void closeApp(){
+            glfwSetWindowShouldClose(window, GL_FALSE);
+        }
 
     };
 

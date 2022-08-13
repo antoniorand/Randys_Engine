@@ -2,6 +2,7 @@
 
 namespace RandysEngine{
 
+
     template<typename api>
     struct matrix_wrapper{
 
@@ -36,6 +37,11 @@ namespace RandysEngine{
 
     };
 
+    
+    enum class KeyInput : unsigned int{
+        exit = 0
+    };
+
     template<typename api>
     struct screen_wrapper{
 
@@ -49,6 +55,18 @@ namespace RandysEngine{
 
         void swapBuffers(){
             static_cast<api*>(this)->swapBuffers();
+        }
+
+        bool getInputPressed(KeyInput input) const{
+            return static_cast<api*>(this)->getInput();
+        }
+
+        bool isAppRunning() const{
+            return static_cast<api*>(this)->isAppRunning();
+        }
+
+        void closeApp(){
+            return static_cast<api*>(this)->closeApp();
         }
 
     };

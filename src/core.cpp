@@ -16,12 +16,13 @@ namespace RandysEngine{
         }   
     };
 
+
     void Rendering_Engine::runFrame(){
 
         /*
         
             In summary, this function will draw first and then
-            it will check if it interacts with the inputs
+            it will check if it interacts with the mouse Input
 
         */
         {
@@ -43,6 +44,8 @@ namespace RandysEngine{
                 iteratorR++;
             }
         }
+
+        screen.swapBuffers();
 
     }
 

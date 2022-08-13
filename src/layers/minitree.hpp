@@ -18,32 +18,32 @@ namespace RandysEngine{
 
     class layer_minitree : public layer_interface<layer_minitree>{
 
-        using VectorNodes = std::vector<
-                ResourceManager::KeyId,
-                RandysEngine::Pool::Static_pool_allocator<ResourceManager::KeyId,1024*4>
+        using SlotMapNodes = RandysEngine::SlotMap::SlotMap<
+                MinitreeNode,
+                RandysEngine::Pool::Static_pool_allocator<MinitreeNode,32>
                 >;
 
         using SlotMapModels = RandysEngine::SlotMap::SlotMap<
-                ResourceManager::KeyId,
-                RandysEngine::Pool::Static_pool_allocator<ResourceManager::KeyId,1024*4>
+                Model_Entity,
+                RandysEngine::Pool::Static_pool_allocator<Model_Entity,1024*4>
                 >;
 
         using SlotMapLights = RandysEngine::SlotMap::SlotMap<
-                ResourceManager::KeyId,
-                RandysEngine::Pool::Static_pool_allocator<ResourceManager::KeyId,1024*4>
+                Light_Entity,
+                RandysEngine::Pool::Static_pool_allocator<Light_Entity,128*4>
                 >;
 
         using SlotMapCameras = RandysEngine::SlotMap::SlotMap<
-                ResourceManager::KeyId,
-                RandysEngine::Pool::Static_pool_allocator<ResourceManager::KeyId,1024*4>
+                Camera_Entity,
+                RandysEngine::Pool::Static_pool_allocator<Camera_Entity,8*4>
                 >;
 
-        VectorNodes nodes;
+        SlotMapNodes nodes;
         SlotMapModels models;
         SlotMapLights lights;
         SlotMapCameras cameras;
 
-        ResourceManager::KeyId rootNode;
+        SlotMap::SlotMap_Key rootNode;
         ResourceManager::KeyId triangle_Mesh;
 
         bool activated {true};
@@ -51,15 +51,13 @@ namespace RandysEngine{
         public:
 
             layer_minitree(ResourceManager& man) 
-                : layer_interface<layer_minitree>(man), 
-                    models{maxNodesMinitree}, lights{maxNodesMinitree}, cameras{maxNodesMinitree}{
-                nodes.reserve(maxNodesMinitree);
-                {
-                    MinitreeNode e_rootNode;
-                    gl_mesh_resource triangle{""};
-                    rootNode = man.reserveResource<MinitreeNode>(e_rootNode);
-                    triangle_Mesh = man.reserveResource<gl_mesh_resource>(triangle);
-                }
+                : layer_interface<layer_minitree>(man), nodes{maxNodesMinitree},
+                    models{maxModelsMinitree}, lights{maxLightsMinitree}, cameras{maxCamerasMinitree}{
+                MinitreeNode e_rootNode;
+                gl_mesh_resource triangle{""};
+                rootNode = nodes.push_back(e_rootNode);
+                triangle_Mesh = man.reserveResource<gl_mesh_resource>(triangle);
+                
             };
             ~layer_minitree(){};
 
@@ -71,16 +69,7 @@ namespace RandysEngine{
             void deactivate(){
                 activated = false;
             };
-            bool draw() const{
-                bool devolver = true;
-                if(!activated){
-                    std::cout << "Cannot draw deactivated layer\n";
-                    devolver = false;
-                }
-                else{
-                }
-                return devolver;
-            };
+            bool draw() const;
             bool interact() const{
                 return false;
             }

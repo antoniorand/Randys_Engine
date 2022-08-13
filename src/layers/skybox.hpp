@@ -31,7 +31,7 @@ namespace RandysEngine{
                 : layer_interface<layer_skybox>(resource_Manager){
 
                 //create a cube and store it in the heap
-                float skyboxVertices[108] = {
+                /*float skyboxVertices[108] = {
                     // positions          
                     -1.0f,  1.0f, -1.0f,
                     -1.0f, -1.0f, -1.0f,
@@ -74,7 +74,7 @@ namespace RandysEngine{
                     1.0f, -1.0f, -1.0f,
                     -1.0f, -1.0f,  1.0f,
                     1.0f, -1.0f,  1.0f
-                };
+                };*/
 
           
             };

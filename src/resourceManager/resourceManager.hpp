@@ -71,7 +71,7 @@ namespace RandysEngine{
         };
 
         template<typename Resource_Stored>
-        auto& getSlotMapList(){
+        auto& getSlotMapList() const{
             static WrappedSlotMapList<Resource_Stored> devolver;
             return (devolver.list);
         }
@@ -128,7 +128,7 @@ namespace RandysEngine{
 
             //Get the resource after inputing the key, which is constant
             template<typename Resource_Stored>
-            Resource_Stored* getResource(const KeyId input){
+            Resource_Stored* getResource(const KeyId input)const{
                 Resource_Stored* devolver = nullptr;
                 //If this is the right resource type
                 if(input.idType == typeid(Resource_Stored).hash_code()){

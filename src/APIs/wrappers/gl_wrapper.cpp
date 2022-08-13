@@ -10,6 +10,10 @@ namespace RandysEngine{
         }
     }
 
+    void window_close_callback(GLFWwindow* window){
+        glfwSetWindowShouldClose(window, GL_TRUE);
+    }
+
     gl_screen::gl_screen(){
         // glfw: initialize and configure
         // ------------------------------
@@ -20,12 +24,14 @@ namespace RandysEngine{
 
         // glfw window creation
         // --------------------
-        window = glfwCreateWindow((int)width*4, (int)height*4, "LearnOpenGL", NULL, NULL);
+        window = glfwCreateWindow((int)width*4, (int)height*4, "Randys Engine Example", NULL, NULL);
         if (window == NULL){
             std::cout << "Failed to create GLFW window" << std::endl;
             glfwTerminate();
         }
         glfwMakeContextCurrent(window);
+
+        glfwSetWindowCloseCallback(window, window_close_callback);
     }
     
     gl_screen::~gl_screen(){

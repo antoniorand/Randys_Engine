@@ -313,7 +313,7 @@ namespace RandysEngine{
                     return devolver;
                 }
 
-                [[nodiscard]] constexpr bool isValid(SlotMap_Key key) noexcept{
+                [[nodiscard]] constexpr bool isValid(SlotMap_Key key) const noexcept{
                     bool devolver = true;
                     if(key.Id >= Capacity 
                     || Indices[key.Id].Gen != key.Gen)
@@ -357,7 +357,7 @@ namespace RandysEngine{
                     }
                 }*/
                 
-                Type* atPosition(SlotMap_Index_Type input){
+                Type* atPosition(SlotMap_Index_Type input) const{
                     Type* devolver = nullptr;
                     if(input < Size){
                         devolver = &Data[input];
@@ -365,7 +365,7 @@ namespace RandysEngine{
                     return (devolver);
                 }
 
-                Type* atPosition(SlotMap_Key input){
+                Type* atPosition(SlotMap_Key input) const{
                     Type* devolver = nullptr;
                     if(isValid(input)){
                         devolver = &Data[

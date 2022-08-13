@@ -136,6 +136,19 @@ namespace RandysEngine{
 
             //Run the frame, not only drawing it but interacting with it
             void runFrame();
+
+            //Read the input from the key
+            bool readKeyPressed(KeyInput input) const{
+                return screen.getInputPressed(input);
+            }
+
+            bool isAppRunning() const{
+                return screen.isAppRunning();
+            }
+
+            void closeApp(){
+                screen.closeApp();
+            }
     };
 
 };

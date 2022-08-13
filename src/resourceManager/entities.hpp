@@ -43,11 +43,11 @@ namespace RandysEngine{
             SlotMap::SlotMap_Key entity;
             entityType_enum type_entity;
 
-            ResourceManager::KeyId parentNode;
+            SlotMap::SlotMap_Key parentNode;
             bool hasParent{false};
 
             ////
-            std::array<ResourceManager::KeyId,maxChildren> childrenNodes{};
+            std::array<SlotMap::SlotMap_Key,maxChildren> childrenNodes{};
             std::array<bool,maxChildren> hasChildren{};
     };
 
