@@ -90,7 +90,7 @@ namespace RandysEngine{
         }
 
         void closeApp(){
-            glfwSetWindowShouldClose(window, GL_FALSE);
+            glfwSetWindowShouldClose(window, GL_TRUE);
         }
 
     };

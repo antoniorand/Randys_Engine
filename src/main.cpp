@@ -15,6 +15,9 @@ int main(){
     minitree.addModel();
 
     while(renderer.isAppRunning()){
+        if(renderer.readKeyPressed(RandysEngine::KeyInput::exit)){
+            renderer.closeApp();
+        }
         renderer.runFrame();
     }
 

@@ -42,6 +42,8 @@ namespace RandysEngine{
 
         gl_main init{};
 
+        gl_shader shader{};
+
 
 #endif
 

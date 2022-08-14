@@ -25,6 +25,10 @@ namespace RandysEngine{
             it will check if it interacts with the mouse Input
 
         */
+
+       init.prepareDraw();
+       shader.useShader();
+
         {
             auto iterator = layers.begin();
             auto itEnd = layers.end();
