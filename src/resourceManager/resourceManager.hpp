@@ -62,11 +62,11 @@ namespace RandysEngine{
             std::list<SlotMapType<Resource_Stored>,ListAlloc> list;
             WrappedSlotMapList(){};
             ~WrappedSlotMapList(){
-                auto currentElements = list.size();
-                while(currentElements != 0){
-                    list.pop_back();
-                    currentElements--;
-                }
+                //auto currentElements = list.size();
+                //while(currentElements != 0){
+                    //list.pop_back();
+                    //currentElements--;
+                //}
             };
         };
 

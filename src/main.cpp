@@ -12,7 +12,7 @@ int main(){
 
     auto& minitree = *renderer.getLayer<RandysEngine::layer_minitree>(0);
 
-    minitree.addModel();
+    //minitree.addModel();
 
     while(renderer.isAppRunning()){
         if(renderer.readKeyPressed(RandysEngine::KeyInput::exit)){
