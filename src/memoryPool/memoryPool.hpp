@@ -1,3 +1,15 @@
+/**
+ * @file memoryPool.hpp
+ * @author Antonio Alberto Peguero Lopez (tony.randalph@gmail.com)
+ * @title Memory Pool
+ * @brief Memory Pool implementation with C++ and STL functions
+ * @version 1.0
+ * @date 2022-08-15
+ * @copyright Copyright (c) 2022
+ * 
+ */
+
+
 #pragma once
 #include <cstddef>
 #include <memory>
@@ -11,30 +23,75 @@
 //Based on the implementation of Misha Shalem during CppCon 2020
 //https://youtu.be/l14Zkx5OXr4
 
+
+
 namespace RandysEngine{
 
     namespace Pool{
 
         //Classes
 
+        //!  Class Bucket
+        /*!
+        A class that has the responsability over memory stored in the Heap.
+        Several objects of this class compounds a memory pool.
+        */
         class Bucket{
-            //Finds n free contiguous blocks in the ledger 
-            //and return the first blocks index or blockcount on failure
+            //! Finds n free contiguous blocks in the ledger.
+            /*!
+            \param n blocks to be found in a contigous manner.
+            \return index number or blockcount on failure.
+            \sa m_ledger(), m_data(), allocate() 
+            */
             const std::uint32_t find_contiguous_blocks(std::uint32_t n) const noexcept;
-            //Marks n blocks in the ledger as "in-use" starting at 'index'
+            //! Sets n blocks in "used" state starting at 'index'.
+            /*!
+            \param index the first block in the ledger to be set
+            \param n number of blocks to be set
+            \sa m_ledger(), set_blocks_in_free() 
+            */
             void set_blocks_in_use(std::uint32_t index,std::uint32_t n) noexcept;
-            //Marks n blocks in the ledger as "free" starting at 'index'
+            //! Sets n blocks in "free" state starting at 'index'.
+            /*!
+            \param index the first block in the ledger to be set
+            \param n number of blocks to be set
+            \sa m_ledger(), set_blocks_in_use() 
+            */
             void set_blocks_in_free(std::uint32_t index,std::uint32_t n) noexcept;
-
-            //Actual memory for allocations
+            //! Current reserved memory for allocations and data storage
+            /*!
+                Smart pointer that points to the reserved memory in the heap for data.
+                RAII design pattern is crucial in the structure of the Memory Pool and std::unique_ptr does a pretty good job here.
+                Data of any type is going to be stored here
+                \sa blockSize(), blockCount()
+            */
             std::unique_ptr<std::byte[]> m_data;
-            //Reserves one bit per block to indicate wheter it is in-use
+            //! Current reserved memory for the ledger
+            /*!
+                Smart pointer that points to the reserved memory in the heap for the ledger.
+                RAII design pattern is crucial in the structure of the Memory Pool and std::unique_ptr does a pretty good job here.
+                Reserves one bit per block to indicate whether the block is in use or not.
+                \sa blockSize(), blockCount()
+            */
             std::unique_ptr<std::byte[]> m_ledger;
 
             public:
+                //! Size of the block in bytes. Each block can only store one object or collection of objects.
+                /*!
+                    \sa blockCount()()
+                */
                 const std::uint32_t blockSize;
+                //! Number of blocks reserved in this bucket.
+                /*!
+                    \sa blockCount()()
+                */
                 const std::uint32_t blockCount;
-
+                //! Number of blocks reserved in this bucket.
+                /*!
+                    @param e_block_size
+                    @param e_block_count
+                    \sa blockCount()()
+                */
                 Bucket(std::uint32_t e_block_size, std::uint32_t e_block_count) noexcept;
 
                 //Test if pointer belongs to bucket

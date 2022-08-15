@@ -9,3 +9,5 @@ lib/libglw3.a
 *.stackdump
 *.dll
 randysEngine
+html/
+latex/
