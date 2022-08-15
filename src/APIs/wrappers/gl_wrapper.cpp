@@ -49,7 +49,7 @@ namespace RandysEngine{
 
     gl_shader::gl_shader(){
         // vertex shader
-        vertexShader = glCreateShader(GL_VERTEX_SHADER);
+        unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
         glCompileShader(vertexShader);
         // check for shader compile errors
@@ -64,7 +64,7 @@ namespace RandysEngine{
         /////////////
 
         // fragment shader
-        fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+        unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
         glCompileShader(fragmentShader);
         // check for shader compile errors
@@ -85,11 +85,12 @@ namespace RandysEngine{
             glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
             std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
         }
+        glDeleteShader(vertexShader);
+        glDeleteShader(fragmentShader);
     }
 
     gl_shader::~gl_shader(){
-        glDeleteShader(vertexShader);
-        glDeleteShader(fragmentShader);
+        
         glDeleteProgram(shaderProgram);
     }
 
@@ -128,7 +129,7 @@ namespace RandysEngine{
         
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         glDrawArrays(GL_TRIANGLES, 0, 3);
-        glBindVertexArray(0); // no need to unbind it every time 
+        //glBindVertexArray(0); // no need to unbind it every time 
     }
 
 }
