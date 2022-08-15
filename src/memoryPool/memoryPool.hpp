@@ -20,7 +20,7 @@ namespace RandysEngine{
         class Bucket{
             //Finds n free contiguous blocks in the ledger 
             //and return the first blocks index or blockcount on failure
-            std::uint32_t find_contiguous_blocks(std::uint32_t n) const noexcept;
+            const std::uint32_t find_contiguous_blocks(std::uint32_t n) const noexcept;
             //Marks n blocks in the ledger as "in-use" starting at 'index'
             void set_blocks_in_use(std::uint32_t index,std::uint32_t n) noexcept;
             //Marks n blocks in the ledger as "free" starting at 'index'
@@ -35,7 +35,7 @@ namespace RandysEngine{
                 const std::uint32_t blockSize;
                 const std::uint32_t blockCount;
 
-                Bucket(std::uint32_t e_block_size, std::uint32_t e_block_count);
+                Bucket(std::uint32_t e_block_size, std::uint32_t e_block_count) noexcept;
 
                 //Test if pointer belongs to bucket
                 bool belongs(void * ptr) const noexcept;
@@ -108,7 +108,7 @@ namespace RandysEngine{
         };*/
 
         template<typename T, std::uint32_t MAXBLOCK_TYPE = 10000>
-        [[nodiscard]] void * allocate(std::uint32_t bytes){
+        [[nodiscard]] void * allocate(std::uint32_t bytes) noexcept{
             //Get reference to instance of pool
             auto & pool = get_instance<T,MAXBLOCK_TYPE>();
             void* devolver = nullptr;
@@ -181,7 +181,7 @@ namespace RandysEngine{
                 template<typename U>
                 struct rebind{ using other = Static_pool_allocator<U,MAXBLOCK_TYPE>;};
 
-                Static_pool_allocator(){}; 
+                Static_pool_allocator() noexcept{}; 
                 
                 template<typename U>
                 Static_pool_allocator(const Static_pool_allocator<U,MAXBLOCK_TYPE> & other) noexcept{}
