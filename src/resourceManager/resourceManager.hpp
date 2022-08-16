@@ -2,7 +2,7 @@
 #include "../slotmap/slotmap.hpp"
 #include "../memoryPool/memoryPool.hpp"
 #include <map>
-#include <list>
+#include <deque>
 
 //https://www.cppstories.com/2020/04/variant-virtual-polymorphism.html/
 
@@ -54,18 +54,30 @@ namespace RandysEngine{
         template<typename Resource_Stored>
         using SlotMapType = RandysEngine::SlotMap::SlotMap<Resource_Stored,SlotMapAlloc<Resource_Stored>>;
 
+
         template<typename Resource_Stored>
-        struct WrappedSlotMapList{
-            static constexpr unsigned int slotmaps_number = 16;
+        struct SlotMapListData{
+            //NOTE: if you specialize this class, NEVER EVER use slotmaps_number under value 16 
+            //because that's the minimun size for std::DEQUE
+            static constexpr unsigned int slotmaps_number = 17;
             //the next id of the next slotmap and element
             static inline indexSlotmap nextMap{0};
-            std::list<SlotMapType<Resource_Stored>> list;
         };
 
         template<typename Resource_Stored>
+        using ListAlloc = RandysEngine::Pool::Static_pool_allocator<
+            SlotMapType<Resource_Stored>, 
+            SlotMapListData<Resource_Stored>::slotmaps_number
+        >;
+
+        //slotmap list
+        template<typename Resource_Stored>
+        using SlotMapList = std::deque<SlotMapType<Resource_Stored>>;
+
+        template<typename Resource_Stored>
         auto& getSlotMapList() const{
-            static WrappedSlotMapList<Resource_Stored> devolver;
-            return (devolver.list);
+            static SlotMapList<Resource_Stored> devolver;
+            return (devolver);
         }
 
         /////
@@ -108,7 +120,7 @@ namespace RandysEngine{
                         //we pushback the new resource and get a key to the element
                         auto key = SlotMapList.back().push_back(std::forward<Resource_Stored>(resource));
                         //we get the key to the resource in the map
-                        devolver = {typeid(Resource_Stored).hash_code(),WrappedSlotMapList<Resource_Stored>::nextMap++, key};
+                        devolver = {typeid(Resource_Stored).hash_code(),SlotMapListData<Resource_Stored>::nextMap++, key};
                     }
                 }
 
@@ -149,7 +161,7 @@ namespace RandysEngine{
                         //we pushback the new resource and get a key to the element
                         auto key = SlotMapList.back().emplace_back(input...);
                         //we get the key to the resource in the map
-                        devolver = {typeid(Resource_Stored).hash_code(),WrappedSlotMapList<Resource_Stored>::nextMap++, key};
+                        devolver = {typeid(Resource_Stored).hash_code(),SlotMapListData<Resource_Stored>::nextMap++, key};
                     }
                 }
                 return devolver;
