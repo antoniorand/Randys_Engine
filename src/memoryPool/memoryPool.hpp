@@ -280,25 +280,6 @@ namespace RandysEngine{
                         throw std::bad_alloc();
                     this->deallocate(p,n);
                 }
-                template<class... CtorArgs> T* new_object(CtorArgs&&... ctor_args){
-                    T* devolver = static_cast<T*>(
-                        this->allocate_object()
-                    );
-                    return(construct(devolver,ctor_args...));
-                }
-                void delete_object(T* p){
-                    destroy(p);
-                    this->deallocate_object(p);
-                }
-
-                template<class... Args>
-                void construct(T* p, Args&&... args){
-                    new ((void*)p) T (args...);
-                }
-                
-                void destroy(T* p){
-                    (p)->~T();
-                }
 
         };
     };

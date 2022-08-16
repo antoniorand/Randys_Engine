@@ -11,3 +11,4 @@ lib/libglw3.a
 randysEngine
 html/
 latex/
+*.map
