@@ -14,3 +14,4 @@ randysEngine
 html/
 latex/
 *.map
+vgcore.*
