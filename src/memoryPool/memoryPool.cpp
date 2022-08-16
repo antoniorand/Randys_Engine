@@ -2,7 +2,7 @@
 #define CHECK_BIT_REVERSED(var,pos) (((uint8_t)var) & (0x80 >> pos))
 #define SET_BIT_REVERSED  (var,pos) (((uint8_t)var) | (0x80 >> pos))  
 
-RandysEngine::Pool::Bucket::Bucket(std::uint32_t e_block_size, std::uint32_t e_block_count) : 
+RandysEngine::Pool::Bucket::Bucket(std::uint32_t e_block_size, std::uint32_t e_block_count) noexcept: 
     blockSize{e_block_size}, blockCount{e_block_count}{
 
     //The number of blocks we are reserving
@@ -28,7 +28,7 @@ bool RandysEngine::Pool::Bucket::belongs(void * ptr) const noexcept{
 
 }
 
-std::uint32_t RandysEngine::Pool::Bucket::find_contiguous_blocks(std::uint32_t n) const noexcept{
+const std::uint32_t RandysEngine::Pool::Bucket::find_contiguous_blocks(std::uint32_t n) const noexcept{
     //for every block in the ledger
     std::uint32_t devolver = blockCount;
     for(std::uint32_t i = 0; i < (blockCount-n+1);i++){

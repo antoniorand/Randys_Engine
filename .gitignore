@@ -10,3 +10,7 @@ lib/libglw3.a
 *.dll
 *.txt
 *.core.*
+randysEngine
+html/
+latex/
+*.map

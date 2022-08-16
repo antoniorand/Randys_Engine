@@ -54,10 +54,8 @@ namespace RandysEngine{
                 : layer_interface<layer_minitree>(man), nodes{maxNodesMinitree},
                     models{maxModelsMinitree}, lights{maxLightsMinitree}, cameras{maxCamerasMinitree}{
                 MinitreeNode e_rootNode;
-                gl_mesh_resource triangle{""};
                 rootNode = nodes.push_back(e_rootNode);
-                triangle_Mesh = man.reserveResource<gl_mesh_resource>(triangle);
-                
+                triangle_Mesh = man.createResource<gl_mesh_resource>("");
             };
             ~layer_minitree(){};
 

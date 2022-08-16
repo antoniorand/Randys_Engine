@@ -155,9 +155,9 @@ namespace RandysEngine{
                 //Get the index to the data array
                 auto dataid = slot.Id;//save id of data slot to check if it is last or not
                 //Destroy the data in the specific place
-                auto& element = Data[slot.Id];
+                auto element = &Data[slot.Id];
 
-                d_alloc.destroy(&element);
+                (element)->~Value_Type();
 
                 //Update freelist
                 slot.Id = Free_list_head;
@@ -193,8 +193,8 @@ namespace RandysEngine{
                 //Destructing the SlotMap
                 constexpr ~SlotMap(){
                     for(SlotMap_Index_Type i= 0; i < Capacity; i++){
-                        auto item =  this->atPosition(i);
-                        d_alloc.destroy(item);
+                        auto element =  this->atPosition(i);
+                        (element)->~Value_Type();
                     }
                     d_alloc.deallocate(Data,Capacity);
                     i_alloc.deallocate(Indices,Capacity);
@@ -238,8 +238,22 @@ namespace RandysEngine{
                 }
 
                 template<class... Args>
-                [[nodiscard]] SlotMap_Key push_back(Args... input){
-                    return(this->push_back(Value_Type{input...}));
+                [[nodiscard]] SlotMap_Key emplace_back(Args... input){
+                    //Allocate a new slot and return the position of the slot (not the data)
+                    auto reservedId = allocate();
+                    //get the reserved slot
+                    auto key = Indices[reservedId];
+
+                    //move data
+                    new (&Data[key.Id]) Value_Type(input...);
+                    Erase[key.Id] = reservedId;
+
+                    //We change the id of the key to be returned
+                    //This is because in the slotmap, the key should point to the index to the array data
+                    //but the key outside should point to the index of the indices data
+                    key.Id = reservedId;     
+
+                    return(key);
                 }
 
                 void swap(SlotMap<Value_Type,DATA_ALLOC>& other) noexcept{

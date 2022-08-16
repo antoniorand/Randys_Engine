@@ -44,8 +44,6 @@ namespace RandysEngine{
         "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
         "}\n\0";
 
-        unsigned int vertexShader;
-        unsigned int fragmentShader;
         unsigned int shaderProgram;
 
         gl_shader();

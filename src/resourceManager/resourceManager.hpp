@@ -19,18 +19,17 @@ namespace RandysEngine{
         ///////////////////////
             
         //id of the type
-        using id_of_type = std::size_t;
+        using idType = std::size_t;
         //index to the specific slotmap;
-        using id_of_slotmap = std::size_t;
-        //key to the slotMap object
-        using mapKeyValue = SlotMap::SlotMap_Key;
+        using indexSlotmap = std::size_t;
 
         //The key to be returned
         struct KeyId{
-            id_of_type idType;
-            id_of_slotmap idSlotmap;
-            mapKeyValue value;
+            idType type_id;
+            indexSlotmap index;
+            SlotMap::SlotMap_Key key;
         };
+
 
 
         private:
@@ -58,16 +57,9 @@ namespace RandysEngine{
         template<typename Resource_Stored>
         struct WrappedSlotMapList{
             static constexpr unsigned int slotmaps_number = 16;
-            using ListAlloc = RandysEngine::Pool::Static_pool_allocator<SlotMapType<Resource_Stored>,slotmaps_number>;
-            std::list<SlotMapType<Resource_Stored>,ListAlloc> list;
-            WrappedSlotMapList(){};
-            ~WrappedSlotMapList(){
-                //auto currentElements = list.size();
-                //while(currentElements != 0){
-                    //list.pop_back();
-                    //currentElements--;
-                //}
-            };
+            //the next id of the next slotmap and element
+            static inline indexSlotmap nextMap{0};
+            std::list<SlotMapType<Resource_Stored>> list;
         };
 
         template<typename Resource_Stored>
@@ -87,11 +79,8 @@ namespace RandysEngine{
 
             //Store the resource in RAM memory, after that get a key that can NEVER be discarded (it has to be stored somewhere)
             template<typename Resource_Stored>
-            [[nodiscard]] const KeyId reserveResource(Resource_Stored resource){
+            [[nodiscard]] const KeyId reserveResource(Resource_Stored&& resource){
                 
-                //the next id of the next slotmap and element
-                static id_of_slotmap nextMap{0};
-
                 //list of slotmaps
                 auto& SlotMapList = getSlotMapList<Resource_Stored>();
 
@@ -99,12 +88,12 @@ namespace RandysEngine{
                 //Find a slotmap and try to store resource
                 {
                     bool found = false;
-                    id_of_slotmap counter = 0;
+                    indexSlotmap counter = 0;
                     //find a free slotmap
                     for(auto& certainSlotmap : SlotMapList){
                         //if this slotmap is free, we store and return
                         if(certainSlotmap.current_size() < slotmap_length<Resource_Stored>::value){
-                            auto key = certainSlotmap.push_back(resource);
+                            auto key = certainSlotmap.push_back(std::forward<Resource_Stored>(resource));
                             //the key to be returned
                             devolver = {typeid(Resource_Stored).hash_code(),counter, key};
                             found = true;
@@ -117,12 +106,52 @@ namespace RandysEngine{
                         //we create a new slotmap
                         SlotMapList.emplace_back(slotmap_length<Resource_Stored>::value);
                         //we pushback the new resource and get a key to the element
-                        auto key = SlotMapList.back().push_back(resource);
+                        auto key = SlotMapList.back().push_back(std::forward<Resource_Stored>(resource));
                         //we get the key to the resource in the map
-                        devolver = {typeid(Resource_Stored).hash_code(),nextMap++, key};
+                        devolver = {typeid(Resource_Stored).hash_code(),WrappedSlotMapList<Resource_Stored>::nextMap++, key};
                     }
                 }
 
+                return devolver;
+            }
+
+            template<typename Resource_Stored>
+            [[nodiscard]] const KeyId reserveResource(Resource_Stored& resource){
+                return(this->reserveResource(Resource_Stored{resource}));
+            }
+
+            template<typename Resource_Stored,class... Args>
+            [[nodiscard]] const KeyId createResource(Args... input){
+                //list of slotmaps
+                auto& SlotMapList = getSlotMapList<Resource_Stored>();
+
+                RandysEngine::ResourceManager::KeyId devolver;
+                //Find a slotmap and try to store resource
+                {
+                    bool found = false;
+                    indexSlotmap counter = 0;
+                    //find a free slotmap
+                    for(auto& certainSlotmap : SlotMapList){
+                        //if this slotmap is free, we store and return
+                        if(certainSlotmap.current_size() < slotmap_length<Resource_Stored>::value){
+                            auto key = certainSlotmap.emplace_back(input...);
+                            //the key to be returned
+                            devolver = {typeid(Resource_Stored).hash_code(),counter, key};
+                            found = true;
+                            break;
+                        }
+                        counter++;
+                    }
+                    //if free slotmap not found
+                    if(!found){
+                        //we create a new slotmap
+                        SlotMapList.emplace_back(slotmap_length<Resource_Stored>::value);
+                        //we pushback the new resource and get a key to the element
+                        auto key = SlotMapList.back().emplace_back(input...);
+                        //we get the key to the resource in the map
+                        devolver = {typeid(Resource_Stored).hash_code(),WrappedSlotMapList<Resource_Stored>::nextMap++, key};
+                    }
+                }
                 return devolver;
             }
 
@@ -131,15 +160,15 @@ namespace RandysEngine{
             Resource_Stored* getResource(const KeyId input)const{
                 Resource_Stored* devolver = nullptr;
                 //If this is the right resource type
-                if(input.idType == typeid(Resource_Stored).hash_code()){
+                if(input.type_id == typeid(Resource_Stored).hash_code()){
                     //get the list
                     auto& SlotMapList = getSlotMapList<Resource_Stored>();
-                    id_of_slotmap counter = 0;
+                    indexSlotmap counter = 0;
                     //look for the slotmap it's stored
                     for(auto& certainSlotmap : SlotMapList){
-                        if(counter == input.idSlotmap){
+                        if(counter == input.index){
                             //get the pointer
-                            devolver = certainSlotmap.atPosition(input.value);
+                            devolver = certainSlotmap.atPosition(input.key);
                             break;
                         }
                     }
@@ -152,15 +181,15 @@ namespace RandysEngine{
             bool freeResource(KeyId input){
                 bool devolver = false;
                 //If this is the right resource type
-                if(input.idType == typeid(Resource_Stored).hash_code()){
+                if(input.type_id == typeid(Resource_Stored).hash_code()){
                     //get the list
                     auto& SlotMapList = getSlotMapList<Resource_Stored>();
-                    id_of_slotmap counter = 0;
+                    indexSlotmap counter = 0;
                     //look for the slotmap it's stored
                     for(auto& certainSlotmap : SlotMapList){
-                        if(counter == input.idSlotmap){
+                        if(counter == input.index){
                             //DELETEEEEE
-                            devolver = certainSlotmap.erase(input.value);
+                            devolver = certainSlotmap.erase(input.key);
                             break;
                         }
                     }

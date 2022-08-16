@@ -1,7 +1,4 @@
-
-
 #include "core.hpp"
-
 
 constexpr double averageTick = 1/60.0;
 int main(){
@@ -12,7 +9,7 @@ int main(){
 
     auto& minitree = *renderer.getLayer<RandysEngine::layer_minitree>(0);
 
-    //minitree.addModel();
+    minitree.addModel();
 
     while(renderer.isAppRunning()){
         if(renderer.readKeyPressed(RandysEngine::KeyInput::exit)){
