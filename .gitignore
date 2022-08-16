@@ -8,3 +8,5 @@ lib/libglw3.a
 *.o
 *.stackdump
 *.dll
+*.txt
+*.core.*
