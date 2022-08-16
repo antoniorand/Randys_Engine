@@ -129,7 +129,7 @@ namespace RandysEngine{
         
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         glDrawArrays(GL_TRIANGLES, 0, 3);
-        //glBindVertexArray(0); // no need to unbind it every time 
+        glBindVertexArray(0); // no need to unbind it every time 
     }
 
 }
