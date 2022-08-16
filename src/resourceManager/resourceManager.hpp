@@ -59,7 +59,7 @@ namespace RandysEngine{
         struct SlotMapListData{
             //NOTE: if you specialize this class, NEVER EVER use slotmaps_number under value 16 
             //because that's the minimun size for std::DEQUE
-            static constexpr unsigned int slotmaps_number = 17;
+            static constexpr unsigned int slotmaps_number = 16;
             //the next id of the next slotmap and element
             static inline indexSlotmap nextMap{0};
         };
@@ -67,7 +67,7 @@ namespace RandysEngine{
         template<typename Resource_Stored>
         using ListAlloc = RandysEngine::Pool::Static_pool_allocator<
             SlotMapType<Resource_Stored>, 
-            SlotMapListData<Resource_Stored>::slotmaps_number
+            SlotMapListData<Resource_Stored>::slotmaps_number+2
         >;
 
         //slotmap list
