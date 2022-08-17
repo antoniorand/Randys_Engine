@@ -176,6 +176,15 @@ namespace RandysEngine{
                 Size-=1;
             }
 
+            constexpr void destroyElements() noexcept{
+
+                for(SlotMap_Index_Type i = 0; i < Size;i++){
+                    auto element = &Data[i];
+                    (element)->~Value_Type();
+                }
+
+            }
+
             public:
                 //Initializing the SlotMap and reserve new Data
                 constexpr explicit SlotMap(SlotMap_Index_Type e_capacity = 128) : Capacity {e_capacity}{
@@ -192,10 +201,7 @@ namespace RandysEngine{
 
                 //Destructing the SlotMap
                 constexpr ~SlotMap(){
-                    for(SlotMap_Index_Type i= 0; i < Size; i++){
-                        auto element =  this->atPosition(i);
-                        (element)->~Value_Type();
-                    }
+                    destroyElements();
                     d_alloc.deallocate(Data,Capacity);
                     i_alloc.deallocate(Indices,Capacity);
                     e_alloc.deallocate(Erase,Capacity);  
@@ -266,7 +272,10 @@ namespace RandysEngine{
                     std::swap(Indices,other.Indices);                    
                 }
 
-                constexpr void clear() noexcept{ freelist_init();}
+                constexpr void clear() noexcept{ 
+                    destroyElements();
+                    freelist_init();
+                }
 
                 constexpr bool resize(SlotMap_Index_Type newCapacity) {
                     bool devolver = true;
