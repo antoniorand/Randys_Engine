@@ -3,6 +3,7 @@
 #include "../memoryPool/memoryPool.hpp"
 #include <map>
 #include <deque>
+#include <typeinfo>
 
 //https://www.cppstories.com/2020/04/variant-virtual-polymorphism.html/
 
@@ -29,8 +30,6 @@ namespace RandysEngine{
             indexSlotmap index;
             SlotMap::SlotMap_Key key;
         };
-
-
 
         private:
         
@@ -70,14 +69,44 @@ namespace RandysEngine{
             SlotMapListData<Resource_Stored>::slotmaps_number
         >;
 
+        struct baseList{
+
+            baseList(){};
+
+            virtual ~baseList(){};
+
+        };
+
         //slotmap list
         template<typename Resource_Stored>
-        using SlotMapList = std::deque<SlotMapType<Resource_Stored>>;
+        struct SlotMapList : baseList {
+            std::deque<SlotMapType<Resource_Stored>,ListAlloc<Resource_Stored>> list;
+        
+            ~SlotMapList(){};
+        };
+
+
+        std::map<std::size_t,
+            baseList*> listMap;
 
         template<typename Resource_Stored>
-        auto& getSlotMapList() const{
-            static SlotMapList<Resource_Stored> devolver;
-            return (devolver);
+        SlotMapList<Resource_Stored>& getSlotMapList(){
+            
+            SlotMapList<Resource_Stored>* devolver = nullptr;
+
+            auto it = listMap.find(typeid(SlotMapList<Resource_Stored>).hash_code());
+
+            if(it != listMap.end()){
+                devolver = static_cast<SlotMapList<Resource_Stored>*>(it->second);
+            }
+            else{
+                const std::size_t typeNumber = typeid(SlotMapList<Resource_Stored>).hash_code();
+                std::unique_ptr<baseList> listPtr = std::make_unique<SlotMapList<Resource_Stored>>();
+                listMap[typeNumber] = listPtr.release();
+                devolver = static_cast<SlotMapList<Resource_Stored>*>(listMap[typeNumber]);
+            }
+
+            return (*devolver);
         }
 
         /////
@@ -87,14 +116,18 @@ namespace RandysEngine{
             //Initialize the manager
             ResourceManager(){};
             //Destroy!!!!
-            ~ResourceManager(){};
+            ~ResourceManager(){
+                for(auto& pair : listMap){
+                    std::unique_ptr<baseList>(pair.second);
+                }
+            };
 
             //Store the resource in RAM memory, after that get a key that can NEVER be discarded (it has to be stored somewhere)
             template<typename Resource_Stored>
             [[nodiscard]] const KeyId reserveResource(Resource_Stored&& resource){
                 
                 //list of slotmaps
-                auto& SlotMapList = getSlotMapList<Resource_Stored>();
+                auto& SlotMapList = getSlotMapList<Resource_Stored>().list;
 
                 RandysEngine::ResourceManager::KeyId devolver;
                 //Find a slotmap and try to store resource
@@ -135,7 +168,7 @@ namespace RandysEngine{
             template<typename Resource_Stored,class... Args>
             [[nodiscard]] const KeyId createResource(Args... input){
                 //list of slotmaps
-                auto& SlotMapList = getSlotMapList<Resource_Stored>();
+                auto& SlotMapList = getSlotMapList<Resource_Stored>().list;
 
                 RandysEngine::ResourceManager::KeyId devolver;
                 //Find a slotmap and try to store resource
@@ -169,12 +202,12 @@ namespace RandysEngine{
 
             //Get the resource after inputing the key, which is constant
             template<typename Resource_Stored>
-            Resource_Stored* getResource(const KeyId input)const{
+            Resource_Stored* getResource(const KeyId input){
                 Resource_Stored* devolver = nullptr;
                 //If this is the right resource type
                 if(input.type_id == typeid(Resource_Stored).hash_code()){
                     //get the list
-                    auto& SlotMapList = getSlotMapList<Resource_Stored>();
+                    auto& SlotMapList = getSlotMapList<Resource_Stored>().list;
                     indexSlotmap counter = 0;
                     //look for the slotmap it's stored
                     for(auto& certainSlotmap : SlotMapList){
