@@ -192,7 +192,7 @@ namespace RandysEngine{
 
                 //Destructing the SlotMap
                 constexpr ~SlotMap(){
-                    for(SlotMap_Index_Type i= 0; i < Capacity; i++){
+                    for(SlotMap_Index_Type i= 0; i < Size; i++){
                         auto element =  this->atPosition(i);
                         (element)->~Value_Type();
                     }
