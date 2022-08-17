@@ -8,3 +8,10 @@ lib/libglw3.a
 *.o
 *.stackdump
 *.dll
+*.txt
+*.core.*
+randysEngine
+html/
+latex/
+*.map
+vgcore.*

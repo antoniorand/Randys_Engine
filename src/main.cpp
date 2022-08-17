@@ -1,9 +1,6 @@
-#include <3ds.h>
-#include <citro3d.h>
-#include <string.h>
-#include "vshader_shbin.h"
 
-#define CLEAR_COLOR 0x68B0D8FF
+#ifndef __3DS__
+#include "core.hpp"
 
 #define DISPLAY_TRANSFER_FLAGS \
 	(GX_TRANSFER_FLIP_VERT(0) | GX_TRANSFER_OUT_TILED(0) | GX_TRANSFER_RAW_COPY(0) | \
@@ -160,3 +157,6 @@ int main()
 	gfxExit();
 	return 0;
 }
+
+
+#endif

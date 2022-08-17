@@ -22,7 +22,10 @@ namespace RandysEngine{
         //Type of the Generation to be stored
         using SlotMap_Gen_Type      = std::uint64_t;
         //Type of the key to be returned and stored
-        using SlotMap_Key = struct{RandysEngine::SlotMap::SlotMap_Id_Type Id;RandysEngine::SlotMap::SlotMap_Gen_Type Gen;};
+        struct SlotMap_Key{
+            RandysEngine::SlotMap::SlotMap_Id_Type Id;
+            RandysEngine::SlotMap::SlotMap_Gen_Type Gen;
+        };
 
         //We will be using the std::allocator by default, 
         //but you can use other allocs as well as the defined by you
@@ -106,9 +109,10 @@ namespace RandysEngine{
                     EraseArray newErase = e_alloc.allocate(newCapacity);    
 
                     //Copy new memory from old memory
-                    memcpy(newData,Data,sizeof(Value_Type)*Capacity);
-                    memcpy(newIndices,Indices,sizeof(SlotMap_Key)*Capacity);
-                    memcpy(newErase,Erase,sizeof(SlotMap_Index_Type)*Capacity);
+                    std::copy(Data,Data + sizeof(Value_Type)*newCapacity,newData);
+                    std::memcpy(newIndices,Indices,sizeof(SlotMap_Key)*Capacity);
+                    std::memcpy(newErase,Erase,sizeof(SlotMap_Index_Type)*Capacity);
+
 
                     //Dealloc old memory
                     d_alloc.deallocate(Data,Capacity);
@@ -150,12 +154,16 @@ namespace RandysEngine{
                 auto& slot = Indices[key.Id];
                 //Get the index to the data array
                 auto dataid = slot.Id;//save id of data slot to check if it is last or not
+                //Destroy the data in the specific place
+                auto element = &Data[slot.Id];
+
+                (element)->~Value_Type();
 
                 //Update freelist
                 slot.Id = Free_list_head;
                 slot.Gen = Generation;
                 Free_list_head = key.Id;
-
+                
                 //copy data to free slot?
                 if(dataid != Size-1){
                     //data slot is not last, copy last here
@@ -166,6 +174,15 @@ namespace RandysEngine{
                 //Update size and generation
                 Generation+=1;
                 Size-=1;
+            }
+
+            constexpr void destroyElements() noexcept{
+
+                for(SlotMap_Index_Type i = 0; i < Size;i++){
+                    auto element = &Data[i];
+                    (element)->~Value_Type();
+                }
+
             }
 
             public:
@@ -184,6 +201,7 @@ namespace RandysEngine{
 
                 //Destructing the SlotMap
                 constexpr ~SlotMap(){
+                    destroyElements();
                     d_alloc.deallocate(Data,Capacity);
                     i_alloc.deallocate(Indices,Capacity);
                     e_alloc.deallocate(Erase,Capacity);  
@@ -226,8 +244,22 @@ namespace RandysEngine{
                 }
 
                 template<class... Args>
-                [[nodiscard]] SlotMap_Key push_back(Args... input){
-                    return(this->push_back(Value_Type{input...}));
+                [[nodiscard]] SlotMap_Key emplace_back(Args... input){
+                    //Allocate a new slot and return the position of the slot (not the data)
+                    auto reservedId = allocate();
+                    //get the reserved slot
+                    auto key = Indices[reservedId];
+
+                    //move data
+                    new (&Data[key.Id]) Value_Type(input...);
+                    Erase[key.Id] = reservedId;
+
+                    //We change the id of the key to be returned
+                    //This is because in the slotmap, the key should point to the index to the array data
+                    //but the key outside should point to the index of the indices data
+                    key.Id = reservedId;     
+
+                    return(key);
                 }
 
                 void swap(SlotMap<Value_Type,DATA_ALLOC>& other) noexcept{
@@ -240,7 +272,10 @@ namespace RandysEngine{
                     std::swap(Indices,other.Indices);                    
                 }
 
-                constexpr void clear() noexcept{ freelist_init();}
+                constexpr void clear() noexcept{ 
+                    destroyElements();
+                    freelist_init();
+                }
 
                 constexpr bool resize(SlotMap_Index_Type newCapacity) {
                     bool devolver = true;
@@ -255,9 +290,9 @@ namespace RandysEngine{
                         EraseArray newErase = e_alloc.allocate(newCapacity);    
 
                         //Copy new memory from old memory
-                        memcpy(newData,Data,sizeof(Value_Type)*Capacity);
-                        memcpy(newIndices,Indices,sizeof(SlotMap_Key)*Capacity);
-                        memcpy(newErase,Erase,sizeof(SlotMap_Index_Type)*Capacity);
+                        std::copy(Data,Data + sizeof(Value_Type)*newCapacity,newData);
+                        std::memcpy(newIndices,Indices,sizeof(SlotMap_Key)*Capacity);
+                        std::memcpy(newErase,Erase,sizeof(SlotMap_Index_Type)*Capacity);
 
                         //Dealloc old memory
                         d_alloc.deallocate(Data,Capacity);
@@ -301,7 +336,7 @@ namespace RandysEngine{
                     return devolver;
                 }
 
-                [[nodiscard]] constexpr bool isValid(SlotMap_Key key) noexcept{
+                [[nodiscard]] constexpr bool isValid(SlotMap_Key key) const noexcept{
                     bool devolver = true;
                     if(key.Id >= Capacity 
                     || Indices[key.Id].Gen != key.Gen)
@@ -345,7 +380,7 @@ namespace RandysEngine{
                     }
                 }*/
                 
-                Type* atPosition(std::uint32_t input){
+                Type* atPosition(SlotMap_Index_Type input) const{
                     Type* devolver = nullptr;
                     if(input < Size){
                         devolver = &Data[input];
@@ -353,7 +388,7 @@ namespace RandysEngine{
                     return (devolver);
                 }
 
-                Type* atPosition(SlotMap_Key input){
+                Type* atPosition(SlotMap_Key input) const{
                     Type* devolver = nullptr;
                     if(isValid(input)){
                         devolver = &Data[

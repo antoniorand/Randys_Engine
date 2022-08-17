@@ -1,22 +1,27 @@
 #include "memoryPool/memoryPool.hpp"
 #include "memoryPool/memoryPool.hpp"
 #include "resourceManager/resourceManager.hpp"
+
+#ifndef __3DS__
+    #include "APIs/GLAD/glad.h"
+    #include <GLFW/glfw3.h>
+    #include "APIs/wrappers/gl_wrapper.hpp"
+#endif
+
 #include "layers/layers.hpp"
 #include <iostream>
 #include <variant>
 #include <list>
-#ifndef __3DS__
-    #include "APIs/GLAD/glad.h"
-    #include <GLFW/glfw3.h>
-#endif
+
 
 namespace RandysEngine{
 
     //The current layer types we are going to run
     using layerTypes = std::variant<
             RandysEngine::layer_skybox,
-            RandysEngine::layer_GUI
-            >;
+            RandysEngine::layer_GUI,
+            RandysEngine::layer_minitree
+        >;
     //the maximum number of layers
     constexpr std::size_t maxLayers = 10;
 
@@ -27,7 +32,21 @@ namespace RandysEngine{
     
     //The rendering Engine by itself
     class Rendering_Engine{
-        
+
+#ifdef __3DS__
+    //3ds API wrapper
+#else
+    //opengl api wrapper
+
+        gl_screen screen{};
+
+        gl_main init{};
+
+        gl_shader shader{};
+
+
+#endif
+
         //The Resource manager that stores data on the heap
         //with optimizations
         RandysEngine::ResourceManager ResourceManager;
@@ -46,7 +65,7 @@ namespace RandysEngine{
                 bool devolver = false;
 
                 if(layers.size() < maxLayers){
-                    Layer_Type newLayer{args...};
+                    Layer_Type newLayer{ResourceManager,args...};
                     devolver = true;
                     //std::cout << "Inserting layer of type " << typeid(Layer_Type).name() << " in the back of the list\n"; 
                     layers.push_back(newLayer);
@@ -61,7 +80,7 @@ namespace RandysEngine{
                 bool devolver = false;
 
                 if(layers.size() != layers.max_size() && position <= layers.size()){
-                    Layer_Type newLayer{args...};
+                    Layer_Type newLayer{ResourceManager,args...};
                     auto itBegin = layers.begin();
                     for(unsigned int i = 0; i < position;i++)
                         itBegin++;
@@ -95,8 +114,43 @@ namespace RandysEngine{
                 return devolver;
             }
 
+            //Get the layer number something of an specific layer.
+            //Example, if you have three GUI layers, and input 1, you will get the third GUI layer
+            template<typename Layer_type>
+            Layer_type* getLayer(std::size_t index_of_layer){
+                Layer_type* devolver = nullptr;
+                std::size_t counter = 0;
+                
+                auto itBegin = layers.begin();
+                auto itEnd = layers.end();
+                while(itBegin != itEnd){
+                    if(std::holds_alternative<Layer_type>(*itBegin)){
+                        if(counter == index_of_layer){
+                            devolver = &std::get<Layer_type>(*itBegin);
+                            break;
+                        }
+                        else counter++;
+                    }
+                    itBegin++;
+                }                
+                return devolver;
+            }
+
             //Run the frame, not only drawing it but interacting with it
             void runFrame();
+
+            //Read the input from the key
+            bool readKeyPressed(KeyInput input) const{
+                return screen.getInputPressed(input);
+            }
+
+            bool isAppRunning() const{
+                return screen.isAppRunning();
+            }
+
+            void closeApp(){
+                screen.closeApp();
+            }
     };
 
 };

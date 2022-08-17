@@ -1,15 +1,31 @@
 #pragma once
 
+#ifndef __3DS__
+#endif
+
+    #include "../resourceManager/resourceManager.hpp"
+
 namespace RandysEngine{
 
+    template<typename layer_type>
     class layer_interface{
+        protected:
+            ResourceManager& resource_manager;
         public:
-            layer_interface(){};
+            layer_interface(ResourceManager& man) : resource_manager{man}{};
             virtual ~layer_interface() {};
-            virtual void activate() = 0;
-            virtual void deactivate() = 0;
-            virtual bool draw() = 0;
-            virtual bool interact() = 0;
+            void activate(){
+                static_cast<layer_type*>(this)->activate();
+            }
+            void deactivate(){
+                static_cast<layer_type*>(this)->deactivate();
+            }
+            bool draw() const {
+                return static_cast<layer_type*>(this)->draw();
+            }
+            bool interact() const{
+                return static_cast<layer_type*>(this)->interact();
+            }
     };
 
 }

@@ -3,8 +3,9 @@
 namespace RandysEngine{
 
     struct draw_visitor{
+
         template< typename T >
-        void operator() ( T& value ){
+        void operator() ( T& value){
             value.draw();
         }   
     };
@@ -15,14 +16,19 @@ namespace RandysEngine{
         }   
     };
 
+
     void Rendering_Engine::runFrame(){
 
         /*
         
             In summary, this function will draw first and then
-            it will check if it interacts with the inputs
+            it will check if it interacts with the mouse Input
 
         */
+
+       init.prepareDraw();
+       shader.useShader();
+
         {
             auto iterator = layers.begin();
             auto itEnd = layers.end();
@@ -42,6 +48,8 @@ namespace RandysEngine{
                 iteratorR++;
             }
         }
+
+        screen.swapBuffers();
 
     }
 

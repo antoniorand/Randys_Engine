@@ -1,5 +1,11 @@
 
-libraries = ['glfw3','gdi32']
+env = Environment()
+
+if(env['PLATFORM'] == 'msys'):
+    libraries = ['glfw3','gdi32','soil','opengl32']
+else:
+    libraries = ['glfw']
+
 pathToLibraries=['./lib']
 
 ##Reference: https://stackoverflow.com/questions/26342109/scons-build-all-sources-files-in-all-directories
@@ -12,8 +18,6 @@ def AllSources(node='.', pattern='*'):
                for source in Glob(str(node)+'/'+pattern)
                if source.isfile()]
     return result
-
-env = Environment()
 
 nintendo3dsBuild = ARGUMENTS.get('3dsBuild',0)
 nintendo3dsClean = ARGUMENTS.get('3dsClean',0)
@@ -41,6 +45,7 @@ else:
         env.Replace(CC= "clang", CXX="clang++")
         env.Replace(CCFLAGS='-O3 -std=c++20 ')
         env.Append(CCFLAGS='-fsanitize=address', LINKFLAGS='-fsanitize=address -fno-omit-frame-pointer')
-    env.Append(LINKFLAGS='-static -static-libgcc -static-libstdc++')
+    if(env['PLATFORM'] == 'msys'):
+        env.Append(LINKFLAGS='-static -static-libgcc -static-libstdc++')
     app = env.Program(target= 'randysEngine',source = AllSources('./src', '*.cpp*'),LIBS = libraries, LIBPATH=pathToLibraries )
     #Library(target= 'randysEngine',source = src_files)
