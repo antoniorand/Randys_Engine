@@ -95,11 +95,7 @@ namespace RandysEngine{
     }
 
     gl_mesh_resource::gl_mesh_resource(std::string file) noexcept{
-        float vertices[] = {
-            -0.5f, -0.5f, 0.0f, // left  
-            0.5f, -0.5f, 0.0f, // right 
-            0.0f,  0.5f, 0.0f  // top   
-        }; 
+        
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
         // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
