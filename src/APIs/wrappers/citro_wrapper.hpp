@@ -1,6 +1,10 @@
 #pragma once
 #include "base_wrapper.hpp"
 #include <3ds.h>
+#include <citro3d.h>
+#include <citro2d.h>
+#include "vshader_shbin.h"
+
 #include <iostream>
 #include <string>
 
@@ -11,15 +15,18 @@ namespace RandysEngine{
     };  
 
     struct citro_mesh_resource : mesh_resource_wrapper<citro_mesh_resource>{
-        unsigned int VBO{0}, VAO{0};
+        void* vbo_data;
+        std::size_t numberVertices, sizeVertices;
+        //C2D_TextBuf staticTextBuf;
+        //C2D_Text txt_helloWorld;
+
+
         citro_mesh_resource(std::string file) noexcept;
         citro_mesh_resource(const citro_mesh_resource& other) noexcept{
-            VBO = other.VBO;
-            VAO = other.VAO;
+            vbo_data = other.vbo_data;
         }
         citro_mesh_resource& operator=(const citro_mesh_resource& other) noexcept{
-            VBO = other.VBO;
-            VAO = other.VAO;
+            vbo_data = other.vbo_data;
             return *this;
         }
        ~citro_mesh_resource() noexcept;
@@ -28,84 +35,44 @@ namespace RandysEngine{
     };
 
     struct citro_shader : shader_wrapper<citro_shader>{
+        DVLB_s* vshader_dvlb;
+        shaderProgram_s shaderProgram;
+        C3D_Mtx projection;
+        int uLoc_projection;
 
-        const char *vertexShaderSource = "#version 330 core\n"
-        "layout (location = 0) in vec3 aPos;\n"
-        "void main()\n"
-        "{\n"
-        "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-        "}\0";
+        citro_shader() noexcept;
+       ~citro_shader() noexcept;
 
-        const char *fragmentShaderSource = "#version 330 core\n"
-        "out vec4 FragColor;\n"
-        "void main()\n"
-        "{\n"
-        "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-        "}\n\0";
-
-        unsigned int shaderProgram;
-
-        citro_shader();
-       ~citro_shader();
-
-        void useShader(){
-            //glUseProgram(shaderProgram);
-        }
+        void useShader() const noexcept;
     };
 
     struct citro_screen : screen_wrapper<citro_screen>{
 
-        //GLFWwindow* window;
+        C3D_RenderTarget* target;
+        
+        bool running = true;
 
-        C3D_RenderTarget* targetLeft;
-        C3D_RenderTarget* targetRight;
+        citro_screen() noexcept;
+       ~citro_screen() noexcept;
 
-        citro_screen();
-       ~citro_screen();
+        void changeWindowSize(int e_width,int e_height) noexcept{};
 
-        void changeWindowSize(int e_width,int e_height);
+        void swapBuffers() const noexcept;
 
-        void swapBuffers(){
-            // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-            // -------------------------------------------------------------------------------
-            //glfwSwapBuffers(window);
-            //glfwPollEvents();
-        }
+        bool getInputPressed(KeyInput input) const noexcept;
 
-        bool getInputPressed(KeyInput input) const{
-            bool devolver = false;
-            switch (input){
-                case KeyInput::exit :
-                //    if(glfwGetKey(window,GLFW_KEY_ESCAPE) == GLFW_PRESS)
-                    devolver = true;
-                break;
-                default: 
-                break;
-            }
-            return devolver;
-        }
+        bool isAppRunning() const noexcept;
 
-        bool isAppRunning() const{
-            //return !glfwWindowShouldClose(window);
-            return true;
-        }
+        void closeApp() noexcept;
 
-        void closeApp(){
-            //glfwSetWindowShouldClose(window, GL_TRUE);
-        }
+        void prepareDraw() const noexcept;
 
     };
 
     struct citro_main : initializer_wrapper<citro_main>{
 
-        citro_main();
-
-        void prepareDraw(){
-            // render
-            // ------
-            //glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            //glClear(GL_COLOR_BUFFER_BIT);            
-        }
+        citro_main() noexcept;
+       ~citro_main() noexcept;
 
     };
 

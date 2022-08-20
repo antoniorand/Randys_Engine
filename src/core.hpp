@@ -3,9 +3,9 @@
 #include "resourceManager/resourceManager.hpp"
 
 #ifndef __3DS__
-    #include "APIs/GLAD/glad.h"
-    #include <GLFW/glfw3.h>
     #include "APIs/wrappers/gl_wrapper.hpp"
+#else
+    #include "APIs/wrappers/citro_wrapper.hpp"
 #endif
 
 #include "layers/layers.hpp"
@@ -35,6 +35,11 @@ namespace RandysEngine{
 
 #ifdef __3DS__
     //3ds API wrapper
+    
+        citro_main init{};
+        citro_screen screen{};
+        citro_shader shader{};
+
 #else
     //opengl api wrapper
 

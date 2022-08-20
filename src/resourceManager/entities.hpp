@@ -1,6 +1,5 @@
 #pragma once
 #include "resourceManager.hpp"
-#include "../APIs/wrappers/gl_wrapper.hpp"
 
 namespace RandysEngine{
 

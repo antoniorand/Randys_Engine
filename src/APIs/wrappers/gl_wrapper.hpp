@@ -46,64 +46,37 @@ namespace RandysEngine{
 
         unsigned int shaderProgram;
 
-        gl_shader();
-       ~gl_shader();
+        gl_shader() noexcept;
+       ~gl_shader() noexcept;
 
-        void useShader(){
-            glUseProgram(shaderProgram);
-        }
+        void useShader() const noexcept;
     };
 
     struct gl_screen : screen_wrapper<gl_screen>{
 
         GLFWwindow* window;
 
-        gl_screen();
-       ~gl_screen();
+        gl_screen() noexcept;
+       ~gl_screen() noexcept;
 
-        void changeWindowSize(int e_width,int e_height);
+        void changeWindowSize(int e_width,int e_height) noexcept;
 
-        void swapBuffers(){
-            // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-            // -------------------------------------------------------------------------------
-            glfwSwapBuffers(window);
-            glfwPollEvents();
-        }
+        void swapBuffers() const noexcept;
 
-        bool getInputPressed(KeyInput input) const{
-            bool devolver = false;
-            switch (input){
-                case KeyInput::exit :
-                    if(glfwGetKey(window,GLFW_KEY_ESCAPE) == GLFW_PRESS)
-                    devolver = true;
-                break;
-                default: 
-                break;
-            }
-            return devolver;
-        }
+        bool getInputPressed(KeyInput input) const noexcept;
 
-        bool isAppRunning() const{
-            return !glfwWindowShouldClose(window);
-        }
+        bool isAppRunning() const noexcept;
+            
 
-        void closeApp(){
-            glfwSetWindowShouldClose(window, GL_TRUE);
-        }
+        void closeApp() noexcept;
+
+        void prepareDraw() const noexcept;
 
     };
 
     struct gl_main : initializer_wrapper<gl_main>{
 
-        gl_main();
-
-        void prepareDraw(){
-            // render
-            // ------
-            glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-            glClear(GL_COLOR_BUFFER_BIT);            
-        }
-
+        gl_main() noexcept;
         
 
     };

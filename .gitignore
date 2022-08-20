@@ -1,6 +1,7 @@
 *.exe
 .vscode/
 obj/
+build/
 lib/*.dll
 lib/libglw3.a
 *.a
@@ -15,4 +16,4 @@ html/
 latex/
 *.map
 vgcore.*
-randysEngine*
+randysEngine.*

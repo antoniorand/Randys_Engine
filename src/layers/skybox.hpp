@@ -9,7 +9,7 @@ namespace RandysEngine{
 
         struct GraphicData{
             std::string skyboxFile[6];
-            GLuint VAO, VBO, textureID;
+            //GLuint VAO, VBO, textureID;
         };
 
         GraphicData skybox {};

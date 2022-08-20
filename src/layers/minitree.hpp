@@ -8,6 +8,9 @@
 
 #ifndef __3DS__
     #include <glm/glm.hpp>
+    #include "../APIs/wrappers/gl_wrapper.hpp"
+#else
+    #include "../APIs/wrappers/citro_wrapper.hpp"
 #endif
 namespace RandysEngine{
     
@@ -55,7 +58,11 @@ namespace RandysEngine{
                     models{maxModelsMinitree}, lights{maxLightsMinitree}, cameras{maxCamerasMinitree}{
                 MinitreeNode e_rootNode;
                 rootNode = nodes.push_back(e_rootNode);
-                triangle_Mesh = man.createResource<gl_mesh_resource>("");
+                #ifndef __3DS__
+                    triangle_Mesh = man.createResource<gl_mesh_resource>("");
+                #else
+                    triangle_Mesh = man.createResource<citro_mesh_resource>("");
+                #endif
             };
             ~layer_minitree(){};
 

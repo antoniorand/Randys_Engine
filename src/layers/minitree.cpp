@@ -13,7 +13,12 @@ namespace RandysEngine{
         else{
             for(SlotMap::SlotMap_Index_Type i = 0;i < models.current_size();i++){
                 auto& model = *models.atPosition(i);
-                auto& meshResource = *resource_manager.getResource<gl_mesh_resource>(model.mesh_resource);
+                #ifndef __3DS__
+                    auto& meshResource = *resource_manager.getResource<gl_mesh_resource>(model.mesh_resource);
+                #else
+                    auto& meshResource = *resource_manager.getResource<citro_mesh_resource>(model.mesh_resource);
+                #endif
+                
                 meshResource.draw();
             }
         }

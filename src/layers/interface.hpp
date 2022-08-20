@@ -1,9 +1,6 @@
 #pragma once
 
-#ifndef __3DS__
-#endif
-
-    #include "../resourceManager/resourceManager.hpp"
+#include "../resourceManager/resourceManager.hpp"
 
 namespace RandysEngine{
 

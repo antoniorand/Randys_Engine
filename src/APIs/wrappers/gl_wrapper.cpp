@@ -1,8 +1,10 @@
+#ifndef __3DS__
+
 #include "gl_wrapper.hpp"
 
 namespace RandysEngine{
 
-    gl_main::gl_main(){
+    gl_main::gl_main() noexcept{
         // glad: load all OpenGL function pointers
         // ---------------------------------------
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
@@ -14,7 +16,7 @@ namespace RandysEngine{
         glfwSetWindowShouldClose(window, GL_TRUE);
     }
 
-    gl_screen::gl_screen(){
+    gl_screen::gl_screen() noexcept{
         // glfw: initialize and configure
         // ------------------------------
         glfwInit();
@@ -34,20 +36,55 @@ namespace RandysEngine{
         glfwSetWindowCloseCallback(window, window_close_callback);
     }
     
-    gl_screen::~gl_screen(){
+    gl_screen::~gl_screen() noexcept{
                     
         // glfw: terminate, clearing all previously allocated GLFW resources.
         // ------------------------------------------------------------------
         glfwTerminate();
     }
 
-    void gl_screen::changeWindowSize(int e_width, int e_height){
+    void gl_screen::changeWindowSize(int e_width, int e_height) noexcept{
         width = e_width;
         height = e_height;
         glfwSetWindowSize(window,width,height);
     }
 
-    gl_shader::gl_shader(){
+    void gl_screen::swapBuffers() const noexcept{
+        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // -------------------------------------------------------------------------------
+        glfwSwapBuffers(window);
+        glfwPollEvents();
+    }
+
+    bool gl_screen::getInputPressed(KeyInput input) const noexcept{
+        bool devolver = false;
+        switch (input){
+            case KeyInput::exit :
+                if(glfwGetKey(window,GLFW_KEY_ESCAPE) == GLFW_PRESS)
+                    devolver = true;
+            break;
+            default: 
+            break;
+        }
+        return devolver;
+    }
+
+    bool gl_screen::isAppRunning() const noexcept{
+        return !glfwWindowShouldClose(window);
+    }
+
+    void gl_screen::closeApp() noexcept{
+        glfwSetWindowShouldClose(window,GL_TRUE);
+    }
+
+    void gl_screen::prepareDraw() const noexcept{
+        // render
+        // ------
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);       
+    }
+
+    gl_shader::gl_shader() noexcept{
         // vertex shader
         unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
@@ -89,9 +126,13 @@ namespace RandysEngine{
         glDeleteShader(fragmentShader);
     }
 
-    gl_shader::~gl_shader(){
+    gl_shader::~gl_shader() noexcept{
         
         glDeleteProgram(shaderProgram);
+    }
+
+    void gl_shader::useShader() const noexcept{
+        glUseProgram(shaderProgram);
     }
 
     gl_mesh_resource::gl_mesh_resource(std::string file) noexcept{
@@ -129,3 +170,4 @@ namespace RandysEngine{
     }
 
 }
+#endif

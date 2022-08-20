@@ -17,7 +17,7 @@ namespace RandysEngine{
             0.0f,  0.5f, 0.0f  // top   
         }; 
 
-        virtual ~mesh_resource_wrapper(){};
+        virtual ~mesh_resource_wrapper() noexcept{};
 
         void draw() const noexcept {
             static_cast<api*>(this)->draw();
@@ -27,7 +27,7 @@ namespace RandysEngine{
     template<typename api>
     struct shader_wrapper{
 
-        virtual ~shader_wrapper(){};
+        virtual ~shader_wrapper() noexcept{};
 
         void useShader() const noexcept{
             static_cast<api*>(this)->useShader();
@@ -37,9 +37,8 @@ namespace RandysEngine{
     template<typename api>
     struct initializer_wrapper {
         
-        void prepareDraw() const noexcept{
-            static_cast<api*>(this)->prepareDraw();
-        }
+        initializer_wrapper() noexcept{};
+        virtual ~initializer_wrapper() noexcept{};
 
     };
 
@@ -53,26 +52,30 @@ namespace RandysEngine{
 
         int width {400},height{240};
 
-        virtual ~screen_wrapper(){};
+        virtual ~screen_wrapper() noexcept{};
 
-        void changeWindowSize(int e_width, int e_height){
+        void changeWindowSize(int e_width, int e_height) noexcept{
             static_cast<api*>(this)->changeWindowSize(e_width,e_height);
         }
 
-        void swapBuffers(){
+        void swapBuffers() const noexcept{
             static_cast<api*>(this)->swapBuffers();
         }
 
-        bool getInputPressed(KeyInput input) const{
+        bool getInputPressed(KeyInput input) const noexcept{
             return static_cast<api*>(this)->getInput();
         }
 
-        bool isAppRunning() const{
+        bool isAppRunning() const noexcept{
             return static_cast<api*>(this)->isAppRunning();
         }
 
-        void closeApp(){
+        void closeApp() noexcept{
             return static_cast<api*>(this)->closeApp();
+        }
+
+        void prepareDraw() const noexcept{
+            static_cast<api*>(this)->prepareDraw();
         }
 
     };

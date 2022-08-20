@@ -26,7 +26,7 @@ namespace RandysEngine{
 
         */
 
-       init.prepareDraw();
+       screen.prepareDraw();
        shader.useShader();
 
         {

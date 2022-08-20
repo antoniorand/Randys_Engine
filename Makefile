@@ -33,7 +33,7 @@ include $(DEVKITARM)/3ds_rules
 #---------------------------------------------------------------------------------
 TARGET		:=	randysEngine
 BUILD		:=	build
-SOURCES		:=	src shaders
+SOURCES		:=	src shaders src/APIs/wrappers src/layers src/memoryPool src/resourceManager src/slotmap
 DATA		:=	data
 INCLUDES	:=	include
 GRAPHICS	:=	gfx
@@ -57,7 +57,7 @@ CXXFLAGS	:= $(CFLAGS) -fexceptions -fpermissive -std=gnu++20
 ASFLAGS	:=	-g $(ARCH)
 LDFLAGS	=	-specs=3dsx.specs -g $(ARCH) -Wl,-Map,$(notdir $*.map)
 
-LIBS	:= -lcitro3d -lctru -lm
+LIBS	:= -lcitro2d -lcitro3d -lctru -lm
 
 #---------------------------------------------------------------------------------
 # list of directories containing libraries, this must be the top level containing
