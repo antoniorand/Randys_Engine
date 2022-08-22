@@ -16,6 +16,7 @@ namespace RandysEngine{
 
     struct citro_mesh_resource : mesh_resource_wrapper<citro_mesh_resource>{
         void* vbo_data;
+        void* ibo_data;
         std::size_t numberVertices, sizeVertices;
         //C2D_TextBuf staticTextBuf;
         //C2D_Text txt_helloWorld;

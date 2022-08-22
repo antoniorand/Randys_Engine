@@ -1,5 +1,5 @@
 #pragma once
-
+#include <cstdint>
 namespace RandysEngine{
 
 
@@ -17,10 +17,15 @@ namespace RandysEngine{
     template<typename api>
     struct mesh_resource_wrapper{ 
 
-        static constexpr Vertex triangleVertices[3] = {
-            {-0.5f, -0.5f, 0.0f}, // left  
-            {0.5f, -0.5f, 0.0f}, // right 
-            {0.0f,  0.5f, 0.0f}  // top   
+        static constexpr Vertex triangleVertices[4] = {
+           {0.5f,  0.5f, 0.0f},  // top right
+           {0.5f, -0.5f, 0.0f},  // bottom right
+          {-0.5f, -0.5f, 0.0f},  // bottom left
+          {-0.5f,  0.5f, 0.0f} // top   
+        };
+        unsigned int indices[6] = {  // note that we start from 0!
+            0, 1, 3,  // first Triangle
+            1, 2, 3   // second Triangle
         };
 
         virtual ~mesh_resource_wrapper() noexcept{};
