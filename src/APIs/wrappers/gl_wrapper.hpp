@@ -12,6 +12,12 @@ namespace RandysEngine{
     };  
 
     struct gl_mesh_resource : mesh_resource_wrapper<gl_mesh_resource>{
+
+        const unsigned int indices[6] = {  // note that we start from 0!
+            0, 1, 3,  // first Triangle
+            1, 2, 3   // second Triangle
+        };
+
         unsigned int VBO{0}, VAO{0},EBO{0};
         gl_mesh_resource(std::string file) noexcept;
         gl_mesh_resource(const gl_mesh_resource& other) noexcept{

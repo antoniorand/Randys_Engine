@@ -15,9 +15,16 @@ namespace RandysEngine{
     };  
 
     struct citro_mesh_resource : mesh_resource_wrapper<citro_mesh_resource>{
+
+        const u16 indices[6] = {  // note that we start from 0!
+            0, 1, 3,  // first Triangle
+            1, 2, 3   // second Triangle
+        };
+
         void* vbo_data;
         void* ibo_data;
         std::size_t numberVertices, sizeVertices;
+        std::size_t numberIndices, sizeIndices;
         //C2D_TextBuf staticTextBuf;
         //C2D_Text txt_helloWorld;
 

@@ -21,19 +21,19 @@ namespace RandysEngine{
 
         for(unsigned int i = 0; i < 4; i++){
             convertedVertices[i] = verticesConverter(triangleVertices[i]);
+            //std::cout << "x: " << convertedVertices[i].x << "y: " << convertedVertices[i].y << "z: " << convertedVertices[i].z << std::endl;
         }
         sizeVertices = sizeof(convertedVertices);
         numberVertices = sizeVertices/sizeof(convertedVertices[0]);
 
+        sizeIndices = sizeof(indices);
+        numberIndices = sizeIndices/sizeof(indices[0]);
+
         vbo_data = linearAlloc(sizeVertices);
         memcpy(vbo_data,convertedVertices, sizeVertices);
 
-        ibo_data = linearAlloc(sizeof(indices));
-	    memcpy(ibo_data, indices, sizeof(indices));
-        // Configure buffers
-        C3D_BufInfo* bufInfo = C3D_GetBufInfo();
-        BufInfo_Init(bufInfo);
-        BufInfo_Add(bufInfo, vbo_data, sizeof(Vertex), 1, 0x0);
+        ibo_data = linearAlloc(sizeIndices);
+        memcpy(ibo_data, indices, sizeIndices);
 
     }
 
@@ -43,10 +43,14 @@ namespace RandysEngine{
     }
 
     void citro_mesh_resource::draw() const noexcept{
-        
-        unsigned int elementCount = sizeof(indices)/sizeof(indices[0]);
-        // Draw the VBO
-        C3D_DrawElements(GPU_TRIANGLES, elementCount, C3D_UNSIGNED_SHORT, ibo_data);
+        // Configure buffers
+        C3D_BufInfo* bufInfo = C3D_GetBufInfo();
+        BufInfo_Init(bufInfo);
+        BufInfo_Add(bufInfo, vbo_data, sizeof(Vertex), 1, 0x0);
+        // Draw the mesh
+        //C3D_DrawArrays(GPU_TRIANGLES, 0, numberVertices);
+        std::cout << "indices: " << numberIndices << std::endl;
+        C3D_DrawElements(GPU_TRIANGLES, numberIndices, C3D_UNSIGNED_SHORT, ibo_data);
 
     }
 
