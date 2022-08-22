@@ -8,35 +8,20 @@ namespace RandysEngine{
 	GX_TRANSFER_IN_FORMAT(GX_TRANSFER_FMT_RGBA8) | GX_TRANSFER_OUT_FORMAT(GX_TRANSFER_FMT_RGB8) | \
 	GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO))
 
-    float verticesConverter(float point, unsigned int axis){
-        float devolver= 0;
-
-        switch(axis){
-            case(0):
-                devolver = 200*point + 200;
-            break;
-            case(1):
-                devolver = 120*point + 120;
-            break;
-            case(2):
-                devolver = point;
-            break;
-        } 
-        std::cout << devolver << std::endl;
+    Vertex verticesConverter(Vertex vertex){
+        RandysEngine::Vertex devolver;     
+        devolver.x = 200*vertex.x + 200;    
+        devolver.y = 120*vertex.y + 120;
+        devolver.z = 0.5;    
         return devolver;
     }
 
     citro_mesh_resource::citro_mesh_resource(std::string input) noexcept{
-        float convertedVertices[9] =
-        {200.0f, 200.0f, 0.5f ,
-	     100.0f, 40.0f, 0.5f ,
-	     300.0f, 40.0f, 0.5f };
+        Vertex convertedVertices[3];
 
-        /*for(unsigned int i = 0; i < 9; i++){
-            convertedVertices[i] = verticesConverter(
-                vertices[i], i/3);
-        }*/
-
+        for(unsigned int i = 0; i < 3; i++){
+            convertedVertices[i] = verticesConverter(triangleVertices[i]);
+        }
         sizeVertices = sizeof(convertedVertices);
         numberVertices = sizeVertices/sizeof(convertedVertices[0]);
 
@@ -46,7 +31,7 @@ namespace RandysEngine{
         // Configure buffers
         C3D_BufInfo* bufInfo = C3D_GetBufInfo();
         BufInfo_Init(bufInfo);
-        BufInfo_Add(bufInfo, vbo_data, sizeVertices, 1, 0x0);
+        BufInfo_Add(bufInfo, vbo_data, sizeof(Vertex), 1, 0x0);
     }
 
     citro_mesh_resource::~citro_mesh_resource() noexcept{
@@ -54,7 +39,6 @@ namespace RandysEngine{
     }
 
     void citro_mesh_resource::draw() const noexcept{
-        
         // Draw the VBO
         C3D_DrawArrays(GPU_TRIANGLES, 0, numberVertices);
 
@@ -77,8 +61,8 @@ namespace RandysEngine{
         AttrInfo_AddLoader(attrInfo, 0, GPU_FLOAT, 3); // v0=position
         AttrInfo_AddFixed(attrInfo, 1); // v1=color
 
-        // Set the fixed attribute (color) to solid white
-        C3D_FixedAttribSet(1, 1.0, 1.0, 1.0, 1.0);
+        // Set the fixed attribute (color) to selected one
+        C3D_FixedAttribSet(1, 1.0, 0.5, 0.2, 1.0);
 
         // Compute the projection matrix
         Mtx_OrthoTilt(&projection, 0.0, 400.0, 0.0, 240.0, 0.0, 1.0, true);
@@ -102,7 +86,6 @@ namespace RandysEngine{
     }
 
     citro_screen::citro_screen() noexcept{
-        
         C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
         target = 
         C3D_RenderTargetCreate(
@@ -138,7 +121,7 @@ namespace RandysEngine{
         return devolver;
     }
 
-    constexpr int CLEAR_COLOR = 0x68B0D8FF;
+    constexpr int BACKGROUND_COLOR = 0x334D4DFF;
 
     void citro_screen::swapBuffers() const noexcept{
         C3D_FrameEnd(0);
@@ -146,7 +129,7 @@ namespace RandysEngine{
 
     void citro_screen::prepareDraw() const noexcept{
         C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
-		C3D_RenderTargetClear(target, C3D_CLEAR_ALL, CLEAR_COLOR, 0);
+		C3D_RenderTargetClear(target, C3D_CLEAR_ALL, BACKGROUND_COLOR, 0);
 		C3D_FrameDrawOn(target);
     }
 
@@ -154,7 +137,6 @@ namespace RandysEngine{
 
         gfxInitDefault();
         consoleInit(GFX_BOTTOM, NULL);
-        std::cout << "Hemlo\n";
 
     };
 

@@ -8,14 +8,20 @@ namespace RandysEngine{
 
     };
 
-    template<typename api>
-    struct mesh_resource_wrapper{
+    struct Vertex{
+        float x, y, z;
+    };
 
-        float vertices[9] = {
-            -0.5f, -0.5f, 0.0f, // left  
-            0.5f, -0.5f, 0.0f, // right 
-            0.0f,  0.5f, 0.0f  // top   
-        }; 
+    
+
+    template<typename api>
+    struct mesh_resource_wrapper{ 
+
+        static constexpr Vertex triangleVertices[3] = {
+            {-0.5f, -0.5f, 0.0f}, // left  
+            {0.5f, -0.5f, 0.0f}, // right 
+            {0.0f,  0.5f, 0.0f}  // top   
+        };
 
         virtual ~mesh_resource_wrapper() noexcept{};
 
