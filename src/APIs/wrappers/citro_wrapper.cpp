@@ -17,23 +17,23 @@ namespace RandysEngine{
     }
 
     citro_mesh_resource::citro_mesh_resource(std::string input) noexcept{
-        Vertex convertedVertices[4];
+        Vertex convertedVertices[3];
 
-        for(unsigned int i = 0; i < 4; i++){
+        for(unsigned int i = 0; i < 3; i++){
             convertedVertices[i] = verticesConverter(triangleVertices[i]);
             //std::cout << "x: " << convertedVertices[i].x << "y: " << convertedVertices[i].y << "z: " << convertedVertices[i].z << std::endl;
         }
         sizeVertices = sizeof(convertedVertices);
         numberVertices = sizeVertices/sizeof(convertedVertices[0]);
 
-        sizeIndices = sizeof(indices);
-        numberIndices = sizeIndices/sizeof(indices[0]);
+        //sizeIndices = sizeof(indices);
+        //numberIndices = sizeIndices/sizeof(indices[0]);
 
         vbo_data = linearAlloc(sizeVertices);
         memcpy(vbo_data,convertedVertices, sizeVertices);
 
-        ibo_data = linearAlloc(sizeIndices);
-        memcpy(ibo_data, indices, sizeIndices);
+        //ibo_data = linearAlloc(sizeIndices);
+        //memcpy(ibo_data, indices, sizeIndices);
 
     }
 
@@ -48,9 +48,9 @@ namespace RandysEngine{
         BufInfo_Init(bufInfo);
         BufInfo_Add(bufInfo, vbo_data, sizeof(Vertex), 1, 0x0);
         // Draw the mesh
-        //C3D_DrawArrays(GPU_TRIANGLES, 0, numberVertices);
-        std::cout << "indices: " << numberIndices << std::endl;
-        C3D_DrawElements(GPU_TRIANGLES, numberIndices, C3D_UNSIGNED_SHORT, ibo_data);
+        C3D_DrawArrays(GPU_TRIANGLES, 0, numberVertices);
+        //std::cout << "indices: " << numberIndices << std::endl;
+        //C3D_DrawElements(GPU_TRIANGLES, numberIndices, C3D_UNSIGNED_SHORT, ibo_data);
 
     }
 
@@ -94,7 +94,15 @@ namespace RandysEngine{
         // Update the uniforms
     	C3D_FVUnifMtx4x4(GPU_VERTEX_SHADER, uLoc_projection, &projection);
     }
-
+    void citro_shader::setBool(const std::string &name, bool value) const{
+        //glUniform1i(glGetUniformLocation(shaderProgram, name.c_str()), (int)value); 
+    }
+    void citro_shader::setInt(const std::string &name, int value) const{
+        //glUniform1i(glGetUniformLocation(shaderProgram, name.c_str()), value); 
+    }
+    void citro_shader::setFloat(const std::string &name, float value) const{
+        //glUniform1f(glGetUniformLocation(shaderProgram, name.c_str()), value); 
+    }
     citro_screen::citro_screen() noexcept{
         C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
         target = 

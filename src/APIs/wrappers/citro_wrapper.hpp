@@ -16,10 +16,6 @@ namespace RandysEngine{
 
     struct citro_mesh_resource : mesh_resource_wrapper<citro_mesh_resource>{
 
-        const u16 indices[6] = {  // note that we start from 0!
-            0, 1, 3,  // first Triangle
-            1, 2, 3   // second Triangle
-        };
 
         void* vbo_data;
         void* ibo_data;
@@ -52,6 +48,9 @@ namespace RandysEngine{
        ~citro_shader() noexcept;
 
         void useShader() const noexcept;
+        void setBool(const std::string &name, bool value) const;
+        void setInt(const std::string &name, int value) const;
+        void setFloat(const std::string &name, float value) const;
     };
 
     struct citro_screen : screen_wrapper<citro_screen>{

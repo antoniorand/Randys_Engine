@@ -1,5 +1,7 @@
 #pragma once
 #include <cstdint>
+
+#include <string>
 namespace RandysEngine{
 
 
@@ -9,7 +11,9 @@ namespace RandysEngine{
     };
 
     struct Vertex{
-        float x, y, z;
+        float x, y, z; //Position
+        float i, j, w; //Normal
+        float coordX, coordY; //Texture position
     };
 
     
@@ -17,11 +21,10 @@ namespace RandysEngine{
     template<typename api>
     struct mesh_resource_wrapper{ 
 
-        const static constexpr Vertex triangleVertices[4] = {
-            {-0.5f, -0.5f, 0.0f},
+        const static constexpr Vertex triangleVertices[3] = {
+           {-0.5f, -0.5f, 0.0f},
             {0.5f, -0.5f, 0.0f},
-            {0.0f,  0.5f, 0.0f},
-            {0.5f,  0.5f, 0.0f}
+            {0.0f,  0.5f, 0.0f}
         };  
         
 
@@ -39,6 +42,17 @@ namespace RandysEngine{
 
         void useShader() const noexcept{
             static_cast<api*>(this)->useShader();
+        }
+
+        // utility uniform functions
+        void setBool(const std::string &name, bool value) const{
+            static_cast<api*>(this)->setBool(name,value);
+        }
+        void setInt(const std::string &name, int value) const{
+            static_cast<api*>(this)->setInt(name,value);
+        }
+        void setFloat(const std::string &name, float value) const{
+            static_cast<api*>(this)->setFloat(name,value);
         }
     };
 
