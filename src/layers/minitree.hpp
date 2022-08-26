@@ -59,7 +59,7 @@ namespace RandysEngine{
                 MinitreeNode e_rootNode;
                 rootNode = nodes.push_back(e_rootNode);
                 #ifndef __3DS__
-                    triangle_Mesh = man.createResource<gl_mesh_resource>("resources/cube.obj");
+                    triangle_Mesh = man.createResource<gl_mesh_resource>("");
                 #else
                     triangle_Mesh = man.createResource<citro_mesh_resource>("");
                 #endif

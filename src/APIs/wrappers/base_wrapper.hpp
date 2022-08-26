@@ -12,27 +12,38 @@ namespace RandysEngine{
 
     struct Vertex{
         float x, y, z; //Position
-        float i, j, w; //Normal
-        float coordX, coordY; //Texture position
+        //float coordX, coordY; //Texture position
     };
-
-    
 
     template<typename api>
     struct mesh_resource_wrapper{ 
 
-        const static constexpr Vertex triangleVertices[3] = {
-           {-0.5f, -0.5f, 0.0f},
+        static constexpr Vertex vertices[4] = {
+            // positions         
+            {0.5f,  0.5f, 0.0f},
             {0.5f, -0.5f, 0.0f},
-            {0.0f,  0.5f, 0.0f}
-        };  
+            {-0.5f, -0.5f, 0.0f},  
+            {-0.5f,  0.5f, 0.0f}  
+        };
         
+        static constexpr unsigned short indices[6] = {
+            0, 1, 3, // first triangle
+            1, 2, 3  // second triangle
+        };
+        static constexpr std::size_t numberVertices{sizeof(vertices)/sizeof(vertices[0])}, sizeVertices{sizeof(vertices)};
+        static constexpr int numberIndices{sizeof(indices)/sizeof(indices[0])}, sizeIndices{sizeof(indices)};
 
         virtual ~mesh_resource_wrapper() noexcept{};
 
         void draw() const noexcept {
             static_cast<api*>(this)->draw();
         }
+    };
+
+    template<typename api>
+    struct texture_resource_wrapper{
+
+        virtual ~texture_resource_wrapper() noexcept{};
     };
 
     template<typename api>
