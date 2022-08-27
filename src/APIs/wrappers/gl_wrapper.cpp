@@ -1,4 +1,8 @@
+//If the __3DS__ identifier macro is not defined, it will compile this
 #ifndef __3DS__
+
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tiny_obj_loader.h>
 
 #include "gl_wrapper.hpp"
 
@@ -10,6 +14,7 @@ namespace RandysEngine{
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
             std::cout << "Failed to initialize GLAD" << std::endl;
         }
+        glEnable(GL_DEPTH_TEST);
     }
 
     void window_close_callback(GLFWwindow* window){
@@ -81,13 +86,41 @@ namespace RandysEngine{
         // render
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);       
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);       
     }
 
     gl_shader::gl_shader() noexcept{
+        std::string vertexCode;
+        std::string fragmentCode;
+        std::ifstream vShaderFile;
+        std::ifstream fShaderFile;
+        // ensure ifstream objects can throw exceptions:
+        vShaderFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
+        fShaderFile.exceptions (std::ifstream::failbit | std::ifstream::badbit);
+
+        try{
+            // open files
+            vShaderFile.open("shaders/shader.vs");
+            fShaderFile.open("shaders/shader.fs");
+            std::stringstream vShaderStream, fShaderStream;
+            // read file's buffer contents into streams
+            vShaderStream << vShaderFile.rdbuf();
+            fShaderStream << fShaderFile.rdbuf();		
+            // close file handlers
+            vShaderFile.close();
+            fShaderFile.close();
+            // convert stream into string
+            vertexCode   = vShaderStream.str();
+            fragmentCode = fShaderStream.str();
+        }catch(std::ifstream::failure& e){
+            std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+        }
+
         // vertex shader
+        const char *vShaderCode = vertexCode.c_str();
+        const char *fShaderCode = fragmentCode.c_str();
         unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-        glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+        glShaderSource(vertexShader, 1, &vShaderCode, NULL);
         glCompileShader(vertexShader);
         // check for shader compile errors
         int success;
@@ -102,7 +135,7 @@ namespace RandysEngine{
 
         // fragment shader
         unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-        glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+        glShaderSource(fragmentShader, 1, &fShaderCode, NULL);
         glCompileShader(fragmentShader);
         // check for shader compile errors
         glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
@@ -126,6 +159,17 @@ namespace RandysEngine{
         glDeleteShader(fragmentShader);
     }
 
+    void gl_shader::setBool(const std::string &name, bool value) const{
+        glUniform1i(glGetUniformLocation(shaderProgram, name.c_str()), (int)value); 
+    }
+    void gl_shader::setInt(const std::string &name, int value) const{
+        glUniform1i(glGetUniformLocation(shaderProgram, name.c_str()), value); 
+    }
+    void gl_shader::setFloat(const std::string &name, float value) const{
+        glUniform1f(glGetUniformLocation(shaderProgram, name.c_str()), value); 
+    }
+
+
     gl_shader::~gl_shader() noexcept{
         
         glDeleteProgram(shaderProgram);
@@ -137,6 +181,7 @@ namespace RandysEngine{
 
     gl_mesh_resource::gl_mesh_resource(std::string file) noexcept{
         
+
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
         glGenBuffers(1, &EBO);
@@ -144,13 +189,22 @@ namespace RandysEngine{
         glBindVertexArray(VAO);
 
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
         glBufferData(GL_ARRAY_BUFFER, sizeVertices, vertices, GL_STATIC_DRAW);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeVertices, indices_list, GL_STATIC_DRAW);
 
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(indices),indices,GL_STATIC_DRAW);
+
+        //vertex position
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 
+            (void*)0);
         glEnableVertexAttribArray(0);
+        //normals
+        glEnableVertexAttribArray(2);    
 
         // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
         glBindBuffer(GL_ARRAY_BUFFER, 0); 
@@ -168,9 +222,9 @@ namespace RandysEngine{
 
 
     void gl_mesh_resource::draw() const noexcept{
-
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
         glDrawElements(GL_TRIANGLES, countIndices, GL_UNSIGNED_SHORT, 0);
+
         glBindVertexArray(0); // no need to unbind it every time 
     }
 

@@ -15,10 +15,13 @@ namespace RandysEngine{
     };  
 
     struct citro_mesh_resource : mesh_resource_wrapper<citro_mesh_resource>{
+
+
         void* vbo_data;
         void* ibo_data;
-        //C2D_TextBuf staticTextBuf;
-        //C2D_Text txt_helloWorld;
+
+        std::size_t numberVertices, sizeVertices;
+        std::size_t numberIndices, sizeIndices;
 
 
         citro_mesh_resource(std::string file) noexcept;
@@ -44,6 +47,9 @@ namespace RandysEngine{
        ~citro_shader() noexcept;
 
         void useShader() const noexcept;
+        void setBool(const std::string &name, bool value) const;
+        void setInt(const std::string &name, int value) const;
+        void setFloat(const std::string &name, float value) const;
     };
 
     struct citro_screen : screen_wrapper<citro_screen>{

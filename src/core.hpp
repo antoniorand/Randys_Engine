@@ -1,4 +1,4 @@
-#include "memoryPool/memoryPool.hpp"
+#pragma once
 #include "memoryPool/memoryPool.hpp"
 #include "resourceManager/resourceManager.hpp"
 

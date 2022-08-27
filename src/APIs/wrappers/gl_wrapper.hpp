@@ -3,7 +3,8 @@
 #include "../GLAD/glad.h"
 #include <GLFW/glfw3.h>
 #include <iostream>
-#include <string>
+#include <fstream>
+#include <sstream>
 
 namespace RandysEngine{
 
@@ -12,6 +13,7 @@ namespace RandysEngine{
     };  
 
     struct gl_mesh_resource : mesh_resource_wrapper<gl_mesh_resource>{
+
         unsigned int VBO{0}, VAO{0}, EBO{0};
         gl_mesh_resource(std::string file) noexcept;
         gl_mesh_resource(const gl_mesh_resource& other) noexcept{
@@ -30,26 +32,15 @@ namespace RandysEngine{
 
     struct gl_shader : shader_wrapper<gl_shader>{
 
-        const char *vertexShaderSource = "#version 330 core\n"
-        "layout (location = 0) in vec3 aPos;\n"
-        "void main()\n"
-        "{\n"
-        "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-        "}\0";
-
-        const char *fragmentShaderSource = "#version 330 core\n"
-        "out vec4 FragColor;\n"
-        "void main()\n"
-        "{\n"
-        "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-        "}\n\0";
-
         unsigned int shaderProgram;
 
         gl_shader() noexcept;
        ~gl_shader() noexcept;
 
         void useShader() const noexcept;
+        void setBool(const std::string &name, bool value) const;
+        void setInt(const std::string &name, int value) const;
+        void setFloat(const std::string &name, float value) const;
     };
 
     struct gl_screen : screen_wrapper<gl_screen>{
