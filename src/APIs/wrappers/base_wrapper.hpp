@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstddef>
+
 namespace RandysEngine{
 
 
@@ -17,11 +19,21 @@ namespace RandysEngine{
     template<typename api>
     struct mesh_resource_wrapper{ 
 
-        static constexpr Vertex triangleVertices[3] = {
-            {-0.5f, -0.5f, 0.0f}, // left  
-            {0.5f, -0.5f, 0.0f}, // right 
-            {0.0f,  0.5f, 0.0f}  // top   
+        static constexpr Vertex vertices[] = {
+            {0.0f,  0.6f, 0.0f}, 
+            {-0.5f, -0.6f, 0.0f},  
+            {0.5f,-0.6f, 0.0f},    
+            {1.0f, 0.6f, 0.0f}
         };
+
+        static constexpr unsigned short indices_list[] =
+        {
+            0,1,2,
+            0,2,3
+        };
+
+        static constexpr std::size_t sizeVertices{sizeof(vertices)}, countVertices{sizeVertices/sizeof(vertices[0])};
+        static constexpr std::size_t sizeIndices{sizeof(indices_list)}, countIndices{sizeIndices/sizeof(indices_list[0])}; 
 
         virtual ~mesh_resource_wrapper() noexcept{};
 

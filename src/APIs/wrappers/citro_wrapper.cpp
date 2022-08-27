@@ -17,16 +17,17 @@ namespace RandysEngine{
     }
 
     citro_mesh_resource::citro_mesh_resource(std::string input) noexcept{
-        Vertex convertedVertices[3];
+        Vertex convertedVertices[countVertices];
 
-        for(unsigned int i = 0; i < 3; i++){
-            convertedVertices[i] = verticesConverter(triangleVertices[i]);
+        for(unsigned int i = 0; i < countVertices; i++){
+            convertedVertices[i] = verticesConverter(vertices[i]);
         }
-        sizeVertices = sizeof(convertedVertices);
-        numberVertices = sizeVertices/sizeof(convertedVertices[0]);
 
         vbo_data = linearAlloc(sizeVertices);
         memcpy(vbo_data,convertedVertices, sizeVertices);
+
+        ibo_data = linearAlloc(sizeIndices);
+        memcpy(ibo_data, indices_list, sizeIndices);
 
         // Configure buffers
         C3D_BufInfo* bufInfo = C3D_GetBufInfo();
@@ -36,12 +37,13 @@ namespace RandysEngine{
 
     citro_mesh_resource::~citro_mesh_resource() noexcept{
         linearFree(vbo_data);
+        linearFree(ibo_data);
     }
 
     void citro_mesh_resource::draw() const noexcept{
         // Draw the VBO
-        C3D_DrawArrays(GPU_TRIANGLES, 0, numberVertices);
-
+        //C3D_DrawArrays(GPU_TRIANGLES, 0, numberVertices);
+        C3D_DrawElements(GPU_TRIANGLES,countIndices,C3D_UNSIGNED_SHORT,ibo_data);
     }
 
     citro_shader::citro_shader() noexcept{
