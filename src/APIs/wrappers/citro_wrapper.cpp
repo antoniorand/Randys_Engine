@@ -1,5 +1,5 @@
 
-#ifdef __3DS__
+//#ifdef __3DS__
 #include "citro_wrapper.hpp"
 namespace RandysEngine{
 
@@ -22,9 +22,6 @@ namespace RandysEngine{
         for(unsigned int i = 0; i < countVertices; i++){
             convertedVertices[i] = verticesConverter(vertices[i]);
         }
-
-        //sizeIndices = sizeof(indices);
-        //numberIndices = sizeIndices/sizeof(indices[0]);
 
         vbo_data = linearAlloc(sizeVertices);
         memcpy(vbo_data,convertedVertices, sizeVertices);
@@ -160,4 +157,4 @@ namespace RandysEngine{
     }
 
 }
-#endif
+//#endif

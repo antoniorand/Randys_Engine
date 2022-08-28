@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <string>
 namespace RandysEngine{
 
 
@@ -25,13 +26,6 @@ namespace RandysEngine{
 
         };
         
-        static constexpr unsigned short indices[6] = {
-            0, 1, 3, // first triangle
-            1, 2, 3  // second triangle
-        };
-        static constexpr std::size_t numberVertices{sizeof(vertices)/sizeof(vertices[0])}, sizeVertices{sizeof(vertices)};
-        static constexpr int numberIndices{sizeof(indices)/sizeof(indices[0])}, sizeIndices{sizeof(indices)};
-
         static constexpr unsigned short indices_list[] =
         {
             0,1,2,

@@ -20,9 +20,6 @@ namespace RandysEngine{
         void* vbo_data;
         void* ibo_data;
 
-        std::size_t numberVertices, sizeVertices;
-        std::size_t numberIndices, sizeIndices;
-
 
         citro_mesh_resource(std::string file) noexcept;
         citro_mesh_resource(const citro_mesh_resource& other) noexcept{
