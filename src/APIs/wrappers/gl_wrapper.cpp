@@ -195,10 +195,6 @@ namespace RandysEngine{
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeVertices, indices_list, GL_STATIC_DRAW);
 
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER,EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(indices),indices,GL_STATIC_DRAW);
-
         //vertex position
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 
             (void*)0);

@@ -1,5 +1,5 @@
 
-//#ifdef __3DS__
+#ifdef __3DS__
 #include "citro_wrapper.hpp"
 namespace RandysEngine{
 
@@ -157,4 +157,4 @@ namespace RandysEngine{
     }
 
 }
-//#endif
+#endif
