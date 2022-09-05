@@ -64,11 +64,17 @@ namespace RandysEngine{
                     face_texture = man.createResource<gl_texture_resource>("");
                 #else
                     triangle_Mesh = man.createResource<citro_mesh_resource>("");
+                    face_texture = man.createResource<citro_texture_resource>("");
                 #endif
             };
             ~layer_minitree(){};
 
-            RandysEngine::SlotMap::SlotMap_Key addModel();
+            [[nodiscard]] RandysEngine::Layer_Element addModel() noexcept;
+
+            RandysEngine::MinitreeNode* getNode(RandysEngine::Layer_Element input) const noexcept; 
+
+            RandysEngine::Model_Entity* getModel(RandysEngine::Layer_Element input) const noexcept;
+            
 
             void activate(){
                 activated = true;

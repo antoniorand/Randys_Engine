@@ -19,7 +19,7 @@ namespace RandysEngine{
 #ifndef __3DS__                                                
                             auto& meshResource = *resource_manager.getResource<gl_mesh_resource>(model.meshes[i]);
 #else
-                            //cosas
+                            auto& meshResource = *resource_manager.getResource<citro_mesh_resource>(model.meshes[i]);
 #endif
                             if(model.hasTexture[i]){
 #ifndef __3DS__
@@ -44,8 +44,33 @@ namespace RandysEngine{
 
     }
 
-    RandysEngine::SlotMap::SlotMap_Key layer_minitree::addModel(){
-        SlotMap::SlotMap_Key devolver;
+    RandysEngine::Model_Entity* layer_minitree::getModel(RandysEngine::Layer_Element input) const noexcept{
+
+        RandysEngine::Model_Entity* devolver = nullptr;
+
+        if(input.layerId == this->instance){
+            RandysEngine::MinitreeNode* node;
+            node = nodes.atPosition(input.element);
+            if(node->type_entity == RandysEngine::entityType_enum::model){
+                devolver = models.atPosition(node->entity);
+            }
+        }
+
+        return devolver;
+    }
+
+    RandysEngine::MinitreeNode* layer_minitree::getNode(RandysEngine::Layer_Element input) const noexcept{
+        RandysEngine::MinitreeNode* devolver = nullptr;
+
+        if(input.layerId == this->instance){
+            devolver = nodes.atPosition(input.element);
+        }
+
+        return devolver;
+    }
+
+    RandysEngine::Layer_Element layer_minitree::addModel() noexcept{
+        RandysEngine::Layer_Element devolver;
 
         if(models.current_size() != models.max_capacity() && nodes.current_size()!= nodes.max_capacity()){
 
@@ -66,13 +91,13 @@ namespace RandysEngine{
                     node.parentNode = rootNode;
 
                     node.type_entity = RandysEngine::entityType_enum::model;
-                    node.entity = models.push_back(model);
+                    auto node_key = node.entity = models.push_back(model);
 
                     rootNodeItem.childrenNodes[i] = nodes.push_back(node);
                     rootNodeItem.hasChildren[i] = true;
 
-                    devolver = node.entity;
-
+                    devolver.element = node_key;
+                    devolver.layerId = this->instance;
                     break;
                 }
             }
