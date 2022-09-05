@@ -26,8 +26,33 @@ namespace RandysEngine{
 
     }
 
-    bool layer_minitree::addModel(){
-        bool devolver = false;
+    RandysEngine::MinitreeNode* layer_minitree::getNode(RandysEngine::Layer_Element input) const noexcept{
+        RandysEngine::MinitreeNode* devolver = nullptr;
+
+        if(input.layerId == this->instance){
+            devolver = nodes.atPosition(input.element);
+        }
+
+        return devolver;
+    }
+
+    RandysEngine::Model_Entity* layer_minitree::getModel(RandysEngine::Layer_Element input) const noexcept{
+
+        RandysEngine::Model_Entity* devolver = nullptr;
+
+        if(input.layerId == this->instance){
+            RandysEngine::MinitreeNode* node;
+            node = nodes.atPosition(input.element);
+            if(node->type_entity == RandysEngine::entityType_enum::model){
+                devolver = models.atPosition(node->entity);
+            }
+        }
+
+        return devolver;
+    }
+
+    RandysEngine::Layer_Element layer_minitree::addModel() noexcept{
+        RandysEngine::Layer_Element devolver;
 
         if(models.current_size() != models.max_capacity() && nodes.current_size()!= nodes.max_capacity()){
 
@@ -45,12 +70,13 @@ namespace RandysEngine{
                     node.parentNode = rootNode;
 
                     node.type_entity = RandysEngine::entityType_enum::model;
-                    node.entity = models.push_back(model);
+                    auto node_key = node.entity = models.push_back(model);
 
                     rootNodeItem.childrenNodes[i] = nodes.push_back(node);
                     rootNodeItem.hasChildren[i] = true;
 
-                    devolver = true;
+                    devolver.element = node_key;
+                    devolver.layerId = this->instance;
 
                     break;
                 }

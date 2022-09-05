@@ -66,7 +66,11 @@ namespace RandysEngine{
             };
             ~layer_minitree(){};
 
-            bool addModel();
+            [[nodiscard]] RandysEngine::Layer_Element addModel() noexcept;
+
+            RandysEngine::MinitreeNode* getNode(RandysEngine::Layer_Element input) const noexcept; 
+
+            RandysEngine::Model_Entity* getModel(RandysEngine::Layer_Element input) const noexcept;
 
             void activate(){
                 activated = true;
