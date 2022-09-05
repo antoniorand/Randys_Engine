@@ -139,7 +139,7 @@ namespace RandysEngine{
         A class that generates through it's template parameter during compilation.
         It defines a bucket of sizeof(T) bytes in which T is an object and a max number of blocks.
         @tparam T type of the class or data struct to be stored.
-        @tparam MAXBLOCK_TYPE number of blocks in each memory poolç
+        @tparam MAXBLOCK_TYPE number of blocks in each memory pool.
         @sa pool_type,get_instance()
         */
         //descriptor for types
