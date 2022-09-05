@@ -208,7 +208,7 @@ namespace RandysEngine{
                 }                
 
                 //Push a new value into the last free position of slotmap
-                [[nodiscard]] SlotMap_Key push_back(Value_Type&& input){
+                [[nodiscard]] const SlotMap_Key push_back(Value_Type&& input) {
                     //Allocate a new slot and return the position of the slot (not the data)
                     auto reservedId = allocate();
                     //get the reserved slot
@@ -239,12 +239,12 @@ namespace RandysEngine{
                     return{key};
                 }
 
-                [[nodiscard]] SlotMap_Key push_back(Value_Type const& input){
+                [[nodiscard]] const SlotMap_Key push_back(Value_Type const& input){
                     return(this->push_back(Value_Type{input}));
                 }
 
                 template<class... Args>
-                [[nodiscard]] SlotMap_Key emplace_back(Args... input){
+                [[nodiscard]] const SlotMap_Key emplace_back(Args... input){
                     //Allocate a new slot and return the position of the slot (not the data)
                     auto reservedId = allocate();
                     //get the reserved slot
@@ -336,7 +336,7 @@ namespace RandysEngine{
                     return devolver;
                 }
 
-                [[nodiscard]] constexpr bool isValid(SlotMap_Key key) const noexcept{
+                [[nodiscard]] constexpr const bool isValid(SlotMap_Key key) const noexcept{
                     bool devolver = true;
                     if(key.Id >= Capacity 
                     || Indices[key.Id].Gen != key.Gen)
@@ -345,11 +345,11 @@ namespace RandysEngine{
                     return(devolver);
                 }
             
-                [[nodiscard]] constexpr std::size_t current_size() const noexcept{
+                [[nodiscard]] constexpr const std::size_t current_size() const noexcept{
                     return Size;
                 }
 
-                [[nodiscard]] constexpr std::size_t max_capacity() const noexcept{
+                [[nodiscard]] constexpr const std::size_t max_capacity() const noexcept{
                     return Capacity;
                 }
 
@@ -380,7 +380,7 @@ namespace RandysEngine{
                     }
                 }*/
                 
-                Type* atPosition(SlotMap_Index_Type input) const{
+                Type* atPosition(SlotMap_Index_Type input) const noexcept{
                     Type* devolver = nullptr;
                     if(input < Size){
                         devolver = &Data[input];
@@ -388,7 +388,7 @@ namespace RandysEngine{
                     return (devolver);
                 }
 
-                Type* atPosition(SlotMap_Key input) const{
+                Type* atPosition(SlotMap_Key input) const noexcept{
                     Type* devolver = nullptr;
                     if(isValid(input)){
                         devolver = &Data[
@@ -397,8 +397,6 @@ namespace RandysEngine{
                     }
                     return(devolver);
                 }
-
-                //constexpr Index_Type getFreeList(){return Free_list_head;};
 
         };
 
