@@ -12,6 +12,17 @@ namespace RandysEngine{
         
     };  
 
+    struct gl_texture_resource : texture_resource_wrapper<gl_texture_resource>{
+
+        unsigned int texture;
+
+        gl_texture_resource(std::string file) noexcept;
+
+        void use() const noexcept;
+        void unlink() const noexcept;
+
+    };
+
     struct gl_mesh_resource : mesh_resource_wrapper<gl_mesh_resource>{
 
         unsigned int VBO{0}, VAO{0}, EBO{0};

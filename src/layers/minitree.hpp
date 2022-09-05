@@ -15,9 +15,9 @@
 namespace RandysEngine{
     
     constexpr std::size_t maxNodesMinitree = 16;
-    constexpr std::size_t maxCamerasMinitree = 16;
-    constexpr std::size_t maxModelsMinitree = 16;
-    constexpr std::size_t maxLightsMinitree = 16;
+    constexpr std::size_t maxCamerasMinitree = 2;
+    constexpr std::size_t maxModelsMinitree = 10;
+    constexpr std::size_t maxLightsMinitree = 4;
 
     class layer_minitree : public layer_interface<layer_minitree>{
 
@@ -48,6 +48,7 @@ namespace RandysEngine{
 
         SlotMap::SlotMap_Key rootNode;
         ResourceManager::KeyId triangle_Mesh;
+        ResourceManager::KeyId face_texture;
 
         bool activated {true};
 
@@ -60,13 +61,14 @@ namespace RandysEngine{
                 rootNode = nodes.push_back(e_rootNode);
                 #ifndef __3DS__
                     triangle_Mesh = man.createResource<gl_mesh_resource>("");
+                    face_texture = man.createResource<gl_texture_resource>("");
                 #else
                     triangle_Mesh = man.createResource<citro_mesh_resource>("");
                 #endif
             };
             ~layer_minitree(){};
 
-            bool addModel();
+            RandysEngine::SlotMap::SlotMap_Key addModel();
 
             void activate(){
                 activated = true;

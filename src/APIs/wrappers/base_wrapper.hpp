@@ -12,18 +12,28 @@ namespace RandysEngine{
 
     struct Vertex{
         float x, y, z; //Position
-        //float coordX, coordY; //Texture position
+        float coordX, coordY; //Texture position
+    };
+
+    template<typename api>
+    struct texture_resource_wrapper{
+
+        bool loaded{false};
+    
+        virtual ~texture_resource_wrapper() noexcept{};
+
+        void use() const noexcept;
+        void unlink() const noexcept;
     };
 
     template<typename api>
     struct mesh_resource_wrapper{ 
 
         static constexpr Vertex vertices[] = {
-            {0.0f,  0.6f, 0.0f}, 
-            {-0.5f, -0.6f, 0.0f},  
-            {0.5f,-0.6f, 0.0f},    
-            {1.0f, 0.6f, 0.0f}
-
+            {0.0f,  0.6f, 0.0f, 1.0f, 0.0f}, //top left 
+            {-0.5f, -0.6f, 0.0f, 0.0f, 0.0f}, //bottom left
+            {0.5f,-0.6f, 0.0f, 1.0f, 0.0f}, //bottom right
+            {1.0f, 0.6f, 0.0f, 1.0f, 1.0f} //top right
         };
         
         static constexpr unsigned short indices_list[] =
@@ -42,11 +52,6 @@ namespace RandysEngine{
         }
     };
 
-    template<typename api>
-    struct texture_resource_wrapper{
-
-        virtual ~texture_resource_wrapper() noexcept{};
-    };
 
     template<typename api>
     struct shader_wrapper{

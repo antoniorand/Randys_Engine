@@ -3,6 +3,7 @@
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
+#include <SOIL/SOIL.h>
 
 #include "gl_wrapper.hpp"
 
@@ -179,6 +180,44 @@ namespace RandysEngine{
         glUseProgram(shaderProgram);
     }
 
+    gl_texture_resource::gl_texture_resource(std::string file) noexcept{
+
+        int width, height, channels;
+        unsigned char *data = SOIL_load_image("resources/face.png",
+            &width,&height,&channels,SOIL_LOAD_RGBA);
+        if(data){
+            glGenTextures(1,&texture);
+            glBindTexture(GL_TEXTURE_2D, texture);
+
+            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
+            glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
+
+            glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+                GL_LINEAR_MIPMAP_LINEAR);
+            glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+                GL_LINEAR);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 
+                width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+                glGenerateMipmap(GL_TEXTURE_2D);
+            SOIL_free_image_data(data);
+            glBindTexture(GL_TEXTURE_2D,0);
+        }
+    }
+
+    void gl_texture_resource::use() const noexcept{
+
+        //TO DO
+        glBindTexture(GL_TEXTURE_2D, texture); 
+
+    }
+
+    void gl_texture_resource::unlink() const noexcept{
+
+        //TO DO
+        glBindTexture(GL_TEXTURE_2D, 0); 
+
+    }
+
     gl_mesh_resource::gl_mesh_resource(std::string file) noexcept{
         
 
@@ -200,7 +239,9 @@ namespace RandysEngine{
             (void*)0);
         glEnableVertexAttribArray(0);
         //normals
-        glEnableVertexAttribArray(2);    
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), 
+            (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
 
         // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
         glBindBuffer(GL_ARRAY_BUFFER, 0); 
