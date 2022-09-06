@@ -4,9 +4,7 @@ constexpr double averageTick = 1/60.0;
 int main(){
 
 	RandysEngine::Rendering_Engine renderer;
-
     renderer.addLayerBack<RandysEngine::layer_minitree>();
-
     auto& minitree = *renderer.getLayer<RandysEngine::layer_minitree>(0);
 
     auto key = minitree.addModel();

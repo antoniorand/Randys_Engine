@@ -158,6 +158,9 @@ namespace RandysEngine{
         }
         glDeleteShader(vertexShader);
         glDeleteShader(fragmentShader);
+
+        
+            
     }
 
     void gl_shader::setBool(const std::string &name, bool value) const{
@@ -183,15 +186,14 @@ namespace RandysEngine{
     gl_texture_resource::gl_texture_resource(std::string file) noexcept{
 
         int width, height, channels;
-        unsigned char *data = SOIL_load_image("resources/face.png",
+        unsigned char *data = SOIL_load_image("resources/face.jpg",
             &width,&height,&channels,SOIL_LOAD_RGBA);
-        if(data){
+        if(data != 0){
             glGenTextures(1,&texture);
             glBindTexture(GL_TEXTURE_2D, texture);
 
             glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
-
             glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                 GL_LINEAR_MIPMAP_LINEAR);
             glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,

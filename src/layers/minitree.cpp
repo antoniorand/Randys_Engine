@@ -27,6 +27,7 @@ namespace RandysEngine{
 #else 
                                 auto& textureResource = *resource_manager.getResource<citro_texture_resource>(model.textures[i]); 
 #endif
+                                
                                 textureResource.use();
                                 meshResource.draw();
                                 textureResource.unlink();
