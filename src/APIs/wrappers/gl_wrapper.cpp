@@ -3,8 +3,8 @@
 
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
-#include <SOIL/SOIL.h>
-
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb/stb_image.h>
 #include "gl_wrapper.hpp"
 
 namespace RandysEngine{
@@ -16,6 +16,7 @@ namespace RandysEngine{
             std::cout << "Failed to initialize GLAD" << std::endl;
         }
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_TEXTURE_2D);
     }
 
     void window_close_callback(GLFWwindow* window){
@@ -186,22 +187,23 @@ namespace RandysEngine{
     gl_texture_resource::gl_texture_resource(std::string file) noexcept{
 
         int width, height, channels;
-        unsigned char *data = SOIL_load_image("resources/face.jpg",
-            &width,&height,&channels,SOIL_LOAD_RGBA);
+        stbi_set_flip_vertically_on_load(true);
+        unsigned char *data = stbi_load("resources/face.jpg",
+            &width,&height,&channels,0);
         if(data != 0){
             glGenTextures(1,&texture);
             glBindTexture(GL_TEXTURE_2D, texture);
-
+            
             glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
-            glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                 GL_LINEAR_MIPMAP_LINEAR);
-            glTextureParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
                 GL_LINEAR);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 
                 width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-                glGenerateMipmap(GL_TEXTURE_2D);
-            SOIL_free_image_data(data);
+            glGenerateMipmap(GL_TEXTURE_2D);
+            stbi_image_free(data);
             glBindTexture(GL_TEXTURE_2D,0);
         }
     }
@@ -240,7 +242,7 @@ namespace RandysEngine{
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 
             (void*)0);
         glEnableVertexAttribArray(0);
-        //normals
+        //texture coordinates
         glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), 
             (void*)(3 * sizeof(float)));
         glEnableVertexAttribArray(1);
