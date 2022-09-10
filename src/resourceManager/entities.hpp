@@ -11,7 +11,20 @@ namespace RandysEngine{
 
     struct Model_Entity{
 
-        ResourceManager::KeyId mesh_resource;
+        static constexpr unsigned int MAXMESHES {4};
+
+        std::array<ResourceManager::KeyId,MAXMESHES> meshes;
+        std::array<bool, MAXMESHES> hasMesh;
+        
+        std::array<ResourceManager::KeyId,MAXMESHES> textures;
+        std::array<bool, MAXMESHES> hasTexture;
+
+        Model_Entity(){
+            for(unsigned int i = 0; i < MAXMESHES;i++){
+                hasMesh[i] = false;
+                hasTexture[i] = false;
+            }
+        }
 
     };
 

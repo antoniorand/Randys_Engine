@@ -8,6 +8,47 @@ namespace RandysEngine{
 	GX_TRANSFER_IN_FORMAT(GX_TRANSFER_FMT_RGBA8) | GX_TRANSFER_OUT_FORMAT(GX_TRANSFER_FMT_RGB8) | \
 	GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO))
 
+
+    // Helper function for loading a texture from memory
+    bool loadTextureFromFile(C3D_Tex* tex, C3D_TexCube* cube,
+        const char* name){
+        bool devolver = false;
+        FILE* file = fopen(name,"rb");
+        if(file!=NULL){
+            Tex3DS_Texture t3x = 
+            Tex3DS_TextureImportStdio(file, tex,NULL,false);
+            if (!t3x){
+                fclose(file);
+            }
+            else{
+                // Delete the t3x object since we don't need it
+                Tex3DS_TextureFree(t3x);
+                devolver = true;
+            }
+        }
+        return devolver;
+    }
+
+    citro_texture_resource::citro_texture_resource(std::string file) noexcept{
+        // Load the texture and bind it to the first texture unit
+	    if (!loadTextureFromFile(&texture, NULL, "romfs:/gfx/face.t3x"))
+	    	svcBreak(USERBREAK_PANIC);
+	    C3D_TexSetFilter(&texture, GPU_LINEAR, GPU_NEAREST);
+    }
+
+    citro_texture_resource::~citro_texture_resource() noexcept{
+        // Free the texture
+	    C3D_TexDelete(&texture);
+    }
+
+    void citro_texture_resource::use() noexcept{
+        C3D_TexBind(0, &texture);
+    }
+
+    void citro_texture_resource::unlink() noexcept{
+        C3D_TexBind(0, &default_texture);
+    }
+
     Vertex verticesConverter(Vertex vertex){   
         vertex.x = 200*vertex.x + 200;    
         vertex.y = 120*vertex.y + 120;    

@@ -13,17 +13,35 @@ namespace RandysEngine{
         else{
             for(SlotMap::SlotMap_Index_Type i = 0;i < models.current_size();i++){
                 auto& model = *models.atPosition(i);
-                #ifndef __3DS__
-                    auto& meshResource = *resource_manager.getResource<gl_mesh_resource>(model.mesh_resource);
-                #else
-                    auto& meshResource = *resource_manager.getResource<citro_mesh_resource>(model.mesh_resource);
-                #endif
                 
-                meshResource.draw();
+                for(unsigned int i = 0; i < Model_Entity::MAXMESHES; i++){
+                    if(model.hasMesh[i]){
+#ifndef __3DS__                                                
+                        auto& meshResource = *resource_manager.getResource<gl_mesh_resource>(model.meshes[i]);
+#else
+                        auto& meshResource = *resource_manager.getResource<citro_mesh_resource>(model.meshes[i]);
+#endif
+                        if(model.hasTexture[i]){
+#ifndef __3DS__
+                            auto& textureResource = *resource_manager.getResource<gl_texture_resource>(model.textures[i]); 
+#else 
+                            auto& textureResource = *resource_manager.getResource<citro_texture_resource>(model.textures[i]); 
+#endif
+                                
+                                textureResource.use();
+                                meshResource.draw();
+                                textureResource.unlink();
+                            }
+                            else{
+                                meshResource.draw();
+                            }
+
+                        }
+                                
+                    }
             }
         }
         return devolver;
-
     }
 
     bool layer_minitree::addModel(){
@@ -38,8 +56,11 @@ namespace RandysEngine{
 
                     RandysEngine::MinitreeNode node;
                     RandysEngine::Model_Entity model;
-                    model.mesh_resource = triangle_Mesh;
+                    model.meshes[0] = triangle_Mesh;
+                    model.hasMesh[0] = true;
 
+                    model.textures[0] = texture;
+                    model.hasTexture[0] = true;
 
                     node.hasParent = true;
                     node.parentNode = rootNode;

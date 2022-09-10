@@ -59,6 +59,13 @@ namespace RandysEngine{
     struct texture_resource_wrapper{
 
         virtual ~texture_resource_wrapper() noexcept{};
+
+        void use() noexcept{
+            static_cast<api*>(this)->use();
+        }
+        void unlink() noexcept{
+            static_cast<api*>(this)->unlink();
+        }
     };
 
     template<typename api>

@@ -48,6 +48,7 @@ namespace RandysEngine{
 
         SlotMap::SlotMap_Key rootNode;
         ResourceManager::KeyId triangle_Mesh;
+        ResourceManager::KeyId texture;
 
         bool activated {true};
 
@@ -62,6 +63,7 @@ namespace RandysEngine{
                     triangle_Mesh = man.createResource<gl_mesh_resource>("");
                 #else
                     triangle_Mesh = man.createResource<citro_mesh_resource>("");
+                    texture = man.createResource<citro_texture_resource>("");
                 #endif
             };
             ~layer_minitree(){};

@@ -14,6 +14,21 @@ namespace RandysEngine{
         
     };  
 
+    struct citro_texture_resource : texture_resource_wrapper<citro_texture_resource>{
+
+        C3D_Tex texture;
+
+        C3D_Tex default_texture;
+
+        citro_texture_resource(std::string file) noexcept;
+        ~citro_texture_resource() noexcept;
+
+        void use() noexcept;
+        void unlink() noexcept;
+
+
+    };
+
     struct citro_mesh_resource : mesh_resource_wrapper<citro_mesh_resource>{
 
 
