@@ -12,17 +12,17 @@ namespace RandysEngine{
 
     struct Vertex{
         float x, y, z; //Position
-        //float coordX, coordY; //Texture position
+        float coordX, coordY; //Texture position
     };
 
     template<typename api>
     struct mesh_resource_wrapper{ 
 
         static constexpr Vertex vertices[] = {
-            {0.0f,  0.6f, 0.0f}, 
-            {-0.5f, -0.6f, 0.0f},  
-            {0.5f,-0.6f, 0.0f},    
-            {1.0f, 0.6f, 0.0f}
+            {0.0f,  0.6f, 0.0f, 0.0f, 0.0f}, 
+            {-0.5f, -0.6f, 0.0f, 0.0f, 0.0f},  
+            {0.5f,-0.6f, 0.0f, 0.0f, 0.0f},    
+            {1.0f, 0.6f, 0.0f, 0.0f, 0.0f}
 
         };
         

@@ -1,5 +1,5 @@
 
-#ifdef __3DS__
+//#ifdef __3DS__
 #include "citro_wrapper.hpp"
 namespace RandysEngine{
 
@@ -39,7 +39,7 @@ namespace RandysEngine{
         // Configure buffers
         C3D_BufInfo* bufInfo = C3D_GetBufInfo();
         BufInfo_Init(bufInfo);
-        BufInfo_Add(bufInfo, vbo_data, sizeof(Vertex), 1, 0x0);
+        BufInfo_Add(bufInfo, vbo_data, sizeof(Vertex), 2, 0x10);
 
         // Draw the VBO
         //C3D_DrawArrays(GPU_TRIANGLES, 0, numberVertices);
@@ -62,10 +62,12 @@ namespace RandysEngine{
         C3D_AttrInfo* attrInfo = C3D_GetAttrInfo();
         AttrInfo_Init(attrInfo);
         AttrInfo_AddLoader(attrInfo, 0, GPU_FLOAT, 3); // v0=position
-        AttrInfo_AddFixed(attrInfo, 1); // v1=color
+        AttrInfo_AddLoader(attrInfo, 1, GPU_FLOAT, 2); // v1=position
+
+        AttrInfo_AddFixed(attrInfo, 2); // v1=color
 
         // Set the fixed attribute (color) to selected one
-        C3D_FixedAttribSet(1, 1.0, 0.5, 0.2, 1.0);
+        C3D_FixedAttribSet(2, 1.0, 0.5, 0.2, 1.0);
 
         // Compute the projection matrix
         Mtx_OrthoTilt(&projection, 0.0, 400.0, 0.0, 240.0, 0.0, 1.0, true);
@@ -156,4 +158,4 @@ namespace RandysEngine{
     }
 
 }
-#endif
+//#endif
