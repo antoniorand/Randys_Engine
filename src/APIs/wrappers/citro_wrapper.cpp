@@ -18,6 +18,7 @@ namespace RandysEngine{
             Tex3DS_Texture t3x = 
             Tex3DS_TextureImportStdio(file, tex,NULL,false);
             if (!t3x){
+                
                 fclose(file);
             }
             else{
@@ -26,6 +27,8 @@ namespace RandysEngine{
                 devolver = true;
             }
         }
+        if(devolver)
+            printf("successful!\n");
         return devolver;
     }
 
@@ -105,11 +108,6 @@ namespace RandysEngine{
         AttrInfo_AddLoader(attrInfo, 0, GPU_FLOAT, 3); // v0=position
         AttrInfo_AddLoader(attrInfo, 1, GPU_FLOAT, 2); // v1=position
 
-        AttrInfo_AddFixed(attrInfo, 2); // v1=color
-
-        // Set the fixed attribute (color) to selected one
-        C3D_FixedAttribSet(2, 1.0, 0.5, 0.2, 1.0);
-
         // Compute the projection matrix
         Mtx_OrthoTilt(&projection, 0.0, 400.0, 0.0, 240.0, 0.0, 1.0, true);
         
@@ -117,8 +115,9 @@ namespace RandysEngine{
         // See https://www.opengl.org/sdk/docs/man2/xhtml/glTexEnv.xml for more insight
         C3D_TexEnv* env = C3D_GetTexEnv(0);
         C3D_TexEnvInit(env);
-        C3D_TexEnvSrc(env, C3D_Both, GPU_PRIMARY_COLOR, (GPU_TEVSRC)0, (GPU_TEVSRC)0);
-        C3D_TexEnvFunc(env, C3D_Both, GPU_REPLACE);
+
+        C3D_TexEnvSrc(env, C3D_Both, GPU_TEXTURE0, GPU_PRIMARY_COLOR, (GPU_TEVSRC)0);
+	    C3D_TexEnvFunc(env, C3D_Both, GPU_MODULATE);
     }
 
     citro_shader::~citro_shader() noexcept{
@@ -188,7 +187,11 @@ namespace RandysEngine{
     }
 
     citro_main::citro_main() noexcept{
-
+        Result rc = romfsInit();
+        if(rc)
+            printf("romfsInit: %08lX\n", rc);
+        else
+            printf("romfs success\n");
         gfxInitDefault();
         consoleInit(GFX_BOTTOM, NULL);
 
@@ -196,6 +199,7 @@ namespace RandysEngine{
 
     citro_main::~citro_main() noexcept{
         gfxExit();
+        romfsExit();
     }
 
 }

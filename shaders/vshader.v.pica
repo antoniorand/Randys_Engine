@@ -12,11 +12,11 @@
 ; Outputs
 .out outpos position
 .out outclr color
+.out outtc0 texcoord0
 
 ; Inputs (defined as aliases for convenience)
 .alias inpos v0
 .alias intex v1
-.alias inclr v2
 
 .proc main
 	; Force the w component of inpos to be 1.0
@@ -30,7 +30,9 @@
 	dp4 outpos.w, projection[3], r0
 
 	; outclr = inclr
-	mov outclr, inclr
+	;mov outclr, inclr
+
+	mov outtc0, intex
 
 	; We're finished
 	end
