@@ -8,12 +8,10 @@ namespace RandysEngine{
 	GX_TRANSFER_IN_FORMAT(GX_TRANSFER_FMT_RGBA8) | GX_TRANSFER_OUT_FORMAT(GX_TRANSFER_FMT_RGB8) | \
 	GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO))
 
-    Vertex verticesConverter(Vertex vertex){
-        RandysEngine::Vertex devolver;     
-        devolver.x = 200*vertex.x + 200;    
-        devolver.y = 120*vertex.y + 120;
-        devolver.z = 0.5;    
-        return devolver;
+    Vertex verticesConverter(Vertex vertex){   
+        vertex.x = 200*vertex.x + 200;    
+        vertex.y = 120*vertex.y + 120;    
+        return vertex;
     }
 
     citro_mesh_resource::citro_mesh_resource(std::string input) noexcept{
@@ -29,11 +27,6 @@ namespace RandysEngine{
         ibo_data = linearAlloc(sizeIndices);
         memcpy(ibo_data, indices_list, sizeIndices);
 
-        // Configure buffers
-        C3D_BufInfo* bufInfo = C3D_GetBufInfo();
-        BufInfo_Init(bufInfo);
-        BufInfo_Add(bufInfo, vbo_data, sizeof(Vertex), 1, 0x0);
-
     }
 
     citro_mesh_resource::~citro_mesh_resource() noexcept{
@@ -42,6 +35,12 @@ namespace RandysEngine{
     }
 
     void citro_mesh_resource::draw() const noexcept{
+
+        // Configure buffers
+        C3D_BufInfo* bufInfo = C3D_GetBufInfo();
+        BufInfo_Init(bufInfo);
+        BufInfo_Add(bufInfo, vbo_data, sizeof(Vertex), 1, 0x0);
+
         // Draw the VBO
         //C3D_DrawArrays(GPU_TRIANGLES, 0, numberVertices);
         C3D_DrawElements(GPU_TRIANGLES,countIndices,C3D_UNSIGNED_SHORT,ibo_data);
