@@ -6,7 +6,57 @@ namespace RandysEngine{
 
 
     template<typename api>
-    struct matrix_wrapper{
+    class matrix_wrapper{
+
+        private:
+            void translate(float x_position, float y_position, float z_position) noexcept{
+                static_cast<api*>(this)->translate(x_position,y_position,z_position);
+            }
+
+            void rotate(float x_rotation, float y_rotation, float z_rotation) noexcept{
+                static_cast<api*>(this)->rotate(x_rotation,y_rotation,z_rotation);
+            }
+
+            void scale(float x_scale, float y_scale, float z_scale) noexcept{
+                static_cast<api*>(this)->scale(x_scale,y_scale,z_scale);
+            }
+
+
+            float getTranslate_x() const noexcept{
+                return static_cast<api*>(this)->getTranslate_x();
+            }
+
+            float getTranslate_y() const noexcept{
+                return static_cast<api*>(this)->getTranslate_y();
+            }
+
+            float getTranslate_z() const noexcept{
+                return static_cast<api*>(this)->getTranslate_z();
+            }
+
+            float getRotation_x() const noexcept{
+                return static_cast<api*>(this)->getRotation_x();
+            }            
+
+            float getRotation_y() const noexcept{
+                return static_cast<api*>(this)->getRotation_y();
+            }
+
+            float getRotation_z() const noexcept{
+                return static_cast<api*>(this)->getRotation_z();
+            }
+
+            float getScale_x() const noexcept{
+                return static_cast<api*>(this)->getRotation_x();
+            }
+
+            float getScale_y() const noexcept{
+                return static_cast<api*>(this)->getRotation_y();
+            }
+
+            float getScale_z() const noexcept{
+                return static_cast<api*>(this)->getRotation_z();
+            }
 
     };
 

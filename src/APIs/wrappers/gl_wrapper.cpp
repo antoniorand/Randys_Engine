@@ -269,5 +269,75 @@ namespace RandysEngine{
         glBindVertexArray(0); // no need to unbind it every time 
     }
 
+    void gl_matrix::translate(float x_position, float y_position, float z_position) noexcept{
+        translation.x = x_position;
+        translation.y = y_position;
+        translation.z = z_position;
+        changed = true;
+    }
+
+    void gl_matrix::rotate(float x_rotation, float y_rotation, float z_rotation) noexcept{
+        rotation.x = x_rotation;
+        rotation.y = y_rotation;
+        rotation.z = z_rotation;
+        changed = true;
+    }
+
+    void gl_matrix::scale(float x_scale, float y_scale, float z_scale) noexcept{
+        scalation.x = x_scale;
+        scalation.y = y_scale;
+        scalation.z = z_scale;
+        changed = true;
+    }
+
+    float gl_matrix::getTranslate_x() const noexcept{
+        return translation.x;
+    }
+
+    float gl_matrix::getTranslate_y() const noexcept{
+        return translation.y;
+    }
+
+    float gl_matrix::getTranslate_z() const noexcept{
+        return translation.z;
+    }
+
+    float gl_matrix::getRotation_x() const noexcept{
+        return rotation.x;
+    }
+
+    float gl_matrix::getRotation_y() const noexcept{
+        return rotation.y;
+    }
+
+    float gl_matrix::getRotation_z() const noexcept{
+        return rotation.z;
+    }
+
+    float gl_matrix::getScale_x() const noexcept{
+        return scalation.x;
+    }
+
+    float gl_matrix::getScale_y() const noexcept{
+        return scalation.y;
+    }
+
+    float gl_matrix::getScale_z() const noexcept{
+        return scalation.z;
+    }
+
+    const glm::mat4& gl_matrix::getTransformationMatrix() noexcept{
+        if(changed){
+            glm::mat4 M{glm::mat4(1.0f)};
+            transform =  M * glm::translate(M,translation)  
+            * (
+                glm::rotate(M,rotation.z,{0.0f,0.0f,1.0f})*
+                glm::rotate(M,rotation.y,{0.0f,1.0f,0.0f})*
+                glm::rotate(M,rotation.x,{1.0f,0.0f,0.0f}))
+            * glm::scale(M,scalation);
+        }
+        return transform;
+    }
+
 }
 #endif

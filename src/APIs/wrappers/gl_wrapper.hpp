@@ -1,6 +1,8 @@
 #pragma once
 #include "base_wrapper.hpp"
 #include "../GLAD/glad.h"
+#include <glm/glm.hpp>
+#include "glm/gtc/matrix_transform.hpp"
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <fstream>
@@ -8,8 +10,42 @@
 
 namespace RandysEngine{
 
-    struct gl_matrix : matrix_wrapper<gl_matrix>{
-        
+    class gl_matrix : matrix_wrapper<gl_matrix>{
+        glm::mat4 transform{glm::mat4(1.0f)};
+
+        bool changed{false};
+
+        glm::vec3 translation {glm::vec3(0.0f)};
+        glm::vec3 rotation {glm::vec3(0.0f)};
+        glm::vec3 scalation {glm::vec3(0.0f)};
+
+        private:
+
+            void translate(float x_position, float y_position, float z_position) noexcept;
+
+            void rotate(float x_rotation, float y_rotation, float z_rotation) noexcept;
+
+            void scale(float x_scale, float y_scale, float z_scale) noexcept;
+
+            float getTranslate_x() const noexcept;
+
+            float getTranslate_y() const noexcept;
+
+            float getTranslate_z() const noexcept;
+
+            float getRotation_x() const noexcept;
+
+            float getRotation_y() const noexcept;
+
+            float getRotation_z() const noexcept;
+
+            float getScale_x() const noexcept;
+
+            float getScale_y() const noexcept;
+
+            float getScale_z() const noexcept;
+
+            const glm::mat4& getTransformationMatrix() noexcept;
     };  
 
     struct gl_texture_resource : texture_resource_wrapper<gl_texture_resource>{
