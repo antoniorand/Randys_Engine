@@ -16,17 +16,6 @@ namespace RandysEngine{
     };
 
     template<typename api>
-    struct texture_resource_wrapper{
-
-        bool loaded{false};
-    
-        virtual ~texture_resource_wrapper() noexcept{};
-
-        void use() const noexcept;
-        void unlink() const noexcept;
-    };
-
-    template<typename api>
     struct mesh_resource_wrapper{ 
 
         static constexpr Vertex vertices[] = {
@@ -38,8 +27,8 @@ namespace RandysEngine{
         
         static constexpr unsigned short indices_list[] =
         {
-            0,1,2,
-            0,2,3
+            2,1,0,
+            3,2,0
         };
 
         static constexpr std::size_t sizeVertices{sizeof(vertices)}, countVertices{sizeVertices/sizeof(vertices[0])};
@@ -52,6 +41,18 @@ namespace RandysEngine{
         }
     };
 
+    template<typename api>
+    struct texture_resource_wrapper{
+
+        virtual ~texture_resource_wrapper() noexcept{};
+
+        void use() noexcept{
+            static_cast<api*>(this)->use();
+        }
+        void unlink() noexcept{
+            static_cast<api*>(this)->unlink();
+        }
+    };
 
     template<typename api>
     struct shader_wrapper{

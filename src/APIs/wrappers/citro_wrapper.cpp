@@ -8,12 +8,54 @@ namespace RandysEngine{
 	GX_TRANSFER_IN_FORMAT(GX_TRANSFER_FMT_RGBA8) | GX_TRANSFER_OUT_FORMAT(GX_TRANSFER_FMT_RGB8) | \
 	GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO))
 
-    Vertex verticesConverter(Vertex vertex){
-        RandysEngine::Vertex devolver;     
-        devolver.x = 200*vertex.x + 200;    
-        devolver.y = 120*vertex.y + 120;
-        devolver.z = 0.5;    
+
+    // Helper function for loading a texture from memory
+    bool loadTextureFromFile(C3D_Tex* tex, C3D_TexCube* cube,
+        const char* name){
+        bool devolver = false;
+        FILE* file = fopen(name,"rb");
+        if(file!=NULL){
+            Tex3DS_Texture t3x = 
+            Tex3DS_TextureImportStdio(file, tex,NULL,false);
+            if (!t3x){
+                
+                fclose(file);
+            }
+            else{
+                // Delete the t3x object since we don't need it
+                Tex3DS_TextureFree(t3x);
+                devolver = true;
+            }
+        }
+        if(devolver)
+            printf("successful!\n");
         return devolver;
+    }
+
+    citro_texture_resource::citro_texture_resource(std::string file) noexcept{
+        // Load the texture and bind it to the first texture unit
+	    if (!loadTextureFromFile(&texture, NULL, "romfs:/gfx/face.t3x"))
+	    	svcBreak(USERBREAK_PANIC);
+	    C3D_TexSetFilter(&texture, GPU_LINEAR, GPU_NEAREST);
+    }
+
+    citro_texture_resource::~citro_texture_resource() noexcept{
+        // Free the texture
+	    C3D_TexDelete(&texture);
+    }
+
+    void citro_texture_resource::use() noexcept{
+        C3D_TexBind(0, &texture);
+    }
+
+    void citro_texture_resource::unlink() noexcept{
+        C3D_TexBind(0, &default_texture);
+    }
+
+    Vertex verticesConverter(Vertex vertex){   
+        vertex.x = 200*vertex.x + 200;    
+        vertex.y = 120*vertex.y + 120;    
+        return vertex;
     }
 
     citro_mesh_resource::citro_mesh_resource(std::string input) noexcept{
@@ -29,11 +71,6 @@ namespace RandysEngine{
         ibo_data = linearAlloc(sizeIndices);
         memcpy(ibo_data, indices_list, sizeIndices);
 
-        // Configure buffers
-        C3D_BufInfo* bufInfo = C3D_GetBufInfo();
-        BufInfo_Init(bufInfo);
-        BufInfo_Add(bufInfo, vbo_data, sizeof(Vertex), 1, 0x0);
-
     }
 
     citro_mesh_resource::~citro_mesh_resource() noexcept{
@@ -42,6 +79,12 @@ namespace RandysEngine{
     }
 
     void citro_mesh_resource::draw() const noexcept{
+
+        // Configure buffers
+        C3D_BufInfo* bufInfo = C3D_GetBufInfo();
+        BufInfo_Init(bufInfo);
+        BufInfo_Add(bufInfo, vbo_data, sizeof(Vertex), 2, 0x10);
+
         // Draw the VBO
         //C3D_DrawArrays(GPU_TRIANGLES, 0, numberVertices);
         C3D_DrawElements(GPU_TRIANGLES,countIndices,C3D_UNSIGNED_SHORT,ibo_data);
@@ -63,10 +106,7 @@ namespace RandysEngine{
         C3D_AttrInfo* attrInfo = C3D_GetAttrInfo();
         AttrInfo_Init(attrInfo);
         AttrInfo_AddLoader(attrInfo, 0, GPU_FLOAT, 3); // v0=position
-        AttrInfo_AddFixed(attrInfo, 1); // v1=color
-
-        // Set the fixed attribute (color) to selected one
-        C3D_FixedAttribSet(1, 1.0, 0.5, 0.2, 1.0);
+        AttrInfo_AddLoader(attrInfo, 1, GPU_FLOAT, 2); // v1=position
 
         // Compute the projection matrix
         Mtx_OrthoTilt(&projection, 0.0, 400.0, 0.0, 240.0, 0.0, 1.0, true);
@@ -75,8 +115,9 @@ namespace RandysEngine{
         // See https://www.opengl.org/sdk/docs/man2/xhtml/glTexEnv.xml for more insight
         C3D_TexEnv* env = C3D_GetTexEnv(0);
         C3D_TexEnvInit(env);
-        C3D_TexEnvSrc(env, C3D_Both, GPU_PRIMARY_COLOR, (GPU_TEVSRC)0, (GPU_TEVSRC)0);
-        C3D_TexEnvFunc(env, C3D_Both, GPU_REPLACE);
+
+        C3D_TexEnvSrc(env, C3D_Both, GPU_TEXTURE0, GPU_PRIMARY_COLOR, (GPU_TEVSRC)0);
+	    C3D_TexEnvFunc(env, C3D_Both, GPU_MODULATE);
     }
 
     citro_shader::~citro_shader() noexcept{
@@ -146,7 +187,11 @@ namespace RandysEngine{
     }
 
     citro_main::citro_main() noexcept{
-
+        Result rc = romfsInit();
+        if(rc)
+            printf("romfsInit: %08lX\n", rc);
+        else
+            printf("romfs success\n");
         gfxInitDefault();
         consoleInit(GFX_BOTTOM, NULL);
 
@@ -154,6 +199,7 @@ namespace RandysEngine{
 
     citro_main::~citro_main() noexcept{
         gfxExit();
+        romfsExit();
     }
 
 }
