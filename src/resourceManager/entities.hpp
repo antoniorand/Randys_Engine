@@ -19,7 +19,7 @@ namespace RandysEngine{
         std::array<ResourceManager::KeyId,MAXMESHES> textures;
         std::array<bool, MAXMESHES> hasTexture;
 
-        Model_Entity(){
+        Model_Entity() noexcept{
             for(unsigned int i = 0; i < MAXMESHES;i++){
                 hasMesh[i] = false;
                 hasTexture[i] = false;
