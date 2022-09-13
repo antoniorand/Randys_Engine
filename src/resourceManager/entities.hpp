@@ -1,12 +1,17 @@
 #pragma once
 #include "resourceManager.hpp"
 
+#ifndef __3DS__
+#include "../APIs/wrappers/gl_wrapper.hpp"
+#endif
+
 namespace RandysEngine{
 
     enum class entityType_enum{
         model,
         light,
-        camera
+        camera,
+        none
     };
 
     struct Model_Entity{
@@ -53,12 +58,15 @@ namespace RandysEngine{
             static constexpr unsigned int maxChildren {4};
 
             SlotMap::SlotMap_Key entity;
-            entityType_enum type_entity;
+            entityType_enum type_entity{entityType_enum::none};
 
             SlotMap::SlotMap_Key parentNode;
             bool hasParent{false};
 
-            ////
+#ifndef __3DS__
+            gl_matrix transformationMatrix;
+#endif
+
             std::array<SlotMap::SlotMap_Key,maxChildren> childrenNodes{};
             std::array<bool,maxChildren> hasChildren{};
     };

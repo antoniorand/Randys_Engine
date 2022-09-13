@@ -47,8 +47,7 @@ namespace RandysEngine{
         SlotMapCameras cameras;
 
         SlotMap::SlotMap_Key rootNode;
-        ResourceManager::KeyId triangle_Mesh;
-        ResourceManager::KeyId face_texture;
+        
 
         bool activated {true};
 
@@ -59,23 +58,20 @@ namespace RandysEngine{
                     models{maxModelsMinitree}, lights{maxLightsMinitree}, cameras{maxCamerasMinitree}{
                 MinitreeNode e_rootNode;
                 rootNode = nodes.push_back(e_rootNode);
-                #ifndef __3DS__
-                    triangle_Mesh = man.createResource<gl_mesh_resource>("");
-                    face_texture = man.createResource<gl_texture_resource>("");
-                #else
-                    triangle_Mesh = man.createResource<citro_mesh_resource>("");
-                    face_texture = man.createResource<citro_texture_resource>("");
-                #endif
+                
             };
             ~layer_minitree(){};
 
-            [[nodiscard]] RandysEngine::Layer_Element addModel() noexcept;
+            [[nodiscard]] const RandysEngine::Layer_Node createNode() noexcept;
 
-            RandysEngine::MinitreeNode* getNode(RandysEngine::Layer_Element input) const noexcept; 
+            [[nodiscard]] const RandysEngine::Layer_Node createNode(const RandysEngine::Layer_Node) noexcept;
 
-            RandysEngine::Model_Entity* getModel(RandysEngine::Layer_Element input) const noexcept;
+            RandysEngine::MinitreeNode* getNode(const RandysEngine::Layer_Node) const noexcept;
             
+            void addModel(RandysEngine::Layer_Node node) noexcept;
 
+            RandysEngine::Model_Entity* getModel(RandysEngine::Layer_Node node) const noexcept;
+            
             void activate(){
                 activated = true;
             };

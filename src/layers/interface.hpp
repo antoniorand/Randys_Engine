@@ -4,9 +4,10 @@
 
 namespace RandysEngine{
 
-    struct Layer_Element{
-        RandysEngine::SlotMap::SlotMap_Key element;
+    struct Layer_Node{
+        RandysEngine::SlotMap::SlotMap_Key reference;
         unsigned int layerId;
+        bool isValid{false};
     };
 
     template<typename layer_type>
@@ -32,6 +33,8 @@ namespace RandysEngine{
             bool interact() const{
                 return static_cast<layer_type*>(this)->interact();
             }
+
+            const unsigned int getInstance(){return instance;};
     };
 
 }

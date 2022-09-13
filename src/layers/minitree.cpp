@@ -44,68 +44,112 @@ namespace RandysEngine{
         return devolver;
     }
 
-    RandysEngine::Model_Entity* layer_minitree::getModel(RandysEngine::Layer_Element input) const noexcept{
+    
 
-        RandysEngine::Model_Entity* devolver = nullptr;
+    [[nodiscard]] const RandysEngine::Layer_Node layer_minitree::createNode() noexcept{
 
-        if(input.layerId == this->instance){
-            RandysEngine::MinitreeNode* node;
-            node = nodes.atPosition(input.element);
-            if(node->type_entity == RandysEngine::entityType_enum::model){
-                devolver = models.atPosition(node->entity);
-            }
-        }
-
-        return devolver;
-    }
-
-    RandysEngine::MinitreeNode* layer_minitree::getNode(RandysEngine::Layer_Element input) const noexcept{
-        RandysEngine::MinitreeNode* devolver = nullptr;
-
-        if(input.layerId == this->instance){
-            devolver = nodes.atPosition(input.element);
-        }
-
-        return devolver;
-    }
-
-    RandysEngine::Layer_Element layer_minitree::addModel() noexcept{
-        RandysEngine::Layer_Element devolver;
-
-        if(models.current_size() != models.max_capacity() && nodes.current_size()!= nodes.max_capacity()){
-
-            auto& rootNodeItem = *nodes.atPosition(rootNode); 
-
-            for(unsigned int i = 0; i < RandysEngine::MinitreeNode::maxChildren;i++){
+        RandysEngine::Layer_Node devolver;
+        
+        auto& rootNodeItem = *nodes.atPosition(rootNode); 
+        
+        for(unsigned int i = 0; i < RandysEngine::MinitreeNode::maxChildren;i++){
                 if(!rootNodeItem.hasChildren[i]){
 
                     RandysEngine::MinitreeNode node;
-                    RandysEngine::Model_Entity model;
-                    model.meshes[0] = triangle_Mesh;
-                    model.hasMesh[0] = true;
-
-                    model.textures[0] = face_texture;
-                    model.hasTexture[0] = true;
 
                     node.hasParent = true;
                     node.parentNode = rootNode;
 
-                    node.type_entity = RandysEngine::entityType_enum::model;
-                    auto node_key = node.entity = models.push_back(model);
+                    node.type_entity = RandysEngine::entityType_enum::none;
 
                     rootNodeItem.childrenNodes[i] = nodes.push_back(node);
                     rootNodeItem.hasChildren[i] = true;
 
-                    devolver.element = node_key;
                     devolver.layerId = this->instance;
+                    devolver.isValid = true;
+                    devolver.reference = rootNodeItem.childrenNodes[i];
                     break;
                 }
             }
+        return devolver;
+    }
 
+    [[nodiscard]] const RandysEngine::Layer_Node 
+        layer_minitree::createNode(RandysEngine::Layer_Node input) noexcept{
 
+        RandysEngine::Layer_Node devolver;
+        
+        if(input.layerId == this->instance && input.isValid){
+
+            auto& oldNode = *nodes.atPosition(input.reference); 
+            
+            for(unsigned int i = 0; i < RandysEngine::MinitreeNode::maxChildren;i++){
+                if(!oldNode.hasChildren[i]){
+
+                    RandysEngine::MinitreeNode node;
+
+                    node.hasParent = true;
+                    node.parentNode = input.reference;
+
+                    node.type_entity = RandysEngine::entityType_enum::none;
+
+                    oldNode.childrenNodes[i] = nodes.push_back(node);
+                    oldNode.hasChildren[i] = true;
+
+                    devolver.layerId = this->instance;
+                    devolver.isValid = true;
+                    devolver.reference = oldNode.childrenNodes[i];
+                    break;
+                }
+            }
+        } 
+        return devolver;
+    }
+
+    RandysEngine::MinitreeNode* layer_minitree::getNode(const RandysEngine::Layer_Node input) const noexcept{
+        
+        RandysEngine::MinitreeNode* devolver = nullptr;
+
+        if(input.layerId == this->instance && input.isValid){
+            devolver = this->nodes.atPosition(input.reference);
         }
 
         return devolver;
+    }
+
+    void layer_minitree::addModel(RandysEngine::Layer_Node input) noexcept{
+        
+        if(input.layerId == this->instance && input.isValid){
+
+            auto& oldNode = *nodes.atPosition(input.reference);
+
+            RandysEngine::Model_Entity newModel;
+
+            oldNode.type_entity = RandysEngine::entityType_enum::model;
+
+            oldNode.entity = models.push_back(newModel);
+        }
+
+    }
+
+    RandysEngine::Model_Entity* 
+        layer_minitree::getModel(RandysEngine::Layer_Node input) const noexcept{
+
+        RandysEngine::Model_Entity* devolver = nullptr;
+
+        if(input.layerId == this->instance && input.isValid){
+
+            auto& oldNode = *nodes.atPosition(input.reference);
+
+            if(oldNode.type_entity == RandysEngine::entityType_enum::model){
+
+                devolver = models.atPosition(oldNode.entity);
+
+            }
+        }
+
+        return devolver;
+
     }
 
 }
