@@ -60,6 +60,9 @@ namespace RandysEngine{
         LayerList layers;
 
         //Resources
+
+        std::map<std::string,ResourceManager::KeyId> resources;
+
         ResourceManager::KeyId triangle_Mesh;
         ResourceManager::KeyId face_texture;
 
@@ -225,12 +228,14 @@ namespace RandysEngine{
 
             //Create a node in a specific layer
             template<typename Layer_type>
-            unsigned int addMesh(const RandysEngine::Layer_Node node){
+            unsigned int addMesh(const RandysEngine::Layer_Node node, std::string file){
                 
                 unsigned int devolver = RandysEngine::Model_Entity::MAXMESHES;
 
                 if(node.isValid){
                     Layer_type* layer;
+
+                    
 
                     auto itBegin = layers.begin();
                     auto itEnd = layers.end();
@@ -244,7 +249,15 @@ namespace RandysEngine{
                                     for(unsigned int i = 0; i < RandysEngine::Model_Entity::MAXMESHES;i++){
                                         if(!model->hasMesh[i]){
                                             model->hasMesh[i] = true;
-                                            model->meshes[i] = triangle_Mesh;
+                                            if(!meshExists(file)){
+                                                auto key = ResourceManager.createResource<gl_mesh_resource>(file);
+                                                resources.emplace(std::make_pair(file, key));
+                                                model->meshes[i] = key;
+                                            }
+                                            else{
+                                                auto key = resources.find(file)->second;
+                                                model->meshes[i] = key;
+                                            }
                                             devolver = i;
                                             break;
                                         }
@@ -262,7 +275,7 @@ namespace RandysEngine{
 
             //Create a node in a specific layer
             template<typename Layer_type>
-            void addTexture(const RandysEngine::Layer_Node node, unsigned int meshNumber){
+            void addTexture(const RandysEngine::Layer_Node node, unsigned int meshNumber, std::string file){
                 
                 if(node.isValid && meshNumber != RandysEngine::Model_Entity::MAXMESHES){
                     Layer_type* layer;
@@ -276,7 +289,15 @@ namespace RandysEngine{
                                 RandysEngine::Model_Entity* model = layer->getModel(node);
                                 if(model){
                                     model->hasTexture[meshNumber] = true;
-                                    model->textures[meshNumber] = face_texture;
+                                    if(!textureExists(file)){
+                                        auto key = ResourceManager.createResource<gl_texture_resource>(file);
+                                        resources.emplace(std::make_pair(file, key));
+                                        model->textures[meshNumber] = key;
+                                    }
+                                    else{
+                                        auto key = resources.find(file)->second;
+                                        model->textures[meshNumber] = key;
+                                    }
                                 }
 
                                 break;
@@ -287,8 +308,42 @@ namespace RandysEngine{
                 }
             }
 
+            using indexVector = std::vector<
+                unsigned int, 
+                RandysEngine::Pool::Static_pool_allocator<unsigned int,20>
+                >;
+
+            //Get a list of the specific type of layer and their indexes
+            template<typename Layer_type> 
+            indexVector getLayerIndexes(){
+                indexVector devolver;
+
+                devolver.reserve(20);
+
+                auto itBegin = layers.begin();
+                auto itEnd = layers.end();
+                while(itBegin != itEnd){
+                    if(std::holds_alternative<Layer_type>(*itBegin)){
+                        Layer_type* layer;
+                        layer = &std::get<Layer_type>(*itBegin);
+                        devolver.push_back(layer->getInstance());
+                    }
+                    itBegin++;
+                }
+                
+                return devolver;
+            }
+            
             //Run the frame, not only drawing it but interacting with it
             void runFrame();
+
+            bool meshExists(std::string file);
+
+            bool reserveMeshResource(std::string file);
+
+            bool textureExists(std::string file);
+
+            bool reserveTextureResource(std::string file);
 
             //Read the input from the key
             bool readKeyPressed(KeyInput input) const{

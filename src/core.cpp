@@ -53,4 +53,71 @@ namespace RandysEngine{
 
     }
 
+    bool Rendering_Engine::meshExists(std::string file){
+
+        bool devolver = false;
+
+        auto search = resources.find(file);
+
+        if(search != resources.end())
+            devolver = true;
+
+        return devolver;
+
+    }
+
+    bool Rendering_Engine::reserveMeshResource(std::string file){
+
+        bool devolver = false;
+
+        if(meshExists(file)){
+#ifndef __3DS__
+            auto key = ResourceManager.createResource<gl_mesh_resource>(file);
+
+            resources.emplace(std::make_pair(file, key));
+#else
+
+#endif
+            devolver = true;
+        }
+
+        return devolver;
+
+    }
+
+    bool Rendering_Engine::textureExists(std::string file){
+
+        bool devolver = false;
+
+        auto search = resources.find(file);
+
+        if(search != resources.end())
+            devolver = true;
+
+        return devolver;
+
+    }
+
+    bool Rendering_Engine::reserveTextureResource(std::string file){
+
+        bool devolver = false;
+
+        auto search = resources.find(file);
+
+        if(textureExists(file)){
+#ifndef __3DS__
+            auto key = ResourceManager.createResource<gl_mesh_resource>(file);
+
+            resources.emplace(std::make_pair(file, key));
+#else
+
+#endif
+            devolver = true;
+        }
+
+        return devolver;
+
+    }
+
+
 }

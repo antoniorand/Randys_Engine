@@ -188,7 +188,7 @@ namespace RandysEngine{
 
         int width, height, channels;
         stbi_set_flip_vertically_on_load(true);
-        unsigned char *data = stbi_load("resources/face.jpg",
+        unsigned char *data = stbi_load(file.c_str(),
             &width,&height,&channels,0);
         if(data != 0){
             glGenTextures(1,&texture);

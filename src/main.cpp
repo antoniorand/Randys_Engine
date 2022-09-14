@@ -13,9 +13,9 @@ int main(){
 
     renderer.addModel<RandysEngine::layer_minitree>(node2);
 
-    unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node2);
+    unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node2,"triangle");
 
-    renderer.addTexture<RandysEngine::layer_minitree>(node2,meshN);
+    renderer.addTexture<RandysEngine::layer_minitree>(node2,meshN,"resources/face.jpg");
 
     while(renderer.isAppRunning()){
         if(renderer.readKeyPressed(RandysEngine::KeyInput::exit)){
