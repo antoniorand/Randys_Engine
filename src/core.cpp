@@ -70,14 +70,13 @@ namespace RandysEngine{
 
         bool devolver = false;
 
-        if(meshExists(file)){
+        if(!meshExists(file)){
 #ifndef __3DS__
             auto key = ResourceManager.createResource<gl_mesh_resource>(file);
-
-            resources.emplace(std::make_pair(file, key));
 #else
-
+            auto key = ResourceManager.createResource<citro_mesh_resource>(file);
 #endif
+            resources.emplace(std::make_pair(file, key));
             devolver = true;
         }
 
@@ -102,16 +101,13 @@ namespace RandysEngine{
 
         bool devolver = false;
 
-        auto search = resources.find(file);
-
-        if(textureExists(file)){
+        if(!textureExists(file)){
 #ifndef __3DS__
             auto key = ResourceManager.createResource<gl_mesh_resource>(file);
-
-            resources.emplace(std::make_pair(file, key));
 #else
-
+            auto key = ResourceManager.createResource<citro_mesh_resource>(file);
 #endif
+            resources.emplace(std::make_pair(file, key));
             devolver = true;
         }
 

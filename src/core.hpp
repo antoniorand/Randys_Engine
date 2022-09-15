@@ -250,7 +250,11 @@ namespace RandysEngine{
                                         if(!model->hasMesh[i]){
                                             model->hasMesh[i] = true;
                                             if(!meshExists(file)){
+#ifndef __3DS__
                                                 auto key = ResourceManager.createResource<gl_mesh_resource>(file);
+#else
+                                                auto key = ResourceManager.createResource<citro_mesh_resource>(file);
+#endif
                                                 resources.emplace(std::make_pair(file, key));
                                                 model->meshes[i] = key;
                                             }
@@ -290,7 +294,11 @@ namespace RandysEngine{
                                 if(model){
                                     model->hasTexture[meshNumber] = true;
                                     if(!textureExists(file)){
+#ifndef __3DS__
                                         auto key = ResourceManager.createResource<gl_texture_resource>(file);
+#else
+                                        auto key = ResourceManager.createResource<citro_texture_resource>(file);
+#endif
                                         resources.emplace(std::make_pair(file, key));
                                         model->textures[meshNumber] = key;
                                     }

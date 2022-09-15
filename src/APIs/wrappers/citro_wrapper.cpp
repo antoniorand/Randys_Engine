@@ -9,6 +9,79 @@ namespace RandysEngine{
 	GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO))
 
 
+    void citro_matrix::translate(float x_position, float y_position, float z_position) noexcept{
+        translation.x = x_position;
+        translation.y = y_position;
+        translation.z = z_position;
+        changed = true;
+    }
+
+    void citro_matrix::rotate(float x_rotation, float y_rotation, float z_rotation) noexcept{
+        rotation.x = x_rotation;
+        rotation.y = y_rotation;
+        rotation.z = z_rotation;
+        changed = true;
+    }
+
+    void citro_matrix::scale(float x_scale, float y_scale, float z_scale) noexcept{
+        scalation.x = x_scale;
+        scalation.y = y_scale;
+        scalation.z = z_scale;
+        changed = true;
+    }
+
+    float citro_matrix::getTranslate_x() const noexcept{
+        return translation.x;
+    }
+
+    float citro_matrix::getTranslate_y() const noexcept{
+        return translation.y;
+    }
+
+    float citro_matrix::getTranslate_z() const noexcept{
+        return translation.z;
+    }
+
+    float citro_matrix::getRotation_x() const noexcept{
+        return rotation.x;
+    }
+
+    float citro_matrix::getRotation_y() const noexcept{
+        return rotation.y;
+    }
+
+    float citro_matrix::getRotation_z() const noexcept{
+        return rotation.z;
+    }
+
+    float citro_matrix::getScale_x() const noexcept{
+        return scalation.x;
+    }
+
+    float citro_matrix::getScale_y() const noexcept{
+        return scalation.y;
+    }
+
+    float citro_matrix::getScale_z() const noexcept{
+        return scalation.z;
+    }
+
+    const C3D_Mtx& citro_matrix::getTransformationMatrix() noexcept{
+        if(changed){
+            //might be a different order;
+            Mtx_Identity(&transform);
+            Mtx_Translate(&transform, translation.x,
+                translation.y,translation.z, true);
+            Mtx_RotateX(&transform, rotation.x, true);
+            Mtx_RotateY(&transform, rotation.y, true);
+            Mtx_RotateZ(&transform, rotation.z, true);
+            Mtx_Scale(&transform,scalation.x,scalation.y,scalation.z);
+        }
+        return transform;
+    }
+    
+
+
     // Helper function for loading a texture from memory
     bool loadTextureFromFile(C3D_Tex* tex, C3D_TexCube* cube,
         const char* name){

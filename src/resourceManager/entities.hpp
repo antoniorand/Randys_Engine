@@ -2,7 +2,9 @@
 #include "resourceManager.hpp"
 
 #ifndef __3DS__
-#include "../APIs/wrappers/gl_wrapper.hpp"
+    #include "../APIs/wrappers/gl_wrapper.hpp"
+#else
+    #include "../APIs/wrappers/citro_wrapper.hpp"
 #endif
 
 namespace RandysEngine{
@@ -65,6 +67,8 @@ namespace RandysEngine{
 
 #ifndef __3DS__
             gl_matrix transformationMatrix;
+#else
+            citro_matrix transformationMatrix;
 #endif
 
             std::array<SlotMap::SlotMap_Key,maxChildren> childrenNodes{};
