@@ -63,20 +63,9 @@ namespace RandysEngine{
 
         std::map<std::string,ResourceManager::KeyId> resources;
 
-        ResourceManager::KeyId triangle_Mesh;
-        ResourceManager::KeyId face_texture;
-
         public:
             
-            Rendering_Engine(){
-                #ifndef __3DS__
-                    triangle_Mesh = ResourceManager.createResource<gl_mesh_resource>("");
-                    face_texture = ResourceManager.createResource<gl_texture_resource>("");
-                #else
-                    triangle_Mesh = ResourceManager.createResource<citro_mesh_resource>("");
-                    face_texture = ResourceManager.createResource<citro_texture_resource>("");
-                #endif
-            };
+            Rendering_Engine(){};
             ~Rendering_Engine(){};
 
             //Templated function that lets you add a layer of an specific type in the back of the list
@@ -85,10 +74,9 @@ namespace RandysEngine{
                 bool devolver = false;
 
                 if(layers.size() < maxLayers){
-                    Layer_Type newLayer{ResourceManager,args...};
                     devolver = true;
                     //std::cout << "Inserting layer of type " << typeid(Layer_Type).name() << " in the back of the list\n"; 
-                    layers.push_back(newLayer);
+                    layers.emplace_back(std::in_place_type<Layer_Type>,ResourceManager,args...);
                 }
                         
                 return devolver;
