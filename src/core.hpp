@@ -277,6 +277,10 @@ namespace RandysEngine{
                 return devolver;
             }
 
+            //
+            void setTranslateNode(RandysEngine::Layer_Node node, float x, float y, float z) noexcept;
+
+
             //Create a node in a specific layer
             template<typename Layer_type>
             void addTexture(const RandysEngine::Layer_Node node, unsigned int meshNumber, std::string file){

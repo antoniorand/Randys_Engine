@@ -2,61 +2,29 @@
 
 #include <cstddef>
 #include <string>
+#include <array>
 namespace RandysEngine{
 
-
-    template<typename api>
     class matrix_wrapper{
 
-        private:
-            void translate(float x_position, float y_position, float z_position) noexcept{
-                static_cast<api*>(this)->translate(x_position,y_position,z_position);
-            }
+        public:
+            virtual void translate(float x_position, float y_position, float z_position) noexcept = 0;
 
-            void rotate(float x_rotation, float y_rotation, float z_rotation) noexcept{
-                static_cast<api*>(this)->rotate(x_rotation,y_rotation,z_rotation);
-            }
+            virtual void rotate(float x_rotation, float y_rotation, float z_rotation) noexcept = 0;
 
-            void scale(float x_scale, float y_scale, float z_scale) noexcept{
-                static_cast<api*>(this)->scale(x_scale,y_scale,z_scale);
-            }
+            virtual void scale(float x_scale, float y_scale, float z_scale) noexcept = 0;
 
+            virtual void setTranslation(float x_position, float y_position, float z_position) noexcept = 0;
 
-            float getTranslate_x() const noexcept{
-                return static_cast<api*>(this)->getTranslate_x();
-            }
+            virtual void setRotation(float x_rotation, float y_rotation, float z_rotation) noexcept = 0;
 
-            float getTranslate_y() const noexcept{
-                return static_cast<api*>(this)->getTranslate_y();
-            }
+            virtual void setScalation(float x_scale, float y_scale, float z_scale) noexcept = 0;
 
-            float getTranslate_z() const noexcept{
-                return static_cast<api*>(this)->getTranslate_z();
-            }
+            virtual std::array<float,3> getTranslation() const noexcept = 0;
 
-            float getRotation_x() const noexcept{
-                return static_cast<api*>(this)->getRotation_x();
-            }            
+            virtual std::array<float,3> getRotation() const noexcept = 0;
 
-            float getRotation_y() const noexcept{
-                return static_cast<api*>(this)->getRotation_y();
-            }
-
-            float getRotation_z() const noexcept{
-                return static_cast<api*>(this)->getRotation_z();
-            }
-
-            float getScale_x() const noexcept{
-                return static_cast<api*>(this)->getRotation_x();
-            }
-
-            float getScale_y() const noexcept{
-                return static_cast<api*>(this)->getRotation_y();
-            }
-
-            float getScale_z() const noexcept{
-                return static_cast<api*>(this)->getRotation_z();
-            }
+            virtual std::array<float,3> getScale() const noexcept = 0;
 
     };
 
@@ -123,6 +91,7 @@ namespace RandysEngine{
         void setFloat(const std::string &name, float value) const{
             static_cast<api*>(this)->setFloat(name,value);
         }
+        
     };
 
     template<typename api>

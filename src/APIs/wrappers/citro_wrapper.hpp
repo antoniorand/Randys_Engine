@@ -10,7 +10,7 @@
 
 namespace RandysEngine{
 
-    class citro_matrix : matrix_wrapper<citro_matrix>{
+    class citro_matrix : public matrix_wrapper{
         C3D_Mtx transform;
 
         bool changed{false};
@@ -100,6 +100,7 @@ namespace RandysEngine{
         void setBool(const std::string &name, bool value) const;
         void setInt(const std::string &name, int value) const;
         void setFloat(const std::string &name, float value) const;
+        void setMat4(const std::string &name, citro_matrix &mat) const;
     };
 
     struct citro_screen : screen_wrapper<citro_screen>{

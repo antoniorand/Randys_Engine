@@ -3,6 +3,7 @@
 #include "../GLAD/glad.h"
 #include <glm/glm.hpp>
 #include "glm/gtc/matrix_transform.hpp"
+#include <glm/gtc/type_ptr.hpp>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <fstream>
@@ -10,7 +11,10 @@
 
 namespace RandysEngine{
 
-    class gl_matrix : matrix_wrapper<gl_matrix>{
+    //forward declaration
+    struct gl_shader;
+
+    class gl_matrix : public matrix_wrapper{
         glm::mat4 transform{glm::mat4(1.0f)};
 
         bool changed{false};
@@ -18,6 +22,11 @@ namespace RandysEngine{
         glm::vec3 translation {glm::vec3(0.0f)};
         glm::vec3 rotation {glm::vec3(0.0f)};
         glm::vec3 scalation {glm::vec3(0.0f)};
+
+        protected: 
+
+            friend struct gl_shader;
+            const glm::mat4& getTransformationMatrix() noexcept;
 
         public:
 
@@ -29,25 +38,19 @@ namespace RandysEngine{
 
             void scale(float x_scale, float y_scale, float z_scale) noexcept;
 
-            float getTranslate_x() const noexcept;
+            void setTranslation(float x_position, float y_position, float z_position) noexcept;
 
-            float getTranslate_y() const noexcept;
+            void setRotation(float x_rotation, float y_rotation, float z_rotation) noexcept;
 
-            float getTranslate_z() const noexcept;
+            void setScalation(float x_scale, float y_scale, float z_scale) noexcept;
 
-            float getRotation_x() const noexcept;
+            std::array<float,3> getTranslation() const noexcept;
 
-            float getRotation_y() const noexcept;
+            std::array<float,3> getRotation() const noexcept;
 
-            float getRotation_z() const noexcept;
+            std::array<float,3> getScale() const noexcept;
 
-            float getScale_x() const noexcept;
-
-            float getScale_y() const noexcept;
-
-            float getScale_z() const noexcept;
-
-            const glm::mat4& getTransformationMatrix() noexcept;
+            
     };  
 
     struct gl_texture_resource : texture_resource_wrapper<gl_texture_resource>{
@@ -90,6 +93,7 @@ namespace RandysEngine{
         void setBool(const std::string &name, bool value) const;
         void setInt(const std::string &name, int value) const;
         void setFloat(const std::string &name, float value) const;
+        void setMat4(const std::string &name, gl_matrix &mat) const;
     };
 
     struct gl_screen : screen_wrapper<gl_screen>{
@@ -107,7 +111,6 @@ namespace RandysEngine{
 
         bool isAppRunning() const noexcept;
             
-
         void closeApp() noexcept;
 
         void prepareDraw() const noexcept;

@@ -174,6 +174,12 @@ namespace RandysEngine{
         glUniform1f(glGetUniformLocation(shaderProgram, name.c_str()), value); 
     }
 
+    void gl_shader::setMat4(const std::string &name, gl_matrix& mat) const{
+        unsigned int location = glGetUniformLocation(shaderProgram, name.c_str());
+        auto value = glm::value_ptr(mat.getTransformationMatrix());
+        glUniformMatrix4fv(location, 1, GL_FALSE, value);
+    }
+
 
     gl_shader::~gl_shader() noexcept{
         
@@ -270,60 +276,60 @@ namespace RandysEngine{
     }
 
     void gl_matrix::translate(float x_position, float y_position, float z_position) noexcept{
+        translation.x += x_position;
+        translation.y += y_position;
+        translation.z += z_position;
+        changed = true;
+    }
+
+    void gl_matrix::rotate(float x_rotation, float y_rotation, float z_rotation) noexcept{
+        rotation.x += x_rotation;
+        rotation.y += y_rotation;
+        rotation.z += z_rotation;
+        changed = true;
+    }
+
+    void gl_matrix::scale(float x_scale, float y_scale, float z_scale) noexcept{
+        scalation.x += x_scale;
+        scalation.y += y_scale;
+        scalation.z += z_scale;
+        changed = true;
+    }
+
+    void gl_matrix::setTranslation(float x_position, float y_position, float z_position) noexcept{
         translation.x = x_position;
         translation.y = y_position;
         translation.z = z_position;
         changed = true;
     }
 
-    void gl_matrix::rotate(float x_rotation, float y_rotation, float z_rotation) noexcept{
+    void gl_matrix::setRotation(float x_rotation, float y_rotation, float z_rotation) noexcept{
         rotation.x = x_rotation;
         rotation.y = y_rotation;
         rotation.z = z_rotation;
         changed = true;
     }
 
-    void gl_matrix::scale(float x_scale, float y_scale, float z_scale) noexcept{
+    void gl_matrix::setScalation(float x_scale, float y_scale, float z_scale) noexcept{
         scalation.x = x_scale;
         scalation.y = y_scale;
         scalation.z = z_scale;
         changed = true;
     }
 
-    float gl_matrix::getTranslate_x() const noexcept{
-        return translation.x;
+    std::array<float,3> gl_matrix::getTranslation() const noexcept{
+        
+        return {{translation.x,translation.y,translation.z}};
     }
 
-    float gl_matrix::getTranslate_y() const noexcept{
-        return translation.y;
+    std::array<float,3> gl_matrix::getRotation() const noexcept{
+        
+        return {{translation.x,translation.y,translation.z}};
     }
 
-    float gl_matrix::getTranslate_z() const noexcept{
-        return translation.z;
-    }
-
-    float gl_matrix::getRotation_x() const noexcept{
-        return rotation.x;
-    }
-
-    float gl_matrix::getRotation_y() const noexcept{
-        return rotation.y;
-    }
-
-    float gl_matrix::getRotation_z() const noexcept{
-        return rotation.z;
-    }
-
-    float gl_matrix::getScale_x() const noexcept{
-        return scalation.x;
-    }
-
-    float gl_matrix::getScale_y() const noexcept{
-        return scalation.y;
-    }
-
-    float gl_matrix::getScale_z() const noexcept{
-        return scalation.z;
+    std::array<float,3> gl_matrix::getScale() const noexcept{
+        
+        return {{translation.x,translation.y,translation.z}};
     }
 
     const glm::mat4& gl_matrix::getTransformationMatrix() noexcept{

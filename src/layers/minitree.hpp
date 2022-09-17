@@ -6,12 +6,7 @@
 #include <vector>
 #include "../resourceManager/entities.hpp"
 
-#ifndef __3DS__
-    #include <glm/glm.hpp>
-    #include "../APIs/wrappers/gl_wrapper.hpp"
-#else
-    #include "../APIs/wrappers/citro_wrapper.hpp"
-#endif
+
 namespace RandysEngine{
     
     constexpr std::size_t maxNodesMinitree = 16;
@@ -23,7 +18,7 @@ namespace RandysEngine{
 
         using SlotMapNodes = RandysEngine::SlotMap::SlotMap<
                 MinitreeNode,
-                RandysEngine::Pool::Static_pool_allocator<MinitreeNode,32>
+                RandysEngine::Pool::Static_pool_allocator<MinitreeNode,32*4>
                 >;
 
         using SlotMapModels = RandysEngine::SlotMap::SlotMap<
@@ -41,24 +36,35 @@ namespace RandysEngine{
                 RandysEngine::Pool::Static_pool_allocator<Camera_Entity,8*4>
                 >;
 
+        using SlotMapMatrixes = RandysEngine::SlotMap::SlotMap<
+                gl_matrix,
+                RandysEngine::Pool::Static_pool_allocator<gl_matrix,32*4>
+        >;
+
+
         SlotMapNodes nodes;
         SlotMapModels models;
         SlotMapLights lights;
         SlotMapCameras cameras;
+        SlotMapMatrixes matrixes;
 
         SlotMap::SlotMap_Key rootNode;
         
-
-        bool activated {true};
-
         public:
 
             layer_minitree(ResourceManager& man) 
                 : layer_interface<layer_minitree>(man), nodes{maxNodesMinitree},
-                    models{maxModelsMinitree}, lights{maxLightsMinitree}, cameras{maxCamerasMinitree}{
+                    models{maxModelsMinitree}, lights{maxLightsMinitree}, 
+                    cameras{maxCamerasMinitree}, matrixes{maxNodesMinitree}
+                    {
                 MinitreeNode e_rootNode;
+#ifndef __3DS__
+                e_rootNode.matrixKey = matrixes.push_back(gl_matrix{});
+#else
+                e_rootNode.matrixKey = matrixes.push_back(citro_matrix{});
+#endif
                 rootNode = nodes.push_back(e_rootNode);
-                
+
             };
             ~layer_minitree(){};
 
@@ -72,13 +78,21 @@ namespace RandysEngine{
 
             RandysEngine::Model_Entity* getModel(RandysEngine::Layer_Node node) const noexcept;
             
+            bool setTranslationMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept;
+
             void activate(){
                 activated = true;
             };
             void deactivate(){
                 activated = false;
             };
-            bool draw() const;
+            bool draw(
+#ifndef __3DS__
+                RandysEngine::gl_shader* shader
+#else
+                RandysEngine::citro_shader* shader
+#endif
+            ) const;
             bool interact() const{
                 return false;
             }
