@@ -170,9 +170,12 @@ namespace RandysEngine{
         if(input.layerId == this->instance && input.isValid){
 
             auto& oldNode = *nodes.atPosition(input.reference);
-            auto matrix_to_translate = matrixes.atPosition(oldNode.matrixKey);
+            auto& matrix_to_translate = *matrixes.atPosition(oldNode.matrixKey);
 
-            matrix_to_translate->setTranslation(x,y,z);
+            matrix_to_translate.translation[0] = x;
+            matrix_to_translate.translation[1] = y;
+            matrix_to_translate.translation[2] = z;
+            matrix_to_translate.changed = true;
 
             devolver = true;
         }

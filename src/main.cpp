@@ -17,7 +17,7 @@ int main(){
 
     renderer.addTexture<RandysEngine::layer_minitree>(node2,meshN,"resources/face.jpg");
 
-    renderer.setTranslateNode(node2,-0.2,0.3,0);
+    renderer.setTranslateNode(node2,0.0f,-1.0f,0.0f);
 
     while(renderer.isAppRunning()){
         if(renderer.readKeyPressed(RandysEngine::KeyInput::exit)){

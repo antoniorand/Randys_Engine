@@ -5,26 +5,13 @@
 #include <array>
 namespace RandysEngine{
 
-    class matrix_wrapper{
+    struct matrix_wrapper{
 
-        public:
-            virtual void translate(float x_position, float y_position, float z_position) noexcept = 0;
-
-            virtual void rotate(float x_rotation, float y_rotation, float z_rotation) noexcept = 0;
-
-            virtual void scale(float x_scale, float y_scale, float z_scale) noexcept = 0;
-
-            virtual void setTranslation(float x_position, float y_position, float z_position) noexcept = 0;
-
-            virtual void setRotation(float x_rotation, float y_rotation, float z_rotation) noexcept = 0;
-
-            virtual void setScalation(float x_scale, float y_scale, float z_scale) noexcept = 0;
-
-            virtual std::array<float,3> getTranslation() const noexcept = 0;
-
-            virtual std::array<float,3> getRotation() const noexcept = 0;
-
-            virtual std::array<float,3> getScale() const noexcept = 0;
+        std::array<float,3> translation{0.0f,0.0f,0.0f};
+        std::array<float,3> rotation{0.0f,0.0f,0.0f};
+        std::array<float,3> scalation{1.0f,1.0f,1.0f};
+        
+        bool changed{false};
 
     };
 

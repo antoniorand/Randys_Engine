@@ -275,72 +275,20 @@ namespace RandysEngine{
         glBindVertexArray(0); // no need to unbind it every time 
     }
 
-    void gl_matrix::translate(float x_position, float y_position, float z_position) noexcept{
-        translation.x += x_position;
-        translation.y += y_position;
-        translation.z += z_position;
-        changed = true;
-    }
-
-    void gl_matrix::rotate(float x_rotation, float y_rotation, float z_rotation) noexcept{
-        rotation.x += x_rotation;
-        rotation.y += y_rotation;
-        rotation.z += z_rotation;
-        changed = true;
-    }
-
-    void gl_matrix::scale(float x_scale, float y_scale, float z_scale) noexcept{
-        scalation.x += x_scale;
-        scalation.y += y_scale;
-        scalation.z += z_scale;
-        changed = true;
-    }
-
-    void gl_matrix::setTranslation(float x_position, float y_position, float z_position) noexcept{
-        translation.x = x_position;
-        translation.y = y_position;
-        translation.z = z_position;
-        changed = true;
-    }
-
-    void gl_matrix::setRotation(float x_rotation, float y_rotation, float z_rotation) noexcept{
-        rotation.x = x_rotation;
-        rotation.y = y_rotation;
-        rotation.z = z_rotation;
-        changed = true;
-    }
-
-    void gl_matrix::setScalation(float x_scale, float y_scale, float z_scale) noexcept{
-        scalation.x = x_scale;
-        scalation.y = y_scale;
-        scalation.z = z_scale;
-        changed = true;
-    }
-
-    std::array<float,3> gl_matrix::getTranslation() const noexcept{
-        
-        return {{translation.x,translation.y,translation.z}};
-    }
-
-    std::array<float,3> gl_matrix::getRotation() const noexcept{
-        
-        return {{translation.x,translation.y,translation.z}};
-    }
-
-    std::array<float,3> gl_matrix::getScale() const noexcept{
-        
-        return {{translation.x,translation.y,translation.z}};
-    }
-
     const glm::mat4& gl_matrix::getTransformationMatrix() noexcept{
         if(changed){
             glm::mat4 M{glm::mat4(1.0f)};
-            transform =  M * glm::translate(M,translation)  
+            glm::vec3 
+                trans{glm::vec3(translation[0],translation[1],translation[2])},
+                rot{glm::vec3(rotation[0],rotation[1],rotation[2])},
+                scale{glm::vec3(scalation[0],scalation[1],scalation[2])};
+
+            transform =  M * glm::translate(M,trans)  
             * (
-                glm::rotate(M,rotation.z,{0.0f,0.0f,1.0f})*
-                glm::rotate(M,rotation.y,{0.0f,1.0f,0.0f})*
-                glm::rotate(M,rotation.x,{1.0f,0.0f,0.0f}))
-            * glm::scale(M,scalation);
+                glm::rotate(M,rot.z,{0.0f,0.0f,1.0f})*
+                glm::rotate(M,rot.y,{0.0f,1.0f,0.0f})*
+                glm::rotate(M,rot.x,{1.0f,0.0f,0.0f}))
+            * glm::scale(M,scale);
         }
         return transform;
     }

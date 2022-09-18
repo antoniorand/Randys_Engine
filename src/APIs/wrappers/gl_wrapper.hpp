@@ -14,43 +14,16 @@ namespace RandysEngine{
     //forward declaration
     struct gl_shader;
 
-    class gl_matrix : public matrix_wrapper{
-        glm::mat4 transform{glm::mat4(1.0f)};
-
-        bool changed{false};
-
-        glm::vec3 translation {glm::vec3(0.0f)};
-        glm::vec3 rotation {glm::vec3(0.0f)};
-        glm::vec3 scalation {glm::vec3(0.0f)};
+    struct gl_matrix : public matrix_wrapper{
+        
+        private:
+            glm::mat4 transform{glm::mat4(1.0f)};
 
         protected: 
 
             friend struct gl_shader;
             const glm::mat4& getTransformationMatrix() noexcept;
 
-        public:
-
-            gl_matrix(){};
-
-            void translate(float x_position, float y_position, float z_position) noexcept;
-
-            void rotate(float x_rotation, float y_rotation, float z_rotation) noexcept;
-
-            void scale(float x_scale, float y_scale, float z_scale) noexcept;
-
-            void setTranslation(float x_position, float y_position, float z_position) noexcept;
-
-            void setRotation(float x_rotation, float y_rotation, float z_rotation) noexcept;
-
-            void setScalation(float x_scale, float y_scale, float z_scale) noexcept;
-
-            std::array<float,3> getTranslation() const noexcept;
-
-            std::array<float,3> getRotation() const noexcept;
-
-            std::array<float,3> getScale() const noexcept;
-
-            
     };  
 
     struct gl_texture_resource : texture_resource_wrapper<gl_texture_resource>{
