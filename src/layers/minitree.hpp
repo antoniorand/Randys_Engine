@@ -37,8 +37,13 @@ namespace RandysEngine{
                 >;
 
         using SlotMapMatrixes = RandysEngine::SlotMap::SlotMap<
+#ifndef __3DS__
                 gl_matrix,
                 RandysEngine::Pool::Static_pool_allocator<gl_matrix,32*4>
+#else
+                citro_matrix,
+                RandysEngine::Pool::Static_pool_allocator<citro_matrix,32*4>
+#endif
         >;
 
 
@@ -52,20 +57,7 @@ namespace RandysEngine{
         
         public:
 
-            layer_minitree(ResourceManager& man) 
-                : layer_interface<layer_minitree>(man), nodes{maxNodesMinitree},
-                    models{maxModelsMinitree}, lights{maxLightsMinitree}, 
-                    cameras{maxCamerasMinitree}, matrixes{maxNodesMinitree}
-                    {
-                MinitreeNode e_rootNode;
-#ifndef __3DS__
-                e_rootNode.matrixKey = matrixes.push_back(gl_matrix{});
-#else
-                e_rootNode.matrixKey = matrixes.push_back(citro_matrix{});
-#endif
-                rootNode = nodes.push_back(e_rootNode);
-
-            };
+            layer_minitree(ResourceManager& man);
             ~layer_minitree(){};
 
             [[nodiscard]] const RandysEngine::Layer_Node createNode() noexcept;

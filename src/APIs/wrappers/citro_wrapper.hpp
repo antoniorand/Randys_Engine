@@ -10,46 +10,23 @@
 
 namespace RandysEngine{
 
-    class citro_matrix : public matrix_wrapper{
-        C3D_Mtx transform;
+    struct citro_matrix : public matrix_wrapper{
 
-        bool changed{false};
+        private:
 
-        C3D_FVec translation{{0.0f,0.0f,0.0f,0.0f}};
-        C3D_FVec rotation{{0.0f,0.0f,0.0f,0.0f}};
-        C3D_FVec scalation{{0.0f,0.0f,0.0f,0.0f}};
+            C3D_Mtx transform;
+
+        protected:
+
+            friend struct citro_shader;
+            const C3D_Mtx& getTransformationMatrix() noexcept;
 
         public:
 
             citro_matrix(){
                 Mtx_Identity(&transform);
             }
-
-            void translate(float x_position, float y_position, float z_position) noexcept;
-
-            void rotate(float x_rotation, float y_rotation, float z_rotation) noexcept;
-
-            void scale(float x_scale, float y_scale, float z_scale) noexcept;
-
-            float getTranslate_x() const noexcept;
-
-            float getTranslate_y() const noexcept;
-
-            float getTranslate_z() const noexcept;
-
-            float getRotation_x() const noexcept;
-
-            float getRotation_y() const noexcept;
-
-            float getRotation_z() const noexcept;
-
-            float getScale_x() const noexcept;
-
-            float getScale_y() const noexcept;
-
-            float getScale_z() const noexcept;
-
-            const C3D_Mtx& getTransformationMatrix() noexcept;
+            
     };  
 
     struct citro_texture_resource : texture_resource_wrapper<citro_texture_resource>{
@@ -100,7 +77,7 @@ namespace RandysEngine{
         void setBool(const std::string &name, bool value) const;
         void setInt(const std::string &name, int value) const;
         void setFloat(const std::string &name, float value) const;
-        void setMat4(const std::string &name, citro_matrix &mat) const;
+        void setMat4(const std::string &name, citro_matrix &mat);
     };
 
     struct citro_screen : screen_wrapper<citro_screen>{

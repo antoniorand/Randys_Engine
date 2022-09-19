@@ -3,6 +3,19 @@
 
 namespace RandysEngine{
 
+    layer_minitree::layer_minitree(ResourceManager& man) : layer_interface<layer_minitree>(man), nodes{maxNodesMinitree},
+        models{maxModelsMinitree}, lights{maxLightsMinitree}, 
+        cameras{maxCamerasMinitree}, matrixes{maxNodesMinitree}{
+        
+            MinitreeNode e_rootNode;
+#ifndef __3DS__
+            e_rootNode.matrixKey = matrixes.push_back(gl_matrix{});
+#else
+            e_rootNode.matrixKey = matrixes.push_back(citro_matrix{});
+#endif
+            rootNode = nodes.push_back(e_rootNode);
+    }
+
     bool layer_minitree::draw(
 #ifndef __3DS__
                 RandysEngine::gl_shader* shader
@@ -20,7 +33,7 @@ namespace RandysEngine{
             for(SlotMap::SlotMap_Index_Type i = 0;i < models.current_size();i++){
                 auto& model = *models.atPosition(i);
                 auto& matrix = *matrixes.atPosition(model.matrixKey);
-                shader->setMat4("transform",matrix);
+                //shader->setMat4("transform",matrix);
 
                 for(unsigned int i = 0; i < Model_Entity::MAXMESHES; i++){
                     if(model.hasMesh[i]){
