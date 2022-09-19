@@ -15,9 +15,9 @@ int main(){
 
     unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node2,"triangle");
 
-    renderer.addTexture<RandysEngine::layer_minitree>(node2,meshN,"resources/face.jpg");
+    renderer.addTexture<RandysEngine::layer_minitree>(node2,meshN,"gfx:/romfs/face.t3x");
 
-    renderer.setTranslateNode(node2,90.0f,-1.0f,0.0f);
+    renderer.setTranslateNode(node2,0.1f,-0.1f,0.0f);
 
     while(renderer.isAppRunning()){
         if(renderer.readKeyPressed(RandysEngine::KeyInput::exit)){

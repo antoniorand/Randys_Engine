@@ -18,6 +18,7 @@
 ; Inputs (defined as aliases for convenience)
 .alias inpos v0
 .alias intex v1
+.alias incol v2
 
 .proc main
 	; Force the w component of inpos to be 1.0
@@ -40,6 +41,7 @@
 	;mov outclr, inclr
 
 	mov outtc0, intex
+	mov outclr, ones
 
 	; We're finished
 	end
