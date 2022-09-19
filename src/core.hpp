@@ -59,6 +59,10 @@ namespace RandysEngine{
         //The list of layers
         LayerList layers;
 
+        //Resources
+
+        std::map<std::string,ResourceManager::KeyId> resources;
+
         public:
             
             Rendering_Engine(){};
@@ -70,10 +74,9 @@ namespace RandysEngine{
                 bool devolver = false;
 
                 if(layers.size() < maxLayers){
-                    Layer_Type newLayer{ResourceManager,args...};
                     devolver = true;
                     //std::cout << "Inserting layer of type " << typeid(Layer_Type).name() << " in the back of the list\n"; 
-                    layers.push_back(newLayer);
+                    layers.emplace_back(std::in_place_type<Layer_Type>,ResourceManager,args...);
                 }
                         
                 return devolver;
@@ -101,18 +104,17 @@ namespace RandysEngine{
             template<typename Layer_type>
             bool deleteLayer(std::size_t index_of_layer){
                 bool devolver = false;
-                std::size_t counter = 0;
                 
                 auto itBegin = layers.begin();
                 auto itEnd = layers.end();
                 while(itBegin != itEnd){
                     if(std::holds_alternative<Layer_type>(*itBegin)){
-                        if(counter == index_of_layer){
+                        Layer_type* layer = &std::get<Layer_type>(*itBegin);
+                        if(layer->getInstance() == index_of_layer){
                             layers.erase(itBegin);
                             devolver = true;
                             break;
                         }
-                        else counter++;
                     }
                     itBegin++;
                 }                
@@ -124,25 +126,224 @@ namespace RandysEngine{
             template<typename Layer_type>
             Layer_type* getLayer(std::size_t index_of_layer){
                 Layer_type* devolver = nullptr;
-                std::size_t counter = 0;
                 
                 auto itBegin = layers.begin();
                 auto itEnd = layers.end();
                 while(itBegin != itEnd){
                     if(std::holds_alternative<Layer_type>(*itBegin)){
-                        if(counter == index_of_layer){
+                        Layer_type* layer = &std::get<Layer_type>(*itBegin);
+                        if(layer->getInstance() == index_of_layer){
                             devolver = &std::get<Layer_type>(*itBegin);
                             break;
                         }
-                        else counter++;
                     }
                     itBegin++;
                 }                
                 return devolver;
             }
 
+            //Create a node in a specific layer
+            template<typename Layer_type>
+            [[nodiscard]] Layer_Node createNode(std::size_t index_of_layer){
+                Layer_Node devolver;
+                
+                auto itBegin = layers.begin();
+                auto itEnd = layers.end();
+                while(itBegin != itEnd){
+                    if(std::holds_alternative<Layer_type>(*itBegin)){
+                        Layer_type* layer = &std::get<Layer_type>(*itBegin);
+                        if(layer->getInstance() == index_of_layer){
+                            layer = &std::get<Layer_type>(*itBegin);
+
+                            devolver = layer->createNode();
+                            break;
+                        }
+                    }
+                    itBegin++;
+                }                
+                return devolver;
+            }
+
+            //Create a node in a specific layer
+            template<typename Layer_type>
+            [[nodiscard]] Layer_Node createNode(const RandysEngine::Layer_Node parentNode){
+                Layer_Node devolver;
+
+                if(parentNode.isValid){
+                  
+                    auto itBegin = layers.begin();
+                    auto itEnd = layers.end();
+
+                    while(itBegin != itEnd){
+                        if(std::holds_alternative<Layer_type>(*itBegin)){
+
+                            Layer_type* layer = &std::get<Layer_type>(*itBegin);
+
+                            if(layer->getInstance() == parentNode.layerId){
+                            
+                                devolver = layer->createNode(parentNode);
+                                break;
+                            
+                            }
+                        
+                        }
+                        itBegin++;
+                    }         
+                }       
+                return devolver;
+            }
+
+            //Create a node in a specific layer
+            template<typename Layer_type>
+            void addModel(const RandysEngine::Layer_Node node){
+                if(node.isValid){
+
+                    auto itBegin = layers.begin();
+                    auto itEnd = layers.end();
+                    while(itBegin != itEnd){
+                        if(std::holds_alternative<Layer_type>(*itBegin)){
+                            Layer_type* layer = &std::get<Layer_type>(*itBegin);
+                            if(node.layerId == layer->getInstance()){
+
+                                layer->addModel(node);
+                                break;
+                            }
+                        }
+                        itBegin++;
+                    }
+                }
+            }
+
+            //Create a node in a specific layer
+            template<typename Layer_type>
+            unsigned int addMesh(const RandysEngine::Layer_Node node, std::string file){
+                
+                unsigned int devolver = RandysEngine::Model_Entity::MAXMESHES;
+
+                if(node.isValid){
+                    Layer_type* layer;
+
+                    
+
+                    auto itBegin = layers.begin();
+                    auto itEnd = layers.end();
+                    while(itBegin != itEnd){
+                        if(std::holds_alternative<Layer_type>(*itBegin)){
+                            layer = &std::get<Layer_type>(*itBegin);
+                            if(layer->getInstance() == node.layerId){
+                                RandysEngine::Model_Entity* model = layer->getModel(node);
+
+                                if(model){
+                                    for(unsigned int i = 0; i < RandysEngine::Model_Entity::MAXMESHES;i++){
+                                        if(!model->hasMesh[i]){
+                                            model->hasMesh[i] = true;
+                                            if(!meshExists(file)){
+#ifndef __3DS__
+                                                auto key = ResourceManager.createResource<gl_mesh_resource>(file);
+#else
+                                                auto key = ResourceManager.createResource<citro_mesh_resource>(file);
+#endif
+                                                resources.emplace(std::make_pair(file, key));
+                                                model->meshes[i] = key;
+                                            }
+                                            else{
+                                                auto key = resources.find(file)->second;
+                                                model->meshes[i] = key;
+                                            }
+                                            devolver = i;
+                                            break;
+                                        }
+                                    }
+                                }
+
+                                break;
+                            }
+                        }
+                        itBegin++;
+                    }
+                }
+                return devolver;
+            }
+
+            //
+            void setTranslateNode(RandysEngine::Layer_Node node, float x, float y, float z) noexcept;
+
+
+            //Create a node in a specific layer
+            template<typename Layer_type>
+            void addTexture(const RandysEngine::Layer_Node node, unsigned int meshNumber, std::string file){
+                
+                if(node.isValid && meshNumber != RandysEngine::Model_Entity::MAXMESHES){
+                    Layer_type* layer;
+
+                    auto itBegin = layers.begin();
+                    auto itEnd = layers.end();
+                    while(itBegin != itEnd){
+                        if(std::holds_alternative<Layer_type>(*itBegin)){
+                            layer = &std::get<Layer_type>(*itBegin);
+                            if(layer->getInstance() == node.layerId){
+                                RandysEngine::Model_Entity* model = layer->getModel(node);
+                                if(model){
+                                    model->hasTexture[meshNumber] = true;
+                                    if(!textureExists(file)){
+#ifndef __3DS__
+                                        auto key = ResourceManager.createResource<gl_texture_resource>(file);
+#else
+                                        auto key = ResourceManager.createResource<citro_texture_resource>(file);
+#endif
+                                        resources.emplace(std::make_pair(file, key));
+                                        model->textures[meshNumber] = key;
+                                    }
+                                    else{
+                                        auto key = resources.find(file)->second;
+                                        model->textures[meshNumber] = key;
+                                    }
+                                }
+
+                                break;
+                            }
+                        }
+                        itBegin++;
+                    }
+                }
+            }
+
+            using indexVector = std::vector<
+                unsigned int, 
+                RandysEngine::Pool::Static_pool_allocator<unsigned int,20>
+                >;
+
+            //Get a list of the specific type of layer and their indexes
+            template<typename Layer_type> 
+            indexVector getLayerIndexes(){
+                indexVector devolver;
+
+                devolver.reserve(20);
+
+                auto itBegin = layers.begin();
+                auto itEnd = layers.end();
+                while(itBegin != itEnd){
+                    if(std::holds_alternative<Layer_type>(*itBegin)){
+                        Layer_type* layer;
+                        layer = &std::get<Layer_type>(*itBegin);
+                        devolver.push_back(layer->getInstance());
+                    }
+                    itBegin++;
+                }
+                
+                return devolver;
+            }
+            
             //Run the frame, not only drawing it but interacting with it
             void runFrame();
+
+            bool meshExists(std::string file);
+
+            bool reserveMeshResource(std::string file);
+
+            bool textureExists(std::string file);
+
+            bool reserveTextureResource(std::string file);
 
             //Read the input from the key
             bool readKeyPressed(KeyInput input) const{

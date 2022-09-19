@@ -1,6 +1,9 @@
 #pragma once
 #include "base_wrapper.hpp"
 #include "../GLAD/glad.h"
+#include <glm/glm.hpp>
+#include "glm/gtc/matrix_transform.hpp"
+#include <glm/gtc/type_ptr.hpp>
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <fstream>
@@ -8,8 +11,19 @@
 
 namespace RandysEngine{
 
-    struct gl_matrix : matrix_wrapper<gl_matrix>{
+    //forward declaration
+    struct gl_shader;
+
+    struct gl_matrix : public matrix_wrapper{
         
+        private:
+            glm::mat4 transform{glm::mat4(1.0f)};
+
+        protected: 
+
+            friend struct gl_shader;
+            const glm::mat4& getTransformationMatrix() noexcept;
+
     };  
 
     struct gl_texture_resource : texture_resource_wrapper<gl_texture_resource>{
@@ -52,6 +66,7 @@ namespace RandysEngine{
         void setBool(const std::string &name, bool value) const;
         void setInt(const std::string &name, int value) const;
         void setFloat(const std::string &name, float value) const;
+        void setMat4(const std::string &name, gl_matrix &mat) const;
     };
 
     struct gl_screen : screen_wrapper<gl_screen>{
@@ -69,7 +84,6 @@ namespace RandysEngine{
 
         bool isAppRunning() const noexcept;
             
-
         void closeApp() noexcept;
 
         void prepareDraw() const noexcept;

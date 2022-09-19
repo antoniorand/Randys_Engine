@@ -1,15 +1,26 @@
 #pragma once
 #include "resourceManager.hpp"
 
+#ifndef __3DS__
+    #include "../APIs/wrappers/gl_wrapper.hpp"
+#else
+    #include "../APIs/wrappers/citro_wrapper.hpp"
+#endif
+
 namespace RandysEngine{
 
     enum class entityType_enum{
         model,
         light,
-        camera
+        camera,
+        none
     };
 
-    struct Model_Entity{
+    struct Base_Entity{
+        SlotMap::SlotMap_Key matrixKey;
+    };
+
+    struct Model_Entity : Base_Entity{
 
         static constexpr unsigned int MAXMESHES {4};
 
@@ -34,7 +45,7 @@ namespace RandysEngine{
         specular
     };
 
-    struct Light_Entity{
+    struct Light_Entity : Base_Entity{
 
         std::array<int,4> intensidad;
         lightType_enum type;
@@ -43,24 +54,32 @@ namespace RandysEngine{
 
     };
 
-    struct Camera_Entity{
+    struct Camera_Entity : Base_Entity{
 
         float left, right, lower, upper, close, far;
 
     };
 
     struct MinitreeNode{
+            ////
             static constexpr unsigned int maxChildren {4};
-
+            ////
             SlotMap::SlotMap_Key entity;
-            entityType_enum type_entity;
-
+            entityType_enum type_entity{entityType_enum::none};
+            ////
             SlotMap::SlotMap_Key parentNode;
             bool hasParent{false};
-
+            ////
+            SlotMap::SlotMap_Key matrixKey;
             ////
             std::array<SlotMap::SlotMap_Key,maxChildren> childrenNodes{};
             std::array<bool,maxChildren> hasChildren{};
+
+            MinitreeNode(){
+                for(unsigned int i = 0; i < maxChildren;i++){
+                    hasChildren[i] = false;
+                }
+            }
     };
 
 }

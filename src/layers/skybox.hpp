@@ -13,7 +13,6 @@ namespace RandysEngine{
         };
 
         GraphicData skybox {};
-        bool activated {true};
 
         //Shader skyboxShader{"shaders/skybox.vs", "shaders/skybox.fs"};
 
@@ -104,7 +103,13 @@ namespace RandysEngine{
             void deactivate(){
                 activated = false;
             };
-            bool draw() const{
+            bool draw(
+#ifndef __3DS__
+                RandysEngine::gl_shader* shader
+#else
+                RandysEngine::citro_shader* shader
+#endif
+            ) const{
                 bool devolver = true;
                 if(!activated){
                     std::cout << "Cannot draw deactivated layer\n";
@@ -117,6 +122,10 @@ namespace RandysEngine{
             };
             bool interact() const{
                 std::cout << "Cannot interact with skybox layer\n";
+                return false;
+            }
+
+            bool setTranslationMatrix(const RandysEngine::Layer_Node node, float x, float y, float z) const noexcept{
                 return false;
             }
     };

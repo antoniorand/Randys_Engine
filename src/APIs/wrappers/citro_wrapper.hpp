@@ -10,8 +10,23 @@
 
 namespace RandysEngine{
 
-    struct citro_matrix : matrix_wrapper<citro_matrix>{
-        
+    struct citro_matrix : public matrix_wrapper{
+
+        private:
+
+            C3D_Mtx transform;
+
+        protected:
+
+            friend struct citro_shader;
+            const C3D_Mtx& getTransformationMatrix() noexcept;
+
+        public:
+
+            citro_matrix(){
+                Mtx_Identity(&transform);
+            }
+            
     };  
 
     struct citro_texture_resource : texture_resource_wrapper<citro_texture_resource>{
@@ -62,6 +77,7 @@ namespace RandysEngine{
         void setBool(const std::string &name, bool value) const;
         void setInt(const std::string &name, int value) const;
         void setFloat(const std::string &name, float value) const;
+        void setMat4(const std::string &name, citro_matrix &mat);
     };
 
     struct citro_screen : screen_wrapper<citro_screen>{

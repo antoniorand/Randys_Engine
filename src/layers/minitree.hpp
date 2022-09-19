@@ -6,12 +6,7 @@
 #include <vector>
 #include "../resourceManager/entities.hpp"
 
-#ifndef __3DS__
-    #include <glm/glm.hpp>
-    #include "../APIs/wrappers/gl_wrapper.hpp"
-#else
-    #include "../APIs/wrappers/citro_wrapper.hpp"
-#endif
+
 namespace RandysEngine{
     
     constexpr std::size_t maxNodesMinitree = 16;
@@ -23,7 +18,7 @@ namespace RandysEngine{
 
         using SlotMapNodes = RandysEngine::SlotMap::SlotMap<
                 MinitreeNode,
-                RandysEngine::Pool::Static_pool_allocator<MinitreeNode,32>
+                RandysEngine::Pool::Static_pool_allocator<MinitreeNode,32*4>
                 >;
 
         using SlotMapModels = RandysEngine::SlotMap::SlotMap<
@@ -41,40 +36,41 @@ namespace RandysEngine{
                 RandysEngine::Pool::Static_pool_allocator<Camera_Entity,8*4>
                 >;
 
+        using SlotMapMatrixes = RandysEngine::SlotMap::SlotMap<
+#ifndef __3DS__
+                gl_matrix,
+                RandysEngine::Pool::Static_pool_allocator<gl_matrix,32*4>
+#else
+                citro_matrix,
+                RandysEngine::Pool::Static_pool_allocator<citro_matrix,32*4>
+#endif
+        >;
+
+
         SlotMapNodes nodes;
         SlotMapModels models;
         SlotMapLights lights;
         SlotMapCameras cameras;
+        SlotMapMatrixes matrixes;
 
         SlotMap::SlotMap_Key rootNode;
-        ResourceManager::KeyId triangle_Mesh;
-        ResourceManager::KeyId face_texture;
-
-        bool activated {true};
-
+        
         public:
 
-            layer_minitree(ResourceManager& man) 
-                : layer_interface<layer_minitree>(man), nodes{maxNodesMinitree},
-                    models{maxModelsMinitree}, lights{maxLightsMinitree}, cameras{maxCamerasMinitree}{
-                MinitreeNode e_rootNode;
-                rootNode = nodes.push_back(e_rootNode);
-                #ifndef __3DS__
-                    triangle_Mesh = man.createResource<gl_mesh_resource>("");
-                    face_texture = man.createResource<gl_texture_resource>("");
-                #else
-                    triangle_Mesh = man.createResource<citro_mesh_resource>("");
-                    face_texture = man.createResource<citro_texture_resource>("");
-                #endif
-            };
+            layer_minitree(ResourceManager& man);
             ~layer_minitree(){};
 
-            [[nodiscard]] RandysEngine::Layer_Element addModel() noexcept;
+            [[nodiscard]] const RandysEngine::Layer_Node createNode() noexcept;
 
-            RandysEngine::MinitreeNode* getNode(RandysEngine::Layer_Element input) const noexcept; 
+            [[nodiscard]] const RandysEngine::Layer_Node createNode(const RandysEngine::Layer_Node) noexcept;
 
-            RandysEngine::Model_Entity* getModel(RandysEngine::Layer_Element input) const noexcept;
+            RandysEngine::MinitreeNode* getNode(const RandysEngine::Layer_Node) const noexcept;
             
+            void addModel(RandysEngine::Layer_Node node) noexcept;
+
+            RandysEngine::Model_Entity* getModel(RandysEngine::Layer_Node node) const noexcept;
+            
+            bool setTranslationMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept;
 
             void activate(){
                 activated = true;
@@ -82,7 +78,13 @@ namespace RandysEngine{
             void deactivate(){
                 activated = false;
             };
-            bool draw() const;
+            bool draw(
+#ifndef __3DS__
+                RandysEngine::gl_shader* shader
+#else
+                RandysEngine::citro_shader* shader
+#endif
+            ) const;
             bool interact() const{
                 return false;
             }

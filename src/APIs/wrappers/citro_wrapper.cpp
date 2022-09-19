@@ -9,6 +9,22 @@ namespace RandysEngine{
 	GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO))
 
 
+    const C3D_Mtx& citro_matrix::getTransformationMatrix() noexcept{
+        if(changed){
+            //might be a different order;
+            Mtx_Identity(&transform);
+            Mtx_Translate(&transform, translation[0],
+                translation[1],translation[2], true);
+            Mtx_RotateX(&transform, rotation[0], true);
+            Mtx_RotateY(&transform, rotation[1], true);
+            Mtx_RotateZ(&transform, rotation[2], true);
+            Mtx_Scale(&transform,scalation[0],scalation[1],scalation[2]);
+        }
+        return transform;
+    }
+    
+
+
     // Helper function for loading a texture from memory
     bool loadTextureFromFile(C3D_Tex* tex, C3D_TexCube* cube,
         const char* name){
@@ -138,6 +154,13 @@ namespace RandysEngine{
     void citro_shader::setFloat(const std::string &name, float value) const{
         //glUniform1f(glGetUniformLocation(shaderProgram, name.c_str()), value); 
     }
+
+    void citro_shader::setMat4(const std::string &name, citro_matrix &mat){
+        int uLocation = 
+            shaderInstanceGetUniformLocation(shaderProgram.vertexShader, name.c_str());
+        C3D_FVUnifMtx4x4(GPU_VERTEX_SHADER, uLocation,  &mat.getTransformationMatrix());
+    }
+
     citro_screen::citro_screen() noexcept{
         C3D_Init(C3D_DEFAULT_CMDBUF_SIZE);
         target = 

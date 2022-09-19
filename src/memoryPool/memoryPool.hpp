@@ -334,7 +334,7 @@ namespace RandysEngine{
                 */
                 [[nodiscard]] T* allocate(std::uint32_t n){
                     //std::cout << "Tipo del allocator: " << typeid(value_type).hash_code() << std::endl;
-                    if(n >= MAXBLOCK_TYPE)
+                    if(n > MAXBLOCK_TYPE)
                         throw std::bad_alloc();
                     return static_cast<T*>(Pool::allocate<T,MAXBLOCK_TYPE>(sizeof(T)*n));
                 }   
@@ -344,7 +344,7 @@ namespace RandysEngine{
                 @param n number of objects to be freed.
                 */
                 void deallocate(T* p, std::uint32_t n){
-                    if(n >= MAXBLOCK_TYPE)
+                    if(n > MAXBLOCK_TYPE)
                         throw std::bad_alloc();
                     Pool::deallocate<T,MAXBLOCK_TYPE>(p,n);
                 }
@@ -354,7 +354,7 @@ namespace RandysEngine{
                 @return pointer to the reserved memory.
                 */
                 [[nodiscard]] void* allocate_bytes(std::uint32_t nbytes){
-                    if(nbytes/sizeof(T) >= MAXBLOCK_TYPE)
+                    if(nbytes/sizeof(T) > MAXBLOCK_TYPE)
                         throw std::bad_alloc();
                     return static_cast<T*>(Pool::allocate<T,MAXBLOCK_TYPE>(nbytes));
 
@@ -365,7 +365,7 @@ namespace RandysEngine{
                 @param nbytes number of bytes to be freed.
                 */
                 void deallocate_bytes(void* p, std::uint32_t nbytes){
-                    if(nbytes/sizeof(T) >= MAXBLOCK_TYPE)
+                    if(nbytes/sizeof(T) > MAXBLOCK_TYPE)
                         throw std::bad_alloc();
                     Pool::deallocate<T,MAXBLOCK_TYPE>(p,nbytes);
                 }
@@ -375,7 +375,7 @@ namespace RandysEngine{
                 @return pointer to the reserved memory.
                 */
                 [[nodiscard]] T* allocate_object(size_t n = 1){
-                    if(n >= MAXBLOCK_TYPE)
+                    if(n > MAXBLOCK_TYPE)
                         throw std::bad_alloc();
                     return(static_cast<T*>(this->allocate(n)));
                 }
@@ -385,7 +385,7 @@ namespace RandysEngine{
                 @param n number of bytes to be freed.
                 */
                 void deallocate_object(T* p, size_t n = 1){
-                    if(n >= MAXBLOCK_TYPE)
+                    if(n > MAXBLOCK_TYPE)
                         throw std::bad_alloc();
                     this->deallocate(p,n);
                 }

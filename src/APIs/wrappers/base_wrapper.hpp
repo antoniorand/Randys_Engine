@@ -2,11 +2,16 @@
 
 #include <cstddef>
 #include <string>
+#include <array>
 namespace RandysEngine{
 
-
-    template<typename api>
     struct matrix_wrapper{
+
+        std::array<float,3> translation{0.0f,0.0f,0.0f};
+        std::array<float,3> rotation{0.0f,0.0f,0.0f};
+        std::array<float,3> scalation{1.0f,1.0f,1.0f};
+        
+        bool changed{false};
 
     };
 
@@ -73,6 +78,7 @@ namespace RandysEngine{
         void setFloat(const std::string &name, float value) const{
             static_cast<api*>(this)->setFloat(name,value);
         }
+        
     };
 
     template<typename api>

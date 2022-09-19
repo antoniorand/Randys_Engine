@@ -174,6 +174,12 @@ namespace RandysEngine{
         glUniform1f(glGetUniformLocation(shaderProgram, name.c_str()), value); 
     }
 
+    void gl_shader::setMat4(const std::string &name, gl_matrix& mat) const{
+        unsigned int location = glGetUniformLocation(shaderProgram, name.c_str());
+        auto value = glm::value_ptr(mat.getTransformationMatrix());
+        glUniformMatrix4fv(location, 1, GL_FALSE, value);
+    }
+
 
     gl_shader::~gl_shader() noexcept{
         
@@ -188,7 +194,7 @@ namespace RandysEngine{
 
         int width, height, channels;
         stbi_set_flip_vertically_on_load(true);
-        unsigned char *data = stbi_load("resources/face.jpg",
+        unsigned char *data = stbi_load(file.c_str(),
             &width,&height,&channels,0);
         if(data != 0){
             glGenTextures(1,&texture);
@@ -267,6 +273,24 @@ namespace RandysEngine{
         glDrawElements(GL_TRIANGLES, countIndices, GL_UNSIGNED_SHORT, 0);
 
         glBindVertexArray(0); // no need to unbind it every time 
+    }
+
+    const glm::mat4& gl_matrix::getTransformationMatrix() noexcept{
+        if(changed){
+            glm::mat4 M{glm::mat4(1.0f)};
+            glm::vec3 
+                trans{glm::vec3(translation[0],translation[1],translation[2])},
+                rot{glm::vec3(rotation[0],rotation[1],rotation[2])},
+                scale{glm::vec3(scalation[0],scalation[1],scalation[2])};
+
+            transform =  M * glm::translate(M,trans)  
+            * (
+                glm::rotate(M,rot.z,{0.0f,0.0f,1.0f})*
+                glm::rotate(M,rot.y,{0.0f,1.0f,0.0f})*
+                glm::rotate(M,rot.x,{1.0f,0.0f,0.0f}))
+            * glm::scale(M,scale);
+        }
+        return transform;
     }
 
 }
