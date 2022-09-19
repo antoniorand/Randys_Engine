@@ -33,7 +33,7 @@ namespace RandysEngine{
             for(SlotMap::SlotMap_Index_Type i = 0;i < models.current_size();i++){
                 auto& model = *models.atPosition(i);
                 auto& matrix = *matrixes.atPosition(model.matrixKey);
-                //shader->setMat4("transform",matrix);
+                shader->setMat4("modelView",matrix);
 
                 for(unsigned int i = 0; i < Model_Entity::MAXMESHES; i++){
                     if(model.hasMesh[i]){
