@@ -195,6 +195,131 @@ namespace RandysEngine{
         return devolver;
     }
 
+    bool layer_minitree::setScalationMatrix(const RandysEngine::Layer_Node input,float x, float y, float z) const noexcept{
+        bool devolver = false;
+        if(input.layerId == this->instance && input.isValid){
 
+            auto& oldNode = *nodes.atPosition(input.reference);
+            auto& matrix_to_translate = *matrixes.atPosition(oldNode.matrixKey);
+
+            matrix_to_translate.scalation[0] = x;
+            matrix_to_translate.scalation[1] = y;
+            matrix_to_translate.scalation[2] = z;
+            matrix_to_translate.changed = true;
+
+            devolver = true;
+        }
+        return devolver;
+    }
+
+    bool layer_minitree::setRotationMatrix(const RandysEngine::Layer_Node input,float x, float y, float z) const noexcept{
+        bool devolver = false;
+        if(input.layerId == this->instance && input.isValid){
+
+            auto& oldNode = *nodes.atPosition(input.reference);
+            auto& matrix_to_translate = *matrixes.atPosition(oldNode.matrixKey);
+
+            matrix_to_translate.rotation[0] = x;
+            matrix_to_translate.rotation[1] = y;
+            matrix_to_translate.rotation[2] = z;
+            matrix_to_translate.changed = true;
+
+            devolver = true;
+        }
+        return devolver;
+    }
+
+    bool layer_minitree::TranslateMatrix(const RandysEngine::Layer_Node input,float x, float y, float z) const noexcept{
+        bool devolver = false;
+        if(input.layerId == this->instance && input.isValid){
+
+            auto& oldNode = *nodes.atPosition(input.reference);
+            auto& matrix_to_translate = *matrixes.atPosition(oldNode.matrixKey);
+
+            matrix_to_translate.translation[0] += x;
+            matrix_to_translate.translation[1] += y;
+            matrix_to_translate.translation[2] += z;
+            matrix_to_translate.changed = true;
+
+            devolver = true;
+        }
+        return devolver;
+    }
+
+    bool layer_minitree::ScaleMatrix(const RandysEngine::Layer_Node input,float x, float y, float z) const noexcept{
+        bool devolver = false;
+        if(input.layerId == this->instance && input.isValid){
+
+            auto& oldNode = *nodes.atPosition(input.reference);
+            auto& matrix_to_translate = *matrixes.atPosition(oldNode.matrixKey);
+
+            matrix_to_translate.scalation[0] += x;
+            matrix_to_translate.scalation[1] += y;
+            matrix_to_translate.scalation[2] += z;
+            matrix_to_translate.changed = true;
+
+            devolver = true;
+        }
+        return devolver;
+    }
+
+    bool layer_minitree::RotateMatrix(const RandysEngine::Layer_Node input,float x, float y, float z) const noexcept{
+        bool devolver = false;
+        if(input.layerId == this->instance && input.isValid){
+
+            auto& oldNode = *nodes.atPosition(input.reference);
+            auto& matrix_to_translate = *matrixes.atPosition(oldNode.matrixKey);
+
+            matrix_to_translate.rotation[0] += x;
+            matrix_to_translate.rotation[1] += y;
+            matrix_to_translate.rotation[2] += z;
+            matrix_to_translate.changed = true;
+
+            devolver = true;
+        }
+        return devolver;
+    }
+
+    std::array<float,3> layer_minitree::getTranslationMatrix(const RandysEngine::Layer_Node input) const noexcept{
+        std::array<float,3> devolver = {0.0f,0.0f,0.0f};
+        if(input.layerId == this->instance && input.isValid){
+
+            auto& oldNode = *nodes.atPosition(input.reference);
+            const auto& matrix_to_translate = *matrixes.atPosition(oldNode.matrixKey);
+
+            devolver[0] = matrix_to_translate.translation[0];
+            devolver[1] = matrix_to_translate.translation[1];
+            devolver[2] = matrix_to_translate.translation[2];
+        }
+        return devolver;
+    }
+
+    std::array<float,3> layer_minitree::getScalationMatrix(const RandysEngine::Layer_Node input) const noexcept{
+        std::array<float,3> devolver = {0.0f,0.0f,0.0f};
+        if(input.layerId == this->instance && input.isValid){
+
+            auto& oldNode = *nodes.atPosition(input.reference);
+            const auto& matrix_to_translate = *matrixes.atPosition(oldNode.matrixKey);
+
+            devolver[0] = matrix_to_translate.scalation[0];
+            devolver[1] = matrix_to_translate.scalation[1];
+            devolver[2] = matrix_to_translate.scalation[2];
+        }
+        return devolver;
+    }
+
+    std::array<float,3> layer_minitree::getRotationMatrix(const RandysEngine::Layer_Node input) const noexcept{
+        std::array<float,3> devolver = {0.0f,0.0f,0.0f};
+        if(input.layerId == this->instance && input.isValid){
+
+            auto& oldNode = *nodes.atPosition(input.reference);
+            const auto& matrix_to_translate = *matrixes.atPosition(oldNode.matrixKey);
+
+            devolver[0] = matrix_to_translate.rotation[0];
+            devolver[1] = matrix_to_translate.rotation[1];
+            devolver[2] = matrix_to_translate.rotation[2];
+        }
+        return devolver;
+    }
 
 }

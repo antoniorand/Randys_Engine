@@ -267,6 +267,16 @@ namespace RandysEngine{
 
             //
             void setTranslateNode(RandysEngine::Layer_Node node, float x, float y, float z) noexcept;
+            void setScaleNode(RandysEngine::Layer_Node node, float x, float y, float z) noexcept;
+            void setRotateNode(RandysEngine::Layer_Node node, float x, float y, float z) noexcept;
+
+            void TranslateNode(RandysEngine::Layer_Node node, float x, float y, float z) noexcept;
+            void ScaleNode(RandysEngine::Layer_Node node, float x, float y, float z) noexcept;
+            void RotateNode(RandysEngine::Layer_Node node, float x, float y, float z) noexcept;
+
+            std::array<float,3> getTranslationNode(RandysEngine::Layer_Node node) noexcept;
+            std::array<float,3> getScalationNode(RandysEngine::Layer_Node node) noexcept;
+            std::array<float,3> getRotationNode(RandysEngine::Layer_Node node) noexcept;
 
 
             //Create a node in a specific layer

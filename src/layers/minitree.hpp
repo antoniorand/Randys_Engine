@@ -71,6 +71,16 @@ namespace RandysEngine{
             RandysEngine::Model_Entity* getModel(RandysEngine::Layer_Node node) const noexcept;
             
             bool setTranslationMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept;
+            bool setScalationMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept;
+            bool setRotationMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept;
+
+            bool TranslateMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept;
+            bool ScaleMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept;
+            bool RotateMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept;
+
+            std::array<float,3> getTranslationMatrix(const RandysEngine::Layer_Node node) const noexcept;
+            std::array<float,3> getScalationMatrix(const RandysEngine::Layer_Node node) const noexcept;
+            std::array<float,3> getRotationMatrix(const RandysEngine::Layer_Node node) const noexcept;
 
             void activate(){
                 activated = true;
