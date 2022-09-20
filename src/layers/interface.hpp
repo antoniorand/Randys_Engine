@@ -43,7 +43,7 @@ namespace RandysEngine{
 #else
                 RandysEngine::citro_shader* shader
 #endif
-            ) const {
+            ){
                 return static_cast<layer_type*>(this)->draw();
             }
             bool interact() const{

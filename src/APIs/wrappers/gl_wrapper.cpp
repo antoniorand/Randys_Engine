@@ -70,6 +70,22 @@ namespace RandysEngine{
                 if(glfwGetKey(window,GLFW_KEY_ESCAPE) == GLFW_PRESS)
                     devolver = true;
             break;
+            case KeyInput::left :
+                if(glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+                    devolver = true;
+            break;
+            case KeyInput::right :
+                if(glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+                    devolver = true;
+            break;
+            case KeyInput::up :
+                if(glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+                    devolver = true;
+            break;
+            case KeyInput::down :
+                if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+                    devolver = true;
+            break;
             default: 
             break;
         }
@@ -277,18 +293,25 @@ namespace RandysEngine{
 
     const glm::mat4& gl_matrix::getTransformationMatrix() noexcept{
         if(changed){
-            glm::mat4 M{glm::mat4(1.0f)};
             glm::vec3 
                 trans{glm::vec3(translation[0],translation[1],translation[2])},
                 rot{glm::vec3(rotation[0],rotation[1],rotation[2])},
                 scale{glm::vec3(scalation[0],scalation[1],scalation[2])};
 
-            transform =  M * glm::translate(M,trans)  
-            * (
-                glm::rotate(M,rot.z,{0.0f,0.0f,1.0f})*
-                glm::rotate(M,rot.y,{0.0f,1.0f,0.0f})*
-                glm::rotate(M,rot.x,{1.0f,0.0f,0.0f}))
-            * glm::scale(M,scale);
+            if(perspective){
+                transform = glm::perspective(glm::radians(fov), aspect, near,far);
+            }
+            else{
+                transform = glm::mat4(1.0f);
+                transform =  transform * glm::translate(transform,trans)  
+                    * (
+                        glm::rotate(transform,rot.z,{0.0f,0.0f,1.0f})*
+                        glm::rotate(transform,rot.y,{0.0f,1.0f,0.0f})*
+                        glm::rotate(transform,rot.x,{1.0f,0.0f,0.0f}))
+                    * glm::scale(transform,scale);
+            }
+
+            
         }
         return transform;
     }

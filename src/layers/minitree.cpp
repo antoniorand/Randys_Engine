@@ -14,6 +14,13 @@ namespace RandysEngine{
             e_rootNode.matrixKey = matrixes.push_back(citro_matrix{});
 #endif
             rootNode = nodes.push_back(e_rootNode);
+
+            projection.fov = 45.0f;
+            projection.aspect = 400.0f/240.0f;
+            projection.near = 0.1f;
+            projection.far = 500.f;
+            projection.perspective = true;
+            view.translation[3] += -3.0f;
     }
 
     bool layer_minitree::draw(
@@ -22,18 +29,21 @@ namespace RandysEngine{
 #else
                 RandysEngine::citro_shader* shader
 #endif
-    ) const{
+    ){
 
         bool devolver = true;
         if(!activated){
             std::cout << "Cannot draw deactivated layer\n";
                 devolver = false;
-            }
+        }
         else{
+            shader->setMat4("projection",projection);
+            shader->setMat4("view", view);
+
             for(SlotMap::SlotMap_Index_Type i = 0;i < models.current_size();i++){
                 auto& model = *models.atPosition(i);
                 auto& matrix = *matrixes.atPosition(model.matrixKey);
-                shader->setMat4("modelView",matrix);
+                shader->setMat4("model",matrix);
 
                 for(unsigned int i = 0; i < Model_Entity::MAXMESHES; i++){
                     if(model.hasMesh[i]){

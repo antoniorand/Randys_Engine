@@ -10,8 +10,10 @@ namespace RandysEngine{
         std::array<float,3> translation{0.0f,0.0f,0.0f};
         std::array<float,3> rotation{0.0f,0.0f,0.0f};
         std::array<float,3> scalation{1.0f,1.0f,1.0f};
+
+        float fov{0.0f}, aspect{0.0f}, near{0.0f}, far{0.0f};
         
-        bool changed{false};
+        bool changed{true},perspective{false};
 
     };
 
@@ -91,7 +93,11 @@ namespace RandysEngine{
 
     
     enum class KeyInput : unsigned int{
-        exit = 0
+        exit = 0,
+        left = 1,
+        right = 2,
+        up = 3,
+        down = 4
     };
 
     template<typename api>

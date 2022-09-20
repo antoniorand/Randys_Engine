@@ -54,6 +54,9 @@ namespace RandysEngine{
         SlotMapMatrixes matrixes;
 
         SlotMap::SlotMap_Key rootNode;
+
+        gl_matrix view{};
+        gl_matrix projection{};
         
         public:
 
@@ -94,7 +97,7 @@ namespace RandysEngine{
 #else
                 RandysEngine::citro_shader* shader
 #endif
-            ) const;
+            );
             bool interact() const{
                 return false;
             }

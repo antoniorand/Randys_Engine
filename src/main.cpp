@@ -15,13 +15,20 @@ int main(){
 
     unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node2,"triangle");
 
-    renderer.addTexture<RandysEngine::layer_minitree>(node2,meshN,"gfx:/romfs/face.t3x");
+    renderer.addTexture<RandysEngine::layer_minitree>(node2,meshN,"resources/face.jpg");
 
-    renderer.setTranslateNode(node2,0.1f,-0.1f,0.0f);
+    renderer.setTranslateNode(node2,0.0f,0.0f,5.0f);
+    renderer.setRotateNode(node2,30.0f,0.0f,0.0f);
 
     while(renderer.isAppRunning()){
         if(renderer.readKeyPressed(RandysEngine::KeyInput::exit)){
             renderer.closeApp();
+        }
+        if(renderer.readKeyPressed(RandysEngine::KeyInput::left)){
+            renderer.RotateNode(node2,0.0f,0.0f,-0.001f);
+        }
+        if(renderer.readKeyPressed(RandysEngine::KeyInput::right)){
+            renderer.RotateNode(node2,0.0f,0.0f,0.001f);
         }
         renderer.runFrame();
     }

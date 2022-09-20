@@ -109,7 +109,7 @@ namespace RandysEngine{
 #else
                 RandysEngine::citro_shader* shader
 #endif
-            ) const{
+            ){
                 bool devolver = true;
                 if(!activated){
                     std::cout << "Cannot draw deactivated layer\n";
