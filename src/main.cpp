@@ -25,10 +25,10 @@ int main(){
             renderer.closeApp();
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::left)){
-            renderer.RotateNode(node2,0.0f,0.0f,-0.001f);
+            renderer.RotateNode(node2,0.001f,0.0f,-0.001f);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::right)){
-            renderer.RotateNode(node2,0.0f,0.0f,0.001f);
+            renderer.RotateNode(node2,-0.001f,0.0f,0.001f);
         }
         renderer.runFrame();
     }
