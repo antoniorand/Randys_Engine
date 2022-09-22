@@ -185,10 +185,26 @@ namespace RandysEngine{
     bool citro_screen::getInputPressed(KeyInput input) const noexcept{
         bool devolver = false;
         hidScanInput();
-        u32 kDown = hidKeysDown();
+        u32 kDown = hidKeysHeld();
         switch (input){
             case KeyInput::exit :
                 if((kDown & KEY_START))
+                    devolver = true;
+            break;
+            case KeyInput::left :
+                if((kDown & KEY_LEFT))
+                    devolver = true;
+            break;
+            case KeyInput::right :
+                if((kDown & KEY_RIGHT))
+                    devolver = true;
+            break;
+            case KeyInput::up :
+                if((kDown & KEY_UP))
+                    devolver = true;
+            break;
+            case KeyInput::down :
+                if((kDown & KEY_DOWN))
                     devolver = true;
             break;
             default: 

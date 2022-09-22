@@ -91,7 +91,11 @@ namespace RandysEngine{
 
     
     enum class KeyInput : unsigned int{
-        exit = 0
+        exit = 0,
+        left = 1,
+        right = 2,
+        up = 3,
+        down = 4
     };
 
     template<typename api>
