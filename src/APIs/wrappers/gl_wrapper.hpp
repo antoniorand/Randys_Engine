@@ -61,7 +61,7 @@ namespace RandysEngine{
         gl_shader() noexcept;
        ~gl_shader() noexcept;
 
-        void useShader() const noexcept;
+        void useShader() noexcept;
         void setBool(const std::string &name, bool value) const;
         void setInt(const std::string &name, int value) const;
         void setFloat(const std::string &name, float value) const;

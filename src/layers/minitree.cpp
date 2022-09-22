@@ -20,7 +20,11 @@ namespace RandysEngine{
             projection.near = 0.1f;
             projection.far = 500.f;
             projection.perspective = true;
-            view.translation[3] += -3.0f;
+#ifndef __3DS__
+            view.translation[2] += -3.0f;
+#else 
+            view.translation[2] += 200.0f;
+#endif
     }
 
     bool layer_minitree::draw(

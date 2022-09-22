@@ -102,7 +102,7 @@ namespace RandysEngine{
 
         virtual ~shader_wrapper() noexcept{};
 
-        void useShader() const noexcept{
+        void useShader() noexcept{
             static_cast<api*>(this)->useShader();
         }
 

@@ -15,20 +15,23 @@ int main(){
 
     unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node2,"triangle");
 
-    renderer.addTexture<RandysEngine::layer_minitree>(node2,meshN,"resources/face.jpg");
-
-    renderer.setTranslateNode(node2,0.0f,0.0f,5.0f);
-    renderer.setRotateNode(node2,30.0f,0.0f,0.0f);
+    renderer.addTexture<RandysEngine::layer_minitree>(node2,meshN,"romfs:/gfx/kitten.t3x");
 
     while(renderer.isAppRunning()){
         if(renderer.readKeyPressed(RandysEngine::KeyInput::exit)){
             renderer.closeApp();
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::left)){
-            renderer.RotateNode(node2,0.001f,0.0f,-0.001f);
+            renderer.RotateNode(node2,0.1f,0.01f,0.01f);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::right)){
-            renderer.RotateNode(node2,-0.001f,0.0f,0.001f);
+            renderer.RotateNode(node2,-0.1f,-0.01f,-0.01f);
+        }
+        if(renderer.readKeyPressed(RandysEngine::KeyInput::up)){
+            renderer.ScaleNode(node2,0.0f,1.f,0.0f);
+        }
+        if(renderer.readKeyPressed(RandysEngine::KeyInput::down)){
+            renderer.ScaleNode(node2,0.0f,-1.f,0.0f);
         }
         renderer.runFrame();
     }

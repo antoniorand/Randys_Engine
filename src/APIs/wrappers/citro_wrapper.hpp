@@ -67,13 +67,11 @@ namespace RandysEngine{
     struct citro_shader : shader_wrapper<citro_shader>{
         DVLB_s* vshader_dvlb;
         shaderProgram_s shaderProgram;
-        C3D_Mtx projection;
-        int uLoc_projection;
 
         citro_shader() noexcept;
        ~citro_shader() noexcept;
 
-        void useShader() const noexcept;
+        void useShader() noexcept;
         void setBool(const std::string &name, bool value) const;
         void setInt(const std::string &name, int value) const;
         void setFloat(const std::string &name, float value) const;

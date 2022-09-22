@@ -17,3 +17,4 @@ latex/
 *.map
 vgcore.*
 randysEngine.*
+romfs/gfx/*.t3x

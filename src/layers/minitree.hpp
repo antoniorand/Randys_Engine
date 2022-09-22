@@ -55,9 +55,13 @@ namespace RandysEngine{
 
         SlotMap::SlotMap_Key rootNode;
 
+#ifndef __3DS__
         gl_matrix view{};
         gl_matrix projection{};
-        
+#else
+        citro_matrix view{};
+        citro_matrix projection{};
+#endif
         public:
 
             layer_minitree(ResourceManager& man);

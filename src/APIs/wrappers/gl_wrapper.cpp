@@ -202,7 +202,7 @@ namespace RandysEngine{
         glDeleteProgram(shaderProgram);
     }
 
-    void gl_shader::useShader() const noexcept{
+    void gl_shader::useShader() noexcept{
         glUseProgram(shaderProgram);
     }
 

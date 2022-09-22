@@ -1,5 +1,4 @@
-
-#ifdef __3DS__
+//#ifdef __3DS__
 #include "citro_wrapper.hpp"
 namespace RandysEngine{
 
@@ -11,14 +10,21 @@ namespace RandysEngine{
 
     const C3D_Mtx& citro_matrix::getTransformationMatrix() noexcept{
         if(changed){
-            //might be a different order;
-            Mtx_Identity(&transform);
+
+            if(perspective){
+                Mtx_PerspTilt(&transform, C3D_AngleFromDegrees(fov), C3D_AspectRatioTop, near, far, true);
+            }
+            else{
+                Mtx_Identity(&transform);
+            }
+            
             Mtx_Translate(&transform, translation[0],
                 translation[1],translation[2], true);
             Mtx_RotateX(&transform, rotation[0], true);
             Mtx_RotateY(&transform, rotation[1], true);
             Mtx_RotateZ(&transform, rotation[2], true);
             Mtx_Scale(&transform,scalation[0],scalation[1],scalation[2]);
+        
         }
         return transform;
     }
@@ -50,9 +56,10 @@ namespace RandysEngine{
 
     citro_texture_resource::citro_texture_resource(std::string file) noexcept{
         // Load the texture and bind it to the first texture unit
-	    if (!loadTextureFromFile(&texture, NULL, "romfs:/gfx/face.t3x"))
+	    if (!loadTextureFromFile(&texture, NULL, file.c_str()))
 	    	svcBreak(USERBREAK_PANIC);
-	    C3D_TexSetFilter(&texture, GPU_LINEAR, GPU_NEAREST);
+        C3D_TexSetWrap(&texture, GPU_REPEAT, GPU_REPEAT);
+        C3D_TexSetFilter(&texture, GPU_LINEAR, GPU_LINEAR);
     }
 
     citro_texture_resource::~citro_texture_resource() noexcept{
@@ -69,8 +76,9 @@ namespace RandysEngine{
     }
 
     Vertex verticesConverter(Vertex vertex){   
-        vertex.x = 200*vertex.x + 200;    
-        vertex.y = 120*vertex.y + 120;    
+        vertex.x = 200*vertex.x+20;    
+        vertex.y = 120*vertex.y;
+        vertex.z = 120*vertex.z;
         return vertex;
     }
 
@@ -102,8 +110,8 @@ namespace RandysEngine{
         BufInfo_Add(bufInfo, vbo_data, sizeof(Vertex), 2, 0x10);
 
         // Draw the VBO
-        //C3D_DrawArrays(GPU_TRIANGLES, 0, numberVertices);
-        C3D_DrawElements(GPU_TRIANGLES,countIndices,C3D_UNSIGNED_SHORT,ibo_data);
+        C3D_DrawArrays(GPU_TRIANGLES, 0, countVertices);
+        //C3D_DrawElements(GPU_TRIANGLES,countIndices,C3D_UNSIGNED_SHORT,ibo_data);
 
     }
 
@@ -114,9 +122,6 @@ namespace RandysEngine{
         shaderProgramInit(&shaderProgram);
         shaderProgramSetVsh(&shaderProgram, &vshader_dvlb->DVLE[0]);
         C3D_BindProgram(&shaderProgram);
-
-        // Get the location of the uniforms
-	    uLoc_projection = shaderInstanceGetUniformLocation(shaderProgram.vertexShader, "projection");
         
         // Configure attributes for use with the vertex shader
         C3D_AttrInfo* attrInfo = C3D_GetAttrInfo();
@@ -124,8 +129,6 @@ namespace RandysEngine{
         AttrInfo_AddLoader(attrInfo, 0, GPU_FLOAT, 3); // v0=position
         AttrInfo_AddLoader(attrInfo, 1, GPU_FLOAT, 2); // v1=position
 
-        // Compute the projection matrix
-        Mtx_OrthoTilt(&projection, 0.0, 400.0, 0.0, 240.0, 0.0, 1.0, true);
         
         // Configure the first fragment shading substage to just pass through the vertex color
         // See https://www.opengl.org/sdk/docs/man2/xhtml/glTexEnv.xml for more insight
@@ -141,9 +144,8 @@ namespace RandysEngine{
         DVLB_Free(vshader_dvlb);
     }
 
-    void citro_shader::useShader() const noexcept{
-        // Update the uniforms
-    	C3D_FVUnifMtx4x4(GPU_VERTEX_SHADER, uLoc_projection, &projection);
+    void citro_shader::useShader() noexcept{
+        C3D_BindProgram(&shaderProgram);
     }
     void citro_shader::setBool(const std::string &name, bool value) const{
         //glUniform1i(glGetUniformLocation(shaderProgram, name.c_str()), (int)value); 
@@ -185,10 +187,26 @@ namespace RandysEngine{
     bool citro_screen::getInputPressed(KeyInput input) const noexcept{
         bool devolver = false;
         hidScanInput();
-        u32 kDown = hidKeysDown();
+        u32 kDown = hidKeysHeld();
         switch (input){
             case KeyInput::exit :
                 if((kDown & KEY_START))
+                    devolver = true;
+            break;
+            case KeyInput::left :
+                if((kDown & KEY_LEFT))
+                    devolver = true;
+            break;
+            case KeyInput::right :
+                if((kDown & KEY_RIGHT))
+                    devolver = true;
+            break;
+            case KeyInput::up :
+                if((kDown & KEY_UP))
+                    devolver = true;
+            break;
+            case KeyInput::down :
+                if((kDown & KEY_DOWN))
                     devolver = true;
             break;
             default: 
@@ -226,4 +244,4 @@ namespace RandysEngine{
     }
 
 }
-#endif
+//#endif
