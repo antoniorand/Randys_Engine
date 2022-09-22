@@ -1,5 +1,4 @@
-
-#ifdef __3DS__
+//#ifdef __3DS__
 #include "citro_wrapper.hpp"
 namespace RandysEngine{
 
@@ -69,8 +68,9 @@ namespace RandysEngine{
     }
 
     Vertex verticesConverter(Vertex vertex){   
-        vertex.x = 200*vertex.x + 200;    
-        vertex.y = 120*vertex.y + 120;    
+        vertex.x = 200*vertex.x+20;    
+        vertex.y = 120*vertex.y;
+        vertex.z = 120*vertex.z;
         return vertex;
     }
 
@@ -102,8 +102,8 @@ namespace RandysEngine{
         BufInfo_Add(bufInfo, vbo_data, sizeof(Vertex), 2, 0x10);
 
         // Draw the VBO
-        //C3D_DrawArrays(GPU_TRIANGLES, 0, numberVertices);
-        C3D_DrawElements(GPU_TRIANGLES,countIndices,C3D_UNSIGNED_SHORT,ibo_data);
+        C3D_DrawArrays(GPU_TRIANGLES, 0, countVertices);
+        //C3D_DrawElements(GPU_TRIANGLES,countIndices,C3D_UNSIGNED_SHORT,ibo_data);
 
     }
 
@@ -125,7 +125,8 @@ namespace RandysEngine{
         AttrInfo_AddLoader(attrInfo, 1, GPU_FLOAT, 2); // v1=position
 
         // Compute the projection matrix
-        Mtx_OrthoTilt(&projection, 0.0, 400.0, 0.0, 240.0, 0.0, 1.0, true);
+        Mtx_PerspTilt(&projection, C3D_AngleFromDegrees(45.0f), C3D_AspectRatioTop, 0.01f, 1000.0f, false);
+        Mtx_Translate(&projection, 0.0,0.0,-300.0, true);
         
         // Configure the first fragment shading substage to just pass through the vertex color
         // See https://www.opengl.org/sdk/docs/man2/xhtml/glTexEnv.xml for more insight
@@ -242,4 +243,4 @@ namespace RandysEngine{
     }
 
 }
-#endif
+//#endif

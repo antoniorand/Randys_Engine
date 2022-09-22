@@ -17,17 +17,21 @@ int main(){
 
     renderer.addTexture<RandysEngine::layer_minitree>(node2,meshN,"gfx:/romfs/face.t3x");
 
-    renderer.setTranslateNode(node2,100.0f,-0.1f,0.0f);
-
     while(renderer.isAppRunning()){
         if(renderer.readKeyPressed(RandysEngine::KeyInput::exit)){
             renderer.closeApp();
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::left)){
-            renderer.RotateNode(node2,0.0f,0.f,0.01f);
+            renderer.RotateNode(node2,0.1f,0.01f,0.01f);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::right)){
-            renderer.RotateNode(node2,0.0f,0.f,-0.01f);
+            renderer.RotateNode(node2,-0.1f,-0.01f,-0.01f);
+        }
+        if(renderer.readKeyPressed(RandysEngine::KeyInput::up)){
+            renderer.ScaleNode(node2,0.0f,1.f,0.0f);
+        }
+        if(renderer.readKeyPressed(RandysEngine::KeyInput::down)){
+            renderer.ScaleNode(node2,0.0f,-1.f,0.0f);
         }
         renderer.runFrame();
     }
