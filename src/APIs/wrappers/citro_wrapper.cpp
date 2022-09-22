@@ -49,7 +49,7 @@ namespace RandysEngine{
 
     citro_texture_resource::citro_texture_resource(std::string file) noexcept{
         // Load the texture and bind it to the first texture unit
-	    if (!loadTextureFromFile(&texture, NULL, "romfs:/gfx/face.t3x"))
+	    if (!loadTextureFromFile(&texture, NULL, file.c_str()))
 	    	svcBreak(USERBREAK_PANIC);
 	    C3D_TexSetFilter(&texture, GPU_LINEAR, GPU_NEAREST);
     }
