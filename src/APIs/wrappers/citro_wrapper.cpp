@@ -77,8 +77,8 @@ namespace RandysEngine{
 
     Vertex verticesConverter(Vertex vertex){   
         vertex.x = 200*vertex.x+20;    
-        vertex.y = 120*vertex.y;
-        vertex.z = 120*vertex.z;
+        vertex.y = 200*vertex.y;
+        vertex.z = 200*vertex.z;
         return vertex;
     }
 

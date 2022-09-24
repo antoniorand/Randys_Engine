@@ -18,12 +18,12 @@ namespace RandysEngine{
             projection.fov = 45.0f;
             projection.aspect = 400.0f/240.0f;
             projection.near = 0.1f;
-            projection.far = 500.f;
+            projection.far = 1000.f;
             projection.perspective = true;
 #ifndef __3DS__
-            view.translation[2] += -3.0f;
+            //view.translation[2] += -3.0f;
 #else 
-            view.translation[2] += 200.0f;
+            projection.translation[2] += 800.0f;
 #endif
     }
 
