@@ -24,11 +24,19 @@ namespace RandysEngine{
             Mtx_RotateY(&transform, rotation[1], true);
             Mtx_RotateZ(&transform, rotation[2], true);
             Mtx_Scale(&transform,scalation[0],scalation[1],scalation[2]);
-        
+            changed = false;
         }
         return transform;
     }
     
+    void citro_matrix::multiply(citro_matrix& other){
+        this->changed = true;
+        auto thisMatrix = this->getTransformationMatrix();
+        auto otherMatrix = other.getTransformationMatrix();
+
+        Mtx_Multiply(&transform,&thisMatrix,&otherMatrix);
+
+    }
 
 
     // Helper function for loading a texture from memory

@@ -62,6 +62,11 @@ namespace RandysEngine{
         citro_matrix view{};
         citro_matrix projection{};
 #endif
+
+        void runLinks(RandysEngine::MinitreeNode& node);
+        
+        void runLinkedMovement();
+
         public:
 
             layer_minitree(ResourceManager& man);
@@ -105,6 +110,8 @@ namespace RandysEngine{
             bool interact() const{
                 return false;
             }
+
+
     };
 
 }

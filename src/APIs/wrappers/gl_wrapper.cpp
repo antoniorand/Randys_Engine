@@ -33,7 +33,7 @@ namespace RandysEngine{
 
         // glfw window creation
         // --------------------
-        window = glfwCreateWindow(width*4, height*4, "Randys Engine Example", NULL, NULL);
+        window = glfwCreateWindow(width*2, height*2, "Randys Engine Example", NULL, NULL);
         if (window == NULL){
             std::cout << "Failed to create GLFW window" << std::endl;
             glfwTerminate();
@@ -311,9 +311,19 @@ namespace RandysEngine{
                     * glm::scale(transform,scale);
             }
 
-            
+            changed = false;
         }
         return transform;
+    }
+
+    void gl_matrix::multiply(gl_matrix& other){
+
+        this->changed = true;
+
+        auto& thisMatrix = this->getTransformationMatrix();
+        auto& otherMatrix = other.getTransformationMatrix();
+
+        transform = otherMatrix*thisMatrix;
     }
 
 }

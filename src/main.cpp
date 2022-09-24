@@ -27,17 +27,18 @@ int main(){
             renderer.closeApp();
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::left)){
-            renderer.RotateNode(node2,0.001f,0.001f,0.001f);
+            renderer.TranslateNode(node1,-1.0f,0.0f,0.0f);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::right)){
-            renderer.RotateNode(node2,-0.001f,-0.001f,-0.001f);
+            renderer.TranslateNode(node1,1.0f,0.0f,0.0f);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::up)){
-            renderer.ScaleNode(node2,0.0f,0.001f,0.0f);
+            renderer.ScaleNode(node1,0.0f,0.0001f,0.0f);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::down)){
-            renderer.ScaleNode(node2,0.0f,-0.001f,0.0f);
+            renderer.ScaleNode(node1,0.0f,-0.0001f,0.0f);
         }
+
         renderer.runFrame();
     }
 

@@ -41,41 +41,50 @@ namespace RandysEngine{
                 devolver = false;
         }
         else{
+
+            runLinkedMovement();
+
             shader->setMat4("projection",projection);
             shader->setMat4("view", view);
 
             for(SlotMap::SlotMap_Index_Type i = 0;i < models.current_size();i++){
                 auto& model = *models.atPosition(i);
                 auto& matrix = *matrixes.atPosition(model.matrixKey);
+
                 shader->setMat4("model",matrix);
 
                 for(unsigned int i = 0; i < Model_Entity::MAXMESHES; i++){
                     if(model.hasMesh[i]){
 #ifndef __3DS__                                                
-                        auto& meshResource = *resource_manager.getResource<gl_mesh_resource>(model.meshes[i]);
+                        auto meshResource = resource_manager.getResource<gl_mesh_resource>(model.meshes[i]);
 #else
-                        auto& meshResource = *resource_manager.getResource<citro_mesh_resource>(model.meshes[i]);
+                        auto meshResource = resource_manager.getResource<citro_mesh_resource>(model.meshes[i]);
 #endif
                         
-                    
+                        if(!meshResource)
+                            model.hasMesh[i] = false;
+
                         if(model.hasTexture[i]){
 #ifndef __3DS__
-                            auto& textureResource = *resource_manager.getResource<gl_texture_resource>(model.textures[i]); 
+                            auto textureResource = resource_manager.getResource<gl_texture_resource>(model.textures[i]); 
 #else 
-                            auto& textureResource = *resource_manager.getResource<citro_texture_resource>(model.textures[i]); 
+                            auto textureResource = resource_manager.getResource<citro_texture_resource>(model.textures[i]); 
 #endif
                                 
-                                textureResource.use();
-                                meshResource.draw();
-                                textureResource.unlink();
-                            }
-                            else{
-                                meshResource.draw();
-                            }
+                            if(!textureResource)
+                                model.hasTexture[i] = false;
 
+                            textureResource->use();
+                            meshResource->draw();
+                            textureResource->unlink();
                         }
-                                
+                        else{
+                            meshResource->draw();
+                        }
+
                     }
+                                
+                }
             }
         }
         return devolver;
@@ -93,13 +102,11 @@ namespace RandysEngine{
                 if(!rootNodeItem.hasChildren[i]){
 
                     RandysEngine::MinitreeNode node;
-
 #ifndef __3DS__
                     node.matrixKey = matrixes.push_back(gl_matrix{});
 #else
                     node.matrixKey = matrixes.push_back(citro_matrix{});
 #endif
-
                     node.hasParent = true;
                     node.parentNode = rootNode;
 
@@ -334,6 +341,32 @@ namespace RandysEngine{
             devolver[2] = matrix_to_translate.rotation[2];
         }
         return devolver;
+    }
+
+    void layer_minitree::runLinks(RandysEngine::MinitreeNode& node){
+
+        auto& matrix = *matrixes.atPosition(node.matrixKey);
+
+        for(unsigned int i = 0; i < RandysEngine::MinitreeNode::maxChildren;i++){
+            if(node.hasChildren[i]){
+                auto& childNode = *nodes.atPosition(node.childrenNodes[i]);
+                auto& childMatrix = *matrixes.atPosition(childNode.matrixKey);
+
+                childMatrix.multiply(matrix);
+                
+                runLinks(childNode);
+            }
+        }
+    }
+
+    void layer_minitree::runLinkedMovement(){
+        for(unsigned int i = 0; i < nodes.current_size();i++){
+            auto& node = *nodes.atPosition(i);
+            auto& matrix = *matrixes.atPosition(node.matrixKey);
+
+            if(matrix.changed)
+                runLinks(node);
+        }
     }
 
 }

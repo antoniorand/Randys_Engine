@@ -16,6 +16,8 @@ namespace RandysEngine{
 
     struct gl_matrix : public matrix_wrapper{
         
+        void multiply(gl_matrix& other);
+    
         private:
             glm::mat4 transform;
 
@@ -23,6 +25,8 @@ namespace RandysEngine{
 
             friend struct gl_shader;
             const glm::mat4& getTransformationMatrix() noexcept;
+
+            
     };  
 
     struct gl_texture_resource : texture_resource_wrapper<gl_texture_resource>{

@@ -27,6 +27,7 @@ namespace RandysEngine{
                 Mtx_Identity(&transform);
             }
             
+            void multiply(citro_matrix& other);
     };  
 
     struct citro_texture_resource : texture_resource_wrapper<citro_texture_resource>{
