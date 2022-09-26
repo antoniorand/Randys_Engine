@@ -56,7 +56,7 @@ namespace RandysEngine{
 
     struct Camera_Entity : Base_Entity{
 
-        float left, right, lower, upper, close, far;
+        SlotMap::SlotMap_Key projectionMatrix;
 
     };
 

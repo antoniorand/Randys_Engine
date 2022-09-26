@@ -38,6 +38,14 @@ namespace RandysEngine{
 
     }
 
+    citro_matrix citro_matrix::reverse() noexcept{
+        citro_matrix devolver;
+        devolver.changed = false;
+        devolver.transform = this->transform;
+        Mtx_Inverse(&devolver.transform);
+
+        return(devolver);
+    }
 
     // Helper function for loading a texture from memory
     bool loadTextureFromFile(C3D_Tex* tex, C3D_TexCube* cube,

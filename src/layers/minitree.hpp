@@ -39,7 +39,7 @@ namespace RandysEngine{
         using SlotMapMatrixes = RandysEngine::SlotMap::SlotMap<
 #ifndef __3DS__
                 gl_matrix,
-                RandysEngine::Pool::Static_pool_allocator<gl_matrix,32*4>
+                RandysEngine::Pool::Static_pool_allocator<gl_matrix,32*4 + 10*4>
 #else
                 citro_matrix,
                 RandysEngine::Pool::Static_pool_allocator<citro_matrix,32*4>
@@ -55,17 +55,14 @@ namespace RandysEngine{
 
         SlotMap::SlotMap_Key rootNode;
 
-#ifndef __3DS__
-        gl_matrix view{};
-        gl_matrix projection{};
-#else
-        citro_matrix view{};
-        citro_matrix projection{};
-#endif
+        RandysEngine::SlotMap::SlotMap_Key currentActiveCamera;
+        bool isCameraActive; 
 
         void runLinks(RandysEngine::MinitreeNode& node);
         
         void runLinkedMovement();
+
+        void deleteEntity(RandysEngine::MinitreeNode& node);
 
         public:
 
@@ -79,6 +76,9 @@ namespace RandysEngine{
             RandysEngine::MinitreeNode* getNode(const RandysEngine::Layer_Node) const noexcept;
             
             void addModel(RandysEngine::Layer_Node node) noexcept;
+           
+            void addCamera(RandysEngine::Layer_Node node, float fov, float aspect, float near, float far) noexcept;
+            bool setActiveCamera(RandysEngine::Layer_Node node) noexcept;
 
             RandysEngine::Model_Entity* getModel(RandysEngine::Layer_Node node) const noexcept;
             
@@ -107,9 +107,6 @@ namespace RandysEngine{
                 RandysEngine::citro_shader* shader
 #endif
             );
-            bool interact() const{
-                return false;
-            }
 
 
     };

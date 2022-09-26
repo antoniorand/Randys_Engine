@@ -28,6 +28,7 @@ namespace RandysEngine{
             }
             
             void multiply(citro_matrix& other);
+            citro_matrix reverse() noexcept;
     };  
 
     struct citro_texture_resource : texture_resource_wrapper<citro_texture_resource>{

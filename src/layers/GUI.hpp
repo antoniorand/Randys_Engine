@@ -65,10 +65,13 @@ namespace RandysEngine{
                 }
                 return devolver;
             };
-            bool interact() const{
-                std::cout << "Interact with " << buttons.size() << " buttons \n";
-                std::cout << "Interact with " << pictures.size() << " pictures \n";
-                return false;
+
+            [[nodiscard]] const RandysEngine::Layer_Node createNode() noexcept{
+                return RandysEngine::Layer_Node{};
+            }
+
+            [[nodiscard]] const RandysEngine::Layer_Node createNode(const RandysEngine::Layer_Node node) noexcept{
+                return RandysEngine::Layer_Node{};
             }
 
             bool setTranslationMatrix(const RandysEngine::Layer_Node node, float x, float y, float z) const noexcept{

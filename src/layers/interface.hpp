@@ -46,9 +46,6 @@ namespace RandysEngine{
             ){
                 return static_cast<layer_type*>(this)->draw();
             }
-            bool interact() const{
-                return static_cast<layer_type*>(this)->interact();
-            }
 
             const unsigned int getInstance(){return instance;};
 
@@ -58,15 +55,6 @@ namespace RandysEngine{
 
             [[nodiscard]] const RandysEngine::Layer_Node createNode(const RandysEngine::Layer_Node node) noexcept{
                 return static_cast<layer_type*>(this)->createNode(node);
-            }
-
-            void addModel(const RandysEngine::Layer_Node node) noexcept{
-                static_cast<layer_type*>(this)->addModel(node);
-            }
-
-            RandysEngine::Model_Entity* 
-                getModel(const RandysEngine::Layer_Node node) const noexcept{
-                return static_cast<layer_type*>(this)->getModel(node);
             }
 
             bool setTranslationMatrix(const RandysEngine::Layer_Node node, float x, float y, float z) const noexcept{

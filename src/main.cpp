@@ -11,7 +11,12 @@ int main(){
 
     auto node2 = renderer.createNode<RandysEngine::layer_minitree>(node1);
 
+    auto nodeCamera = renderer.createNode<RandysEngine::layer_minitree>(node1);
+
     renderer.addModel<RandysEngine::layer_minitree>(node2);
+
+    renderer.addCamera<RandysEngine::layer_minitree>(nodeCamera);
+    renderer.setActiveCamera<RandysEngine::layer_minitree>(nodeCamera);
 
     unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node2,"triangle");
 #ifndef __3DS__
@@ -27,10 +32,10 @@ int main(){
             renderer.closeApp();
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::left)){
-            renderer.TranslateNode(node1,-1.0f,0.0f,0.0f);
+            renderer.TranslateNode(nodeCamera,-0.001f,0.0f,0.0f);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::right)){
-            renderer.TranslateNode(node1,1.0f,0.0f,0.0f);
+            renderer.TranslateNode(nodeCamera,0.001f,0.0f,0.0f);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::up)){
             renderer.ScaleNode(node1,0.0f,0.0001f,0.0f);

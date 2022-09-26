@@ -17,6 +17,7 @@ namespace RandysEngine{
     struct gl_matrix : public matrix_wrapper{
         
         void multiply(gl_matrix& other);
+        gl_matrix reverse() noexcept;
     
         private:
             glm::mat4 transform;

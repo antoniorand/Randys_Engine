@@ -25,13 +25,6 @@ namespace RandysEngine{
             value.draw(shader);
         }   
     };
-    struct interact_visitor{
-        template< typename T >
-        void operator() ( T& value ){
-            value.interact();
-        }   
-    };
-
 
     void Rendering_Engine::runFrame(){
 
@@ -55,16 +48,6 @@ namespace RandysEngine{
             }
         }
         
-        {
-            auto iteratorR = layers.rbegin();
-            auto itEndR = layers.rend();
-
-            while(iteratorR != itEndR){
-                std::visit( interact_visitor{}, *iteratorR);
-                iteratorR++;
-            }
-        }
-
         screen.swapBuffers();
 
     }

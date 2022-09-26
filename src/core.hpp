@@ -216,6 +216,51 @@ namespace RandysEngine{
 
             //Create a node in a specific layer
             template<typename Layer_type>
+            void addCamera(const RandysEngine::Layer_Node node, 
+                float fov = 45.0f, float height = 400.0f, float width = 240.0f, float near = 0.1f, float far = 1000.0f){
+                
+                if(node.isValid){
+
+                    auto itBegin = layers.begin();
+                    auto itEnd = layers.end();
+                    while(itBegin != itEnd){
+                        if(std::holds_alternative<Layer_type>(*itBegin)){
+                            Layer_type* layer = &std::get<Layer_type>(*itBegin);
+                            if(node.layerId == layer->getInstance()){
+
+                                layer->addCamera(node,fov,height/width,near,far);
+                                break;
+                            }
+                        }
+                        itBegin++;
+                    }
+                }
+            }
+
+            //Create a node in a specific layer
+            template<typename Layer_type>
+            void setActiveCamera(const RandysEngine::Layer_Node node){
+                
+                if(node.isValid){
+
+                    auto itBegin = layers.begin();
+                    auto itEnd = layers.end();
+                    while(itBegin != itEnd){
+                        if(std::holds_alternative<Layer_type>(*itBegin)){
+                            Layer_type* layer = &std::get<Layer_type>(*itBegin);
+                            if(node.layerId == layer->getInstance()){
+
+                                layer->setActiveCamera(node);
+                                break;
+                            }
+                        }
+                        itBegin++;
+                    }
+                }
+            }
+
+            //Create a node in a specific layer
+            template<typename Layer_type>
             unsigned int addMesh(const RandysEngine::Layer_Node node, std::string file){
                 
                 unsigned int devolver = RandysEngine::Model_Entity::MAXMESHES;

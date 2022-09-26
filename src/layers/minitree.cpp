@@ -5,7 +5,7 @@ namespace RandysEngine{
 
     layer_minitree::layer_minitree(ResourceManager& man) : layer_interface<layer_minitree>(man), nodes{maxNodesMinitree},
         models{maxModelsMinitree}, lights{maxLightsMinitree}, 
-        cameras{maxCamerasMinitree}, matrixes{maxNodesMinitree}{
+        cameras{maxCamerasMinitree}, matrixes{maxNodesMinitree + 10}{
         
             MinitreeNode e_rootNode;
 #ifndef __3DS__
@@ -15,16 +15,6 @@ namespace RandysEngine{
 #endif
             rootNode = nodes.push_back(e_rootNode);
 
-            projection.fov = 45.0f;
-            projection.aspect = 400.0f/240.0f;
-            projection.near = 0.1f;
-            projection.far = 1000.f;
-            projection.perspective = true;
-#ifndef __3DS__
-            //view.translation[2] += -3.0f;
-#else 
-            projection.translation[2] += 800.0f;
-#endif
     }
 
     bool layer_minitree::draw(
@@ -44,8 +34,14 @@ namespace RandysEngine{
 
             runLinkedMovement();
 
-            shader->setMat4("projection",projection);
-            shader->setMat4("view", view);
+            if(isCameraActive){
+                auto& activeCamera = *cameras.atPosition(currentActiveCamera);
+                auto& projectionM = *matrixes.atPosition(activeCamera.projectionMatrix);
+                auto viewM = matrixes.atPosition(activeCamera.matrixKey)->reverse();
+
+                shader->setMat4("projection",projectionM);
+                shader->setMat4("view", viewM);
+            }
 
             for(SlotMap::SlotMap_Index_Type i = 0;i < models.current_size();i++){
                 auto& model = *models.atPosition(i);
@@ -162,9 +158,26 @@ namespace RandysEngine{
         return devolver;
     }
 
+    void layer_minitree::deleteEntity(RandysEngine::MinitreeNode& node){
+
+        switch(node.type_entity){
+            case RandysEngine::entityType_enum::camera:
+                cameras.erase(node.entity);
+            break;
+            case RandysEngine::entityType_enum::model:
+                models.erase(node.entity);
+            break;
+            default:
+            break;
+        }
+
+        node.type_entity = RandysEngine::entityType_enum::none;
+
+    }
+
     void layer_minitree::addModel(const RandysEngine::Layer_Node input) noexcept{
         
-        if(input.layerId == this->instance && input.isValid){
+        if(input.layerId == this->instance && input.isValid && models.current_size() != models.max_capacity()){
 
             auto& oldNode = *nodes.atPosition(input.reference);
 
@@ -172,11 +185,67 @@ namespace RandysEngine{
 
             newModel.matrixKey = oldNode.matrixKey;
 
+            deleteEntity(oldNode);
+
             oldNode.type_entity = RandysEngine::entityType_enum::model;
 
             oldNode.entity = models.push_back(newModel);
         }
 
+    }
+
+    void layer_minitree::addCamera(const RandysEngine::Layer_Node input, 
+        float fov, float aspect, float near, float far) noexcept{
+        
+        if(input.layerId == this->instance && input.isValid && cameras.current_size() != cameras.max_capacity()){
+
+            auto& oldNode = *nodes.atPosition(input.reference);
+
+            RandysEngine::Camera_Entity newCamera;
+
+#ifndef __3DS__
+            gl_matrix newProjection{};
+#else
+            citro_matrix newProjection{};
+            newProjection.translation[2] += 800.0f;
+#endif
+
+            newProjection.perspective = true;
+            newProjection.fov = fov;
+            newProjection.aspect = aspect;
+            newProjection.near = near;
+            newProjection.far = far;
+
+            newCamera.projectionMatrix = matrixes.push_back(newProjection);
+
+            newCamera.matrixKey = oldNode.matrixKey;
+
+            deleteEntity(oldNode);
+
+            oldNode.type_entity = RandysEngine::entityType_enum::camera;
+
+            oldNode.entity = cameras.push_back(newCamera);
+        }
+
+    }
+
+    bool layer_minitree::setActiveCamera(RandysEngine::Layer_Node node) noexcept{
+        
+        bool devolver = false;
+        
+        if(node.isValid && node.layerId == this->instance){
+
+            auto& oldNode = *nodes.atPosition(node.reference);
+
+            if(oldNode.type_entity == RandysEngine::entityType_enum::camera){
+                devolver = true;
+                this->isCameraActive = true;
+                this->currentActiveCamera = oldNode.entity;
+            }
+
+        }
+
+        return devolver;
     }
 
     RandysEngine::Model_Entity* 

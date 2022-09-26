@@ -326,5 +326,14 @@ namespace RandysEngine{
         transform = otherMatrix*thisMatrix;
     }
 
+    gl_matrix gl_matrix::reverse() noexcept{
+
+        gl_matrix devolver;
+        devolver.changed = false;
+        devolver.transform = glm::inverse(this->getTransformationMatrix());
+
+        return(devolver);
+    }
+
 }
 #endif
