@@ -18,7 +18,7 @@ int main(){
     renderer.addCamera<RandysEngine::layer_minitree>(nodeCamera);
     renderer.setActiveCamera<RandysEngine::layer_minitree>(nodeCamera);
 
-    unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node2,"cube.obj");
+    unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node2,"resources/cube.obj");
 #ifndef __3DS__
     renderer.addTexture<RandysEngine::layer_minitree>(node2,meshN,"resources/face.jpg");
 #else

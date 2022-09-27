@@ -4,6 +4,7 @@
 #include <string>
 #include <array>
 
+//Source: https://github.com/Bly7/OBJ-Loader
 #include <OBJ_LOADER.h>
 
 namespace RandysEngine{
@@ -86,10 +87,52 @@ namespace RandysEngine{
             static_cast<api*>(this)->draw();
         }
 
-        private:
+        protected:
 
-            bool loadModel(std::string file){
-                return static_cast<api*>(this)->loadModel(file);
+            std::pair<
+                std::vector<Vertex>,
+                std::vector<unsigned short>>
+            loadModel(std::string file){
+
+                std::pair<
+                    std::vector<Vertex>,
+                    std::vector<unsigned short>
+                > devolver;
+
+                // Initialize Loader
+                objl::Loader loader;
+
+                // Load .obj File
+                bool loadout = loader.LoadFile(file.c_str());
+
+                // Check to see if it loaded
+
+                // If so continue
+                if (loadout){
+
+                    const std::size_t nVertices = loader.LoadedVertices.size();
+                    const std::size_t nIndices = loader.LoadedIndices.size();
+
+                    devolver.first.reserve(nVertices);
+                    devolver.second.reserve(nIndices);
+
+                    for(unsigned int i = 0; i < nVertices;i++){
+                        devolver.first.emplace_back(
+                            loader.LoadedVertices[i].Position.X,
+                            loader.LoadedVertices[i].Position.Y,
+                            loader.LoadedVertices[i].Position.Z,
+                            loader.LoadedVertices[i].TextureCoordinate.X,
+                            loader.LoadedVertices[i].TextureCoordinate.Y
+                        );
+                    }
+                    for(unsigned int i = 0; i < nIndices;i++){
+                        devolver.second.push_back(
+                            (unsigned short)loader.LoadedIndices[i]
+                        );
+                    }
+                }
+
+                return devolver;
             }
     };
 

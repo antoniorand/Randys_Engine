@@ -252,7 +252,7 @@ namespace RandysEngine{
 
     gl_mesh_resource::gl_mesh_resource(std::string file) noexcept{
         
-        loadModel(file);
+        auto vertexData = loadModel(file);
 
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
