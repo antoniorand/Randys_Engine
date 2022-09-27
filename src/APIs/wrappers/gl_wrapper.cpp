@@ -243,14 +243,16 @@ namespace RandysEngine{
     }
 
     bool gl_mesh_resource::loadModel(std::string file){
+        bool devolver = false;
 
+        std::cout << "Holi\n";
 
-        return false;
-
+        return devolver;
     }
 
     gl_mesh_resource::gl_mesh_resource(std::string file) noexcept{
         
+        loadModel(file);
 
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);

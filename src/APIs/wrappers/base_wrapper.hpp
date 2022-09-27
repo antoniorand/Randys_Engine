@@ -4,6 +4,8 @@
 #include <string>
 #include <array>
 
+#include <OBJ_LOADER.h>
+
 namespace RandysEngine{
 
     struct matrix_wrapper{
