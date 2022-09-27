@@ -242,14 +242,6 @@ namespace RandysEngine{
 
     }
 
-    bool gl_mesh_resource::loadModel(std::string file){
-        bool devolver = false;
-
-        std::cout << "Holi\n";
-
-        return devolver;
-    }
-
     gl_mesh_resource::gl_mesh_resource(std::string file) noexcept{
         
         auto vertexData = loadModel(file);
@@ -261,10 +253,10 @@ namespace RandysEngine{
         glBindVertexArray(VAO);
 
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeVertices, vertices, GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, size_loadedVertices,&vertexData.first[0], GL_STATIC_DRAW);
 
-        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeVertices, indices_list, GL_STATIC_DRAW);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, size_loadedIndices, &vertexData.second[0], GL_STATIC_DRAW);
 
         //vertex position
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 
@@ -292,8 +284,8 @@ namespace RandysEngine{
 
     void gl_mesh_resource::draw() const noexcept{
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-        glDrawArrays(GL_TRIANGLES, 0, countVertices);
-        //glDrawElements(GL_TRIANGLES, countIndices, GL_UNSIGNED_SHORT, 0);
+        //glDrawArrays(GL_TRIANGLES, 0, count_loadedVertices);
+        glDrawElements(GL_TRIANGLES, count_loadedIndices, GL_UNSIGNED_SHORT, 0);
 
         glBindVertexArray(0); // no need to unbind it every time 
     }

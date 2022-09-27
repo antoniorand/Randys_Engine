@@ -5,7 +5,7 @@
 #include <array>
 
 //Source: https://github.com/Bly7/OBJ-Loader
-#include <OBJ_LOADER.h>
+#include "../../dependencies/OBJ_Loader.h"
 
 namespace RandysEngine{
 
@@ -81,6 +81,8 @@ namespace RandysEngine{
         static constexpr std::size_t sizeVertices{sizeof(vertices)}, countVertices{sizeVertices/sizeof(vertices[0])};
         static constexpr std::size_t sizeIndices{sizeof(indices_list)}, countIndices{sizeIndices/sizeof(indices_list[0])}; 
 
+        std::size_t size_loadedVertices{0}, count_loadedVertices{0}, size_loadedIndices{0}, count_loadedIndices{0};
+
         virtual ~mesh_resource_wrapper() noexcept{};
 
         void draw() const noexcept {
@@ -108,27 +110,31 @@ namespace RandysEngine{
                 // Check to see if it loaded
 
                 // If so continue
+
+                count_loadedVertices = loader.LoadedVertices.size();
+                count_loadedIndices = loader.LoadedIndices.size();
+                size_loadedVertices = count_loadedVertices*sizeof(Vertex);
+                size_loadedIndices = count_loadedIndices*sizeof(unsigned short);
+
+                devolver.first.reserve(count_loadedVertices);
+                devolver.second.reserve(count_loadedIndices);
+
                 if (loadout){
-
-                    const std::size_t nVertices = loader.LoadedVertices.size();
-                    const std::size_t nIndices = loader.LoadedIndices.size();
-
-                    devolver.first.reserve(nVertices);
-                    devolver.second.reserve(nIndices);
-
-                    for(unsigned int i = 0; i < nVertices;i++){
-                        devolver.first.emplace_back(
-                            loader.LoadedVertices[i].Position.X,
-                            loader.LoadedVertices[i].Position.Y,
-                            loader.LoadedVertices[i].Position.Z,
-                            loader.LoadedVertices[i].TextureCoordinate.X,
-                            loader.LoadedVertices[i].TextureCoordinate.Y
-                        );
-                    }
-                    for(unsigned int i = 0; i < nIndices;i++){
-                        devolver.second.push_back(
-                            (unsigned short)loader.LoadedIndices[i]
-                        );
+                    for (unsigned int i = 0; i < loader.LoadedMeshes.size(); i++){
+                        auto& mesh = loader.LoadedMeshes[i];
+                        for (unsigned int j = 0; j < mesh.Vertices.size(); j++){
+                            devolver.first.emplace_back(
+                                mesh.Vertices[j].Position.X,
+                                mesh.Vertices[j].Position.Y,
+                                mesh.Vertices[j].Position.Z,
+                                mesh.Vertices[j].TextureCoordinate.X,
+                                mesh.Vertices[j].TextureCoordinate.Y
+                            );
+                        }
+                        for (unsigned int j = 0; j < mesh.Indices.size(); j++){
+                            std::cout << "Index: " << mesh.Indices[j] << std::endl;
+                            devolver.second.push_back((unsigned short)mesh.Indices[j]);
+                        }
                     }
                 }
 

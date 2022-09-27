@@ -57,10 +57,6 @@ namespace RandysEngine{
        ~gl_mesh_resource() noexcept;
         void draw() const noexcept;
 
-        private:
-
-            bool loadModel(std::string file);
-
     };
 
     struct gl_shader : shader_wrapper<gl_shader>{
