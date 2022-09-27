@@ -29,7 +29,7 @@ elif int(nintendo3dsClean):
     env.Execute('make clean')
     Exit(1)
 else:
-    env.Append(CPPPATH= 'lib/')
+    env.Append(CPPPATH= './src/dependencies')
     #env.Replace(CXX = 'mingw-w64-gcc')
     optimize = ARGUMENTS.get('optimize',0)
     if int(optimize):

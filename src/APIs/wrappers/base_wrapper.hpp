@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <string>
 #include <array>
+
 namespace RandysEngine{
 
     struct matrix_wrapper{
@@ -82,6 +83,12 @@ namespace RandysEngine{
         void draw() const noexcept {
             static_cast<api*>(this)->draw();
         }
+
+        private:
+
+            bool loadModel(std::string file){
+                return static_cast<api*>(this)->loadModel(file);
+            }
     };
 
     template<typename api>

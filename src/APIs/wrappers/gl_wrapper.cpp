@@ -1,8 +1,6 @@
 //If the __3DS__ identifier macro is not defined, it will compile this
 #ifndef __3DS__
 
-#define TINYOBJLOADER_IMPLEMENTATION
-#include <tiny_obj_loader.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
 #include "gl_wrapper.hpp"
@@ -241,6 +239,13 @@ namespace RandysEngine{
 
         //TO DO
         glBindTexture(GL_TEXTURE_2D, 0); 
+
+    }
+
+    bool gl_mesh_resource::loadModel(std::string file){
+
+
+        return false;
 
     }
 
