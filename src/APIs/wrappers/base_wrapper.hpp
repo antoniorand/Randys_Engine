@@ -4,8 +4,6 @@
 #include <string>
 #include <array>
 
-//Source: https://github.com/Bly7/OBJ-Loader
-#include "../../dependencies/OBJ_Loader.h"
 
 namespace RandysEngine{
 
@@ -91,54 +89,8 @@ namespace RandysEngine{
 
         protected:
 
-            std::pair<
-                std::vector<Vertex>,
-                std::vector<unsigned short>>
-            loadModel(std::string file){
-
-                std::pair<
-                    std::vector<Vertex>,
-                    std::vector<unsigned short>
-                > devolver;
-
-                // Initialize Loader
-                objl::Loader loader;
-
-                // Load .obj File
-                bool loadout = loader.LoadFile(file.c_str());
-
-                // Check to see if it loaded
-
-                // If so continue
-
-                count_loadedVertices = loader.LoadedVertices.size();
-                count_loadedIndices = loader.LoadedIndices.size();
-                size_loadedVertices = count_loadedVertices*sizeof(Vertex);
-                size_loadedIndices = count_loadedIndices*sizeof(unsigned short);
-
-                devolver.first.reserve(count_loadedVertices);
-                devolver.second.reserve(count_loadedIndices);
-
-                if (loadout){
-                    for (unsigned int i = 0; i < loader.LoadedMeshes.size(); i++){
-                        auto& mesh = loader.LoadedMeshes[i];
-                        for (unsigned int j = 0; j < mesh.Vertices.size(); j++){
-                            devolver.first.emplace_back(
-                                mesh.Vertices[j].Position.X,
-                                mesh.Vertices[j].Position.Y,
-                                mesh.Vertices[j].Position.Z,
-                                mesh.Vertices[j].TextureCoordinate.X,
-                                mesh.Vertices[j].TextureCoordinate.Y
-                            );
-                        }
-                        for (unsigned int j = 0; j < mesh.Indices.size(); j++){
-                            std::cout << "Index: " << mesh.Indices[j] << std::endl;
-                            devolver.second.push_back((unsigned short)mesh.Indices[j]);
-                        }
-                    }
-                }
-
-                return devolver;
+            std::pair<std::vector<Vertex>,std::vector<unsigned short>>loadModel(std::string file) noexcept{
+                return static_cast<api*>(this)->loadModel(file);
             }
     };
 

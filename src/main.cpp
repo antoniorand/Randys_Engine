@@ -32,10 +32,10 @@ int main(){
             renderer.closeApp();
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::left)){
-            renderer.TranslateNode(nodeCamera,-0.001f,0.0f,0.0f);
+            renderer.RotateNode(node2,0.0f,-0.001f,0.0f);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::right)){
-            renderer.TranslateNode(nodeCamera,0.001f,0.0f,0.0f);
+            renderer.RotateNode(node2,0.0f,0.001f,0.0f);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::up)){
             renderer.ScaleNode(node1,0.0f,0.0001f,0.0f);

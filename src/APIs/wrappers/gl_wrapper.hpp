@@ -57,6 +57,9 @@ namespace RandysEngine{
        ~gl_mesh_resource() noexcept;
         void draw() const noexcept;
 
+        private:
+            std::pair<std::vector<Vertex>,std::vector<unsigned short>>loadModel(std::string file) noexcept;
+
     };
 
     struct gl_shader : shader_wrapper<gl_shader>{

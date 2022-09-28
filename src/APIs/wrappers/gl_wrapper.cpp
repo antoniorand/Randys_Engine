@@ -3,6 +3,12 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb/stb_image.h>
+
+
+//Source: https://github.com/tinyobjloader/tinyobjloader
+#define TINYOBJLOADER_IMPLEMENTATION // define this in only *one* .cc
+#include "../../dependencies/tiny_obj_loader.h"
+
 #include "gl_wrapper.hpp"
 
 namespace RandysEngine{
@@ -242,6 +248,89 @@ namespace RandysEngine{
 
     }
 
+    std::pair<std::vector<Vertex>,std::vector<unsigned short>>
+        gl_mesh_resource::loadModel(std::string file) noexcept{
+
+        std::pair<std::vector<Vertex>,std::vector<unsigned short>> devolver;
+
+        tinyobj::ObjReaderConfig reader_config;
+        reader_config.mtl_search_path = "./"; // Path to material files
+
+        tinyobj::ObjReader reader;
+
+        if (!reader.ParseFromFile(file, reader_config)) {
+            if (!reader.Error().empty()) {
+                std::cerr << "TinyObjReader: " << reader.Error();
+            }
+        }
+
+        if (!reader.Warning().empty()) {
+            std::cout << "TinyObjReader: " << reader.Warning();
+        }
+
+        auto& attrib = reader.GetAttrib();
+        auto& shapes = reader.GetShapes();
+
+        devolver.first.reserve(attrib.vertices.size());
+        devolver.second.reserve(attrib.vertices.size());
+
+        for(unsigned int i = 0; i < attrib.vertices.size();i++){
+            
+        }
+
+        // Loop over shapes
+        for (size_t s = 0; s < shapes.size(); s++) {
+            // Loop over faces(polygon)
+            size_t index_offset = 0;
+            for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
+                size_t fv = size_t(shapes[s].mesh.num_face_vertices[f]);
+
+                // Loop over vertices in the face.
+                for (size_t v = 0; v < fv; v++) {
+                    // access to vertex
+                    tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
+                    tinyobj::real_t vx = attrib.vertices[3*size_t(idx.vertex_index)+0];
+                    tinyobj::real_t vy = attrib.vertices[3*size_t(idx.vertex_index)+1];
+                    tinyobj::real_t vz = attrib.vertices[3*size_t(idx.vertex_index)+2];
+
+                    // Check if `normal_index` is zero or positive. negative = no normal data
+                    /*if (idx.normal_index >= 0) {
+                        tinyobj::real_t nx = attrib.normals[3*size_t(idx.normal_index)+0];
+                        tinyobj::real_t ny = attrib.normals[3*size_t(idx.normal_index)+1];
+                        tinyobj::real_t nz = attrib.normals[3*size_t(idx.normal_index)+2];
+                    }*/
+
+                    tinyobj::real_t tx = 0;
+                    tinyobj::real_t ty = 0;
+                    // Check if `texcoord_index` is zero or positive. negative = no texcoord data
+
+                    if (idx.texcoord_index >= 0) {
+                        tx = attrib.texcoords[2*size_t(idx.texcoord_index)+0];
+                        ty = attrib.texcoords[2*size_t(idx.texcoord_index)+1];
+                    }
+
+                    devolver.first.emplace_back(vx,vy,vz,tx,ty);
+
+                    // Optional: vertex colors
+                    // tinyobj::real_t red   = attrib.colors[3*size_t(idx.vertex_index)+0];
+                    // tinyobj::real_t green = attrib.colors[3*size_t(idx.vertex_index)+1];
+                    // tinyobj::real_t blue  = attrib.colors[3*size_t(idx.vertex_index)+2];
+                }
+                index_offset += fv;
+
+                // per-face material
+                shapes[s].mesh.material_ids[f];
+            }
+
+        }
+
+        count_loadedVertices = devolver.first.size();
+        size_loadedVertices = count_loadedVertices*sizeof(Vertex);
+
+        return devolver;
+
+    }
+
     gl_mesh_resource::gl_mesh_resource(std::string file) noexcept{
         
         auto vertexData = loadModel(file);
@@ -255,8 +344,8 @@ namespace RandysEngine{
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferData(GL_ARRAY_BUFFER, size_loadedVertices,&vertexData.first[0], GL_STATIC_DRAW);
 
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, size_loadedIndices, &vertexData.second[0], GL_STATIC_DRAW);
+        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        //glBufferData(GL_ELEMENT_ARRAY_BUFFER, size_loadedIndices, &vertexData.second[0], GL_STATIC_DRAW);
 
         //vertex position
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 
@@ -284,8 +373,8 @@ namespace RandysEngine{
 
     void gl_mesh_resource::draw() const noexcept{
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-        //glDrawArrays(GL_TRIANGLES, 0, count_loadedVertices);
-        glDrawElements(GL_TRIANGLES, count_loadedIndices, GL_UNSIGNED_SHORT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, count_loadedVertices);
+        //glDrawElements(GL_TRIANGLES, count_loadedIndices, GL_UNSIGNED_SHORT, 0);
 
         glBindVertexArray(0); // no need to unbind it every time 
     }
