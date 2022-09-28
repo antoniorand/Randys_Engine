@@ -213,10 +213,11 @@ namespace RandysEngine{
     gl_texture_resource::gl_texture_resource(std::string file) noexcept{
 
         int width, height, channels;
-        stbi_set_flip_vertically_on_load(true);
-        unsigned char *data = stbi_load(file.c_str(),
+        //stbi_set_flip_vertically_on_load(true);
+        unsigned char *image = stbi_load(file.c_str(),
             &width,&height,&channels,0);
-        if(data != 0){
+        if( image != 0){
+
             glGenTextures(1,&texture);
             glBindTexture(GL_TEXTURE_2D, texture);
             
@@ -227,9 +228,9 @@ namespace RandysEngine{
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
                 GL_LINEAR);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 
-                width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+                width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
             glGenerateMipmap(GL_TEXTURE_2D);
-            stbi_image_free(data);
+            stbi_image_free(image);
             glBindTexture(GL_TEXTURE_2D,0);
         }
     }
@@ -248,10 +249,9 @@ namespace RandysEngine{
 
     }
 
-    std::pair<std::vector<Vertex>,std::vector<unsigned short>>
-        gl_mesh_resource::loadModel(std::string file) noexcept{
+    std::vector<Vertex> gl_mesh_resource::loadModel(std::string file) noexcept{
 
-        std::pair<std::vector<Vertex>,std::vector<unsigned short>> devolver;
+        std::vector<Vertex> devolver;
 
         tinyobj::ObjReaderConfig reader_config;
         reader_config.mtl_search_path = "./"; // Path to material files
@@ -260,19 +260,18 @@ namespace RandysEngine{
 
         if (!reader.ParseFromFile(file, reader_config)) {
             if (!reader.Error().empty()) {
-                std::cerr << "TinyObjReader: " << reader.Error();
+                //std::cerr << "TinyObjReader: " << reader.Error();
             }
         }
 
         if (!reader.Warning().empty()) {
-            std::cout << "TinyObjReader: " << reader.Warning();
+            //std::cout << "TinyObjReader: " << reader.Warning();
         }
 
         auto& attrib = reader.GetAttrib();
         auto& shapes = reader.GetShapes();
 
-        devolver.first.reserve(attrib.vertices.size());
-        devolver.second.reserve(attrib.vertices.size());
+        devolver.reserve(attrib.vertices.size());
 
         for(unsigned int i = 0; i < attrib.vertices.size();i++){
             
@@ -309,7 +308,7 @@ namespace RandysEngine{
                         ty = attrib.texcoords[2*size_t(idx.texcoord_index)+1];
                     }
 
-                    devolver.first.emplace_back(vx,vy,vz,tx,ty);
+                    devolver.emplace_back(vx,vy,vz,tx,ty);
 
                     // Optional: vertex colors
                     // tinyobj::real_t red   = attrib.colors[3*size_t(idx.vertex_index)+0];
@@ -317,14 +316,11 @@ namespace RandysEngine{
                     // tinyobj::real_t blue  = attrib.colors[3*size_t(idx.vertex_index)+2];
                 }
                 index_offset += fv;
-
-                // per-face material
-                shapes[s].mesh.material_ids[f];
             }
 
         }
 
-        count_loadedVertices = devolver.first.size();
+        count_loadedVertices = devolver.size();
         size_loadedVertices = count_loadedVertices*sizeof(Vertex);
 
         return devolver;
@@ -342,7 +338,7 @@ namespace RandysEngine{
         glBindVertexArray(VAO);
 
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, size_loadedVertices,&vertexData.first[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, size_loadedVertices,&vertexData[0], GL_STATIC_DRAW);
 
         //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         //glBufferData(GL_ELEMENT_ARRAY_BUFFER, size_loadedIndices, &vertexData.second[0], GL_STATIC_DRAW);
@@ -367,13 +363,12 @@ namespace RandysEngine{
     gl_mesh_resource::~gl_mesh_resource() noexcept{
         glDeleteVertexArrays(1, &VAO);
         glDeleteBuffers(1, &VBO);
-        glDeleteBuffers(1,&EBO);
     }
 
 
     void gl_mesh_resource::draw() const noexcept{
         glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
-        glDrawArrays(GL_TRIANGLES, 0, count_loadedVertices);
+        glDrawArrays(GL_TRIANGLES, 0, (int)count_loadedVertices);
         //glDrawElements(GL_TRIANGLES, count_loadedIndices, GL_UNSIGNED_SHORT, 0);
 
         glBindVertexArray(0); // no need to unbind it every time 

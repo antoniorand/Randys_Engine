@@ -1,4 +1,8 @@
 #ifdef __3DS__
+//Source: https://github.com/tinyobjloader/tinyobjloader
+#define TINYOBJLOADER_IMPLEMENTATION // define this in only *one* .cc
+#include "../../dependencies/tiny_obj_loader.h"
+
 #include "citro_wrapper.hpp"
 namespace RandysEngine{
 
@@ -65,8 +69,6 @@ namespace RandysEngine{
                 devolver = true;
             }
         }
-        if(devolver)
-            printf("successful!\n");
         return devolver;
     }
 
@@ -98,24 +100,101 @@ namespace RandysEngine{
         return vertex;
     }
 
-    citro_mesh_resource::citro_mesh_resource(std::string input) noexcept{
-        Vertex convertedVertices[countVertices];
+    std::vector<Vertex> citro_mesh_resource::loadModel(std::string file) noexcept{
 
-        for(unsigned int i = 0; i < countVertices; i++){
-            convertedVertices[i] = verticesConverter(vertices[i]);
+        std::vector<Vertex> devolver;
+
+        tinyobj::ObjReaderConfig reader_config;
+        reader_config.mtl_search_path = "./"; // Path to material files
+
+        tinyobj::ObjReader reader;
+
+        if (!reader.ParseFromFile(file, reader_config)) {
+            if (!reader.Error().empty()) {
+                //std::cerr << "TinyObjReader: " << reader.Error();
+            }
         }
 
-        vbo_data = linearAlloc(sizeVertices);
-        memcpy(vbo_data,convertedVertices, sizeVertices);
+        if (!reader.Warning().empty()) {
+            //std::cout << "TinyObjReader: " << reader.Warning();
+        }
 
-        ibo_data = linearAlloc(sizeIndices);
-        memcpy(ibo_data, indices_list, sizeIndices);
+        auto& attrib = reader.GetAttrib();
+        auto& shapes = reader.GetShapes();
+
+        devolver.reserve(attrib.vertices.size());
+
+        for(unsigned int i = 0; i < attrib.vertices.size();i++){
+            
+        }
+
+        // Loop over shapes
+        for (size_t s = 0; s < shapes.size(); s++) {
+            // Loop over faces(polygon)
+            size_t index_offset = 0;
+            for (size_t f = 0; f < shapes[s].mesh.num_face_vertices.size(); f++) {
+                size_t fv = size_t(shapes[s].mesh.num_face_vertices[f]);
+
+                // Loop over vertices in the face.
+                for (size_t v = 0; v < fv; v++) {
+                    // access to vertex
+                    tinyobj::index_t idx = shapes[s].mesh.indices[index_offset + v];
+                    tinyobj::real_t vx = attrib.vertices[3*size_t(idx.vertex_index)+0];
+                    tinyobj::real_t vy = attrib.vertices[3*size_t(idx.vertex_index)+1];
+                    tinyobj::real_t vz = attrib.vertices[3*size_t(idx.vertex_index)+2];
+
+                    // Check if `normal_index` is zero or positive. negative = no normal data
+                    /*if (idx.normal_index >= 0) {
+                        tinyobj::real_t nx = attrib.normals[3*size_t(idx.normal_index)+0];
+                        tinyobj::real_t ny = attrib.normals[3*size_t(idx.normal_index)+1];
+                        tinyobj::real_t nz = attrib.normals[3*size_t(idx.normal_index)+2];
+                    }*/
+
+                    tinyobj::real_t tx = 0;
+                    tinyobj::real_t ty = 0;
+                    // Check if `texcoord_index` is zero or positive. negative = no texcoord data
+
+                    if (idx.texcoord_index >= 0) {
+                        tx = attrib.texcoords[2*size_t(idx.texcoord_index)+0];
+                        ty = attrib.texcoords[2*size_t(idx.texcoord_index)+1];
+                    }
+
+                    devolver.emplace_back(vx,vy,vz,tx,ty);
+
+                    // Optional: vertex colors
+                    // tinyobj::real_t red   = attrib.colors[3*size_t(idx.vertex_index)+0];
+                    // tinyobj::real_t green = attrib.colors[3*size_t(idx.vertex_index)+1];
+                    // tinyobj::real_t blue  = attrib.colors[3*size_t(idx.vertex_index)+2];
+                }
+                index_offset += fv;
+            }
+
+        }
+
+        count_loadedVertices = devolver.size();
+        size_loadedVertices = count_loadedVertices*sizeof(Vertex);
+
+        return devolver;
+
+    }
+
+    citro_mesh_resource::citro_mesh_resource(std::string input) noexcept{
+        std::vector<Vertex> convertedVertices = loadModel(input);
+
+        for(unsigned int i = 0; i < count_loadedVertices; i++){
+            convertedVertices[i] = verticesConverter(convertedVertices[i]);
+            std::cout << "Vertex: X" << convertedVertices[i].x 
+                             << " Y" << convertedVertices[i].y
+                             << " z" << convertedVertices[i].z << std::endl;
+        }
+
+        vbo_data = linearAlloc(size_loadedVertices);
+        memcpy(vbo_data,&convertedVertices[0], size_loadedVertices);
 
     }
 
     citro_mesh_resource::~citro_mesh_resource() noexcept{
         linearFree(vbo_data);
-        linearFree(ibo_data);
     }
 
     void citro_mesh_resource::draw() const noexcept{
@@ -126,8 +205,7 @@ namespace RandysEngine{
         BufInfo_Add(bufInfo, vbo_data, sizeof(Vertex), 2, 0x10);
 
         // Draw the VBO
-        C3D_DrawArrays(GPU_TRIANGLES, 0, countVertices);
-        //C3D_DrawElements(GPU_TRIANGLES,countIndices,C3D_UNSIGNED_SHORT,ibo_data);
+        C3D_DrawArrays(GPU_TRIANGLES, 0, count_loadedVertices);
 
     }
 

@@ -3,6 +3,7 @@
 #include <3ds.h>
 #include <citro3d.h>
 #include <citro2d.h>
+#include <vector>
 #include "vshader_shbin.h"
 
 #include <iostream>
@@ -50,8 +51,6 @@ namespace RandysEngine{
 
 
         void* vbo_data;
-        void* ibo_data;
-
 
         citro_mesh_resource(std::string file) noexcept;
         citro_mesh_resource(const citro_mesh_resource& other) noexcept{
@@ -63,6 +62,9 @@ namespace RandysEngine{
         }
        ~citro_mesh_resource() noexcept;
         void draw() const noexcept;
+
+        private:
+            std::vector<Vertex> loadModel(std::string file) noexcept;
     
     };
 

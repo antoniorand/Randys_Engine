@@ -18,9 +18,14 @@ int main(){
     renderer.addCamera<RandysEngine::layer_minitree>(nodeCamera);
     renderer.setActiveCamera<RandysEngine::layer_minitree>(nodeCamera);
 
-    unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node2,"resources/cube.obj");
 #ifndef __3DS__
-    renderer.addTexture<RandysEngine::layer_minitree>(node2,meshN,"resources/face.jpg");
+    unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node2,"resources/rowlet.obj");
+#else
+    unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node2,"romfs:/3d_resource/cube.obj");
+#endif
+
+#ifndef __3DS__
+    renderer.addTexture<RandysEngine::layer_minitree>(node2,meshN,"resources/rowlet.png");
 #else
     renderer.addTexture<RandysEngine::layer_minitree>(node2,meshN,"romfs:/gfx/kitten.t3x");
 #endif
@@ -32,10 +37,10 @@ int main(){
             renderer.closeApp();
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::left)){
-            renderer.RotateNode(node2,0.0f,-0.001f,0.0f);
+            renderer.RotateNode(node2,0.0f,-0.01f,0.0f);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::right)){
-            renderer.RotateNode(node2,0.0f,0.001f,0.0f);
+            renderer.RotateNode(node2,0.0f,0.01f,0.0f);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::up)){
             renderer.ScaleNode(node1,0.0f,0.0001f,0.0f);

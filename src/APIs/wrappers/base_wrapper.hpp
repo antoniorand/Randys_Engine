@@ -27,59 +27,7 @@ namespace RandysEngine{
     template<typename api>
     struct mesh_resource_wrapper{ 
 
-        static constexpr Vertex vertices[] = {
-            {-0.5f, -0.5f, -0.5f,  0.0f, 0.0f},
-            {0.5f, -0.5f, -0.5f,  1.0f, 0.0f},
-            {0.5f,  0.5f, -0.5f,  1.0f, 1.0f},
-            {0.5f,  0.5f, -0.5f,  1.0f, 1.0f},
-            {-0.5f,  0.5f, -0.5f,  0.0f, 1.0f},
-            {-0.5f, -0.5f, -0.5f,  0.0f, 0.0f},
-
-            {-0.5f, -0.5f,  0.5f,  0.0f, 0.0f},
-            {0.5f, -0.5f,  0.5f,  1.0f, 0.0f},
-            {0.5f,  0.5f,  0.5f,  1.0f, 1.0f},
-            {0.5f,  0.5f,  0.5f,  1.0f, 1.0f},
-            {-0.5f,  0.5f,  0.5f,  0.0f, 1.0f},
-            {-0.5f, -0.5f,  0.5f,  0.0f, 0.0f},
-
-            {-0.5f,  0.5f,  0.5f,  1.0f, 0.0f},
-            {-0.5f,  0.5f, -0.5f,  1.0f, 1.0f},
-            {-0.5f, -0.5f, -0.5f,  0.0f, 1.0f},
-            {-0.5f, -0.5f, -0.5f,  0.0f, 1.0f},
-            {-0.5f, -0.5f,  0.5f,  0.0f, 0.0f},
-            {-0.5f,  0.5f,  0.5f,  1.0f, 0.0f},
-
-            {0.5f,  0.5f,  0.5f,  1.0f, 0.0f},
-            {0.5f,  0.5f, -0.5f,  1.0f, 1.0f},
-            {0.5f, -0.5f, -0.5f,  0.0f, 1.0f},
-            {0.5f, -0.5f, -0.5f,  0.0f, 1.0f},
-            {0.5f, -0.5f,  0.5f,  0.0f, 0.0f},
-            {0.5f,  0.5f,  0.5f,  1.0f, 0.0f},
-
-            {-0.5f, -0.5f, -0.5f,  0.0f, 1.0f},
-            {0.5f, -0.5f, -0.5f,  1.0f, 1.0f},
-            {0.5f, -0.5f,  0.5f,  1.0f, 0.0f},
-            {0.5f, -0.5f,  0.5f,  1.0f, 0.0f},
-            {-0.5f, -0.5f,  0.5f,  0.0f, 0.0f},
-            {-0.5f, -0.5f, -0.5f,  0.0f, 1.0f},
-
-            {-0.5f,  0.5f, -0.5f,  0.0f, 1.0f},
-            {0.5f,  0.5f, -0.5f,  1.0f, 1.0f},
-            {0.5f,  0.5f,  0.5f,  1.0f, 0.0f},
-            {0.5f,  0.5f,  0.5f,  1.0f, 0.0f},
-            {-0.5f,  0.5f,  0.5f,  0.0f, 0.0f},
-            {-0.5f,  0.5f, -0.5f,  0.0f, 1.0f}
-        };
-        static constexpr unsigned short indices_list[] =
-        {
-            2,1,0,
-            3,2,0
-        };
-
-        static constexpr std::size_t sizeVertices{sizeof(vertices)}, countVertices{sizeVertices/sizeof(vertices[0])};
-        static constexpr std::size_t sizeIndices{sizeof(indices_list)}, countIndices{sizeIndices/sizeof(indices_list[0])}; 
-
-        std::size_t size_loadedVertices{0}, count_loadedVertices{0}, size_loadedIndices{0}, count_loadedIndices{0};
+        std::size_t size_loadedVertices{0}, count_loadedVertices{0};
 
         virtual ~mesh_resource_wrapper() noexcept{};
 
@@ -89,7 +37,7 @@ namespace RandysEngine{
 
         protected:
 
-            std::pair<std::vector<Vertex>,std::vector<unsigned short>>loadModel(std::string file) noexcept{
+            std::vector<Vertex> loadModel(std::string file) noexcept{
                 return static_cast<api*>(this)->loadModel(file);
             }
     };
