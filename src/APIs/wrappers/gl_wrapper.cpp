@@ -1,9 +1,7 @@
 //If the __3DS__ identifier macro is not defined, it will compile this
 #ifndef __3DS__
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb/stb_image.h>
-
+#include "../../dependencies/SOIL/SOIL.h"
 
 //Source: https://github.com/tinyobjloader/tinyobjloader
 #define TINYOBJLOADER_IMPLEMENTATION // define this in only *one* .cc
@@ -212,27 +210,56 @@ namespace RandysEngine{
 
     gl_texture_resource::gl_texture_resource(std::string file) noexcept{
 
-        int width, height, channels;
-        //stbi_set_flip_vertically_on_load(true);
-        unsigned char *image = stbi_load(file.c_str(),
-            &width,&height,&channels,0);
-        if( image != 0){
+        //codigo basado en esta fuente: https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/model.h
 
+        int channels,width,height;
+
+        auto image=SOIL_load_image(file.c_str(),&width,&height,&channels,SOIL_LOAD_RGBA);
+        
+        //comprobamos que no ha habido ningun error al cargar la textura
+        if(image==0){
+            printf( "Error al cargar la textura\n" );
+        }
+        else{
+            /////INVERTIR
+                int i, j;
+                for( j = 0; j*2 < height; ++j )
+                {
+                    int index1 = j * width * channels;
+                    int index2 = (height - 1 - j) * width * channels;
+                    for( i = width * channels; i > 0; --i )
+                    {
+                        unsigned char temp = image[index1];
+                        image[index1] = image[index2];
+                        image[index2] = temp;
+                        ++index1;
+                        ++index2;
+                    }
+                }
+            //////
+            GLenum format = GL_RGBA;
             glGenTextures(1,&texture);
-            glBindTexture(GL_TEXTURE_2D, texture);
-            
+            glBindTexture(GL_TEXTURE_2D,texture);
+
             glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_REPEAT);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                 GL_LINEAR_MIPMAP_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
                 GL_LINEAR);
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 
-                width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+
+            glTexImage2D(
+                GL_TEXTURE_2D, 0, format, 
+                width,height,
+                0,format,GL_UNSIGNED_BYTE, image
+            );
             glGenerateMipmap(GL_TEXTURE_2D);
-            stbi_image_free(image);
+
             glBindTexture(GL_TEXTURE_2D,0);
         }
+
+        SOIL_free_image_data(image);
+
     }
 
     void gl_texture_resource::use() const noexcept{
