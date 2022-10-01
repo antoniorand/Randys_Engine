@@ -21,7 +21,7 @@ int main(){
 #ifndef __3DS__
     unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node2,"resources/cube.obj");
 #else
-    unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node2,"romfs:/3d_resource/cube.obj");
+    unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node2,"romfs:/3d_resources/cube.obj");
 #endif
 
 #ifndef __3DS__

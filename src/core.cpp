@@ -43,6 +43,7 @@ namespace RandysEngine{
             auto itEnd = layers.end();
 
             while(iterator != itEnd){
+                screen.clearDepth();
                 std::visit( draw_visitor{this->shader}, *iterator);
                 iterator++;
             }

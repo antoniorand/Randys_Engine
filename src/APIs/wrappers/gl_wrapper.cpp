@@ -17,8 +17,9 @@ namespace RandysEngine{
         if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
             std::cout << "Failed to initialize GLAD" << std::endl;
         }
-        glEnable(GL_DEPTH_TEST);
+        //glEnable(GL_DEPTH_TEST);
         glEnable(GL_TEXTURE_2D);
+        
     }
 
     void window_close_callback(GLFWwindow* window){
@@ -63,6 +64,10 @@ namespace RandysEngine{
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
+    }
+
+    void gl_screen::clearDepth() const noexcept{
+        glClear(GL_DEPTH_BUFFER_BIT);
     }
 
     bool gl_screen::getInputPressed(KeyInput input) const noexcept{
@@ -300,9 +305,6 @@ namespace RandysEngine{
 
         devolver.reserve(attrib.vertices.size());
 
-        for(unsigned int i = 0; i < attrib.vertices.size();i++){
-            
-        }
 
         // Loop over shapes
         for (size_t s = 0; s < shapes.size(); s++) {

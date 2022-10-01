@@ -109,6 +109,10 @@ namespace RandysEngine{
             static_cast<api*>(this)->swapBuffers();
         }
 
+        void clearDepth() const noexcept{
+            static_cast<api*>(this)->clearDepth();
+        }
+
         bool getInputPressed(KeyInput input) const noexcept{
             return static_cast<api*>(this)->getInput();
         }
