@@ -137,9 +137,11 @@ namespace RandysEngine{
             auto itEnd = layers.end();
 
             while(iterator != itEnd){
+
                 bool result = std::visit(Visitor_setTranslationMatrix{node,x,y,z},*iterator);
                 if(result)
                     break;
+                iterator++;
             }
         }
     }
@@ -169,6 +171,7 @@ namespace RandysEngine{
                 bool result = std::visit(Visitor_setScalationMatrix{node,x,y,z},*iterator);
                 if(result)
                     break;
+                iterator++;
             }
         }
     }
@@ -198,6 +201,7 @@ namespace RandysEngine{
                 bool result = std::visit(Visitor_setRotationMatrix{node,x,y,z},*iterator);
                 if(result)
                     break;
+                iterator++;
             }
         }
     }
@@ -227,6 +231,7 @@ namespace RandysEngine{
                 bool result = std::visit(Visitor_TranslateMatrix{node,x,y,z},*iterator);
                 if(result)
                     break;
+                iterator++;
             }
         }
     }
@@ -256,6 +261,7 @@ namespace RandysEngine{
                 bool result = std::visit(Visitor_ScaleMatrix{node,x,y,z},*iterator);
                 if(result)
                     break;
+                iterator++;
             }
         }
     }
@@ -285,6 +291,7 @@ namespace RandysEngine{
                 bool result = std::visit(Visitor_RotateMatrix{node,x,y,z},*iterator);
                 if(result)
                     break;
+                iterator++;
             }
         }
     }
@@ -322,6 +329,7 @@ namespace RandysEngine{
                     devolver = std::visit(Visitor_getTranslationMatrix{node},*iterator);
                     break;
                 }
+                iterator++;
             }
         }
         return devolver;
@@ -352,6 +360,7 @@ namespace RandysEngine{
                     devolver = std::visit(Visitor_getRotationMatrix{node},*iterator);
                     break;
                 }
+                iterator++;
             }
         }
         return devolver;
@@ -382,6 +391,7 @@ namespace RandysEngine{
                     devolver = std::visit(Visitor_getScalationMatrix{node},*iterator);
                     break;
                 }
+                iterator++;
             }
         }
         return devolver;

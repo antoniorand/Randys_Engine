@@ -95,6 +95,8 @@ namespace RandysEngine{
 
         void swapBuffers() const noexcept;
 
+        void clearDepth() const noexcept;
+
         bool getInputPressed(KeyInput input) const noexcept;
 
         bool isAppRunning() const noexcept;

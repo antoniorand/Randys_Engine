@@ -93,13 +93,6 @@ namespace RandysEngine{
         C3D_TexBind(0, &default_texture);
     }
 
-    Vertex verticesConverter(Vertex vertex){   
-        vertex.x = 200*vertex.x+20;    
-        vertex.y = 200*vertex.y;
-        vertex.z = 200*vertex.z;
-        return vertex;
-    }
-
     std::vector<Vertex> citro_mesh_resource::loadModel(std::string file) noexcept{
 
         std::vector<Vertex> devolver;
@@ -123,10 +116,6 @@ namespace RandysEngine{
         auto& shapes = reader.GetShapes();
 
         devolver.reserve(attrib.vertices.size());
-
-        for(unsigned int i = 0; i < attrib.vertices.size();i++){
-            
-        }
 
         // Loop over shapes
         for (size_t s = 0; s < shapes.size(); s++) {
@@ -181,13 +170,6 @@ namespace RandysEngine{
     citro_mesh_resource::citro_mesh_resource(std::string input) noexcept{
         std::vector<Vertex> convertedVertices = loadModel(input);
 
-        for(unsigned int i = 0; i < count_loadedVertices; i++){
-            convertedVertices[i] = verticesConverter(convertedVertices[i]);
-            std::cout << "Vertex: X" << convertedVertices[i].x 
-                             << " Y" << convertedVertices[i].y
-                             << " z" << convertedVertices[i].z << std::endl;
-        }
-
         vbo_data = linearAlloc(size_loadedVertices);
         memcpy(vbo_data,&convertedVertices[0], size_loadedVertices);
 
@@ -229,7 +211,7 @@ namespace RandysEngine{
         C3D_TexEnv* env = C3D_GetTexEnv(0);
         C3D_TexEnvInit(env);
 
-        C3D_TexEnvSrc(env, C3D_Both, GPU_TEXTURE0, GPU_PRIMARY_COLOR, (GPU_TEVSRC)0);
+        C3D_TexEnvSrc(env, C3D_Both, GPU_TEXTURE0, (GPU_TEVSRC)0, (GPU_TEVSRC)0);
 	    C3D_TexEnvFunc(env, C3D_Both, GPU_MODULATE);
     }
 
@@ -264,6 +246,8 @@ namespace RandysEngine{
             240, 400, GPU_RB_RGBA8, GPU_RB_DEPTH24_STENCIL8);
         C3D_RenderTargetSetOutput(
             target, GFX_TOP, GFX_LEFT, DISPLAY_TRANSFER_FLAGS);
+        C3D_CullFace(GPU_CULL_FRONT_CCW);
+        C3D_DepthTest(true, GPU_ALWAYS, GPU_WRITE_ALL);
     };
 
     citro_screen::~citro_screen() noexcept{
@@ -314,6 +298,10 @@ namespace RandysEngine{
     void citro_screen::swapBuffers() const noexcept{
         C3D_FrameEnd(0);
     };
+
+    void citro_screen::clearDepth() const noexcept{
+        C3D_RenderTargetClear(target, C3D_CLEAR_DEPTH, 0x00000000, 0);
+    }
 
     void citro_screen::prepareDraw() const noexcept{
         C3D_FrameBegin(C3D_FRAME_SYNCDRAW);

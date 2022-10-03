@@ -207,7 +207,6 @@ namespace RandysEngine{
             gl_matrix newProjection{};
 #else
             citro_matrix newProjection{};
-            newProjection.translation[2] += 800.0f;
 #endif
 
             newProjection.perspective = true;
