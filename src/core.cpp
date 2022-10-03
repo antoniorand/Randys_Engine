@@ -28,6 +28,12 @@ namespace RandysEngine{
 
     void Rendering_Engine::runFrame(){
 
+        std::chrono::time_point<
+            std::chrono::steady_clock,
+            std::chrono::nanoseconds
+            > 
+            timeStart{std::chrono::steady_clock::now()};
+
         /*
         
             In summary, this function will draw first and then
@@ -50,6 +56,15 @@ namespace RandysEngine{
         }
         
         screen.swapBuffers();
+        {
+            const long long timeCount {(std::chrono::steady_clock::now() - timeStart).count()};
+            const long long frameTime = 16*1000*1000;
+            if (timeCount <frameTime) {
+               std::chrono::nanoseconds tosleep(frameTime - timeCount);
+               //std::cout << "Sleeping for: " << tosleep << std::endl;
+                std::this_thread::sleep_for(tosleep);
+            }
+        }
 
     }
 

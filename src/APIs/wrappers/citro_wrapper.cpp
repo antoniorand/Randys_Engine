@@ -23,7 +23,7 @@ namespace RandysEngine{
             }
             
             Mtx_Translate(&transform, translation[0],
-                translation[1],translation[2], true);
+                translation[1],-1*translation[2], true);
             Mtx_RotateX(&transform, rotation[0], true);
             Mtx_RotateY(&transform, rotation[1], true);
             Mtx_RotateZ(&transform, rotation[2], true);

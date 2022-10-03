@@ -1,6 +1,5 @@
 #include "core.hpp"
 
-constexpr double averageTick = 1/60.0;
 int main(){
 
 	RandysEngine::Rendering_Engine renderer;
@@ -45,25 +44,25 @@ int main(){
     renderer.addTexture<RandysEngine::layer_minitree>(node3,meshN2,"romfs:/gfx/rowlet.t3x");
     renderer.addTexture<RandysEngine::layer_minitree>(node4,meshN3,"romfs:/gfx/rowlet.t3x");
 #endif
-    renderer.setTranslateNode(node2, 0.0f,0.0f,5.0f);
+    renderer.setTranslateNode(node2, 0.0f,0.0f,-5.0f);
     renderer.setTranslateNode(node3, 1.0f,0.0f,-10.0f);
-    renderer.setTranslateNode(node4, -1.0f,0.0f,10.0f);
+    renderer.setTranslateNode(node4, 0.0f,0.0f, 0.0f);
 
     while(renderer.isAppRunning()){
         if(renderer.readKeyPressed(RandysEngine::KeyInput::exit)){
             renderer.closeApp();
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::left)){
-            renderer.TranslateNode(node2,-0.001f,0.0f,0.0f);
+            renderer.TranslateNode(node2,-0.1f,0.0f,0.0f);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::right)){
-            renderer.TranslateNode(node2,0.001f,0.0f,0.0f);
+            renderer.TranslateNode(node2,0.1f,0.0f,0.0f);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::up)){
-            renderer.TranslateNode(node2,0.0f,0.0f,-0.001f);
+            renderer.TranslateNode(node2,0.0f,0.0f,-0.1f);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::down)){
-            renderer.TranslateNode(node2,0.0f,0.0f,0.001f);
+            renderer.TranslateNode(node2,0.0f,0.0f,0.1f);
         }
 
         renderer.runFrame();

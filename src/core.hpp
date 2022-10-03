@@ -12,6 +12,8 @@
 #include <iostream>
 #include <variant>
 #include <list>
+#include <chrono>
+#include <thread>
 
 
 namespace RandysEngine{
@@ -62,6 +64,8 @@ namespace RandysEngine{
         //Resources
 
         std::map<std::string,ResourceManager::KeyId> resources;
+
+        static constexpr long long int frameTime{16*1000*1000};
 
         public:
             
