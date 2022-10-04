@@ -56,6 +56,7 @@ namespace RandysEngine{
         }
         
         screen.swapBuffers();
+#ifndef __3DS__
         {
             const long long timeCount {(std::chrono::steady_clock::now() - timeStart).count()};
             const long long frameTime = 16*1000*1000;
@@ -65,6 +66,7 @@ namespace RandysEngine{
                 std::this_thread::sleep_for(tosleep);
             }
         }
+#endif
 
     }
 

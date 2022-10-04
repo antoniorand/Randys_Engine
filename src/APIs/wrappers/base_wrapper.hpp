@@ -91,7 +91,11 @@ namespace RandysEngine{
         left = 1,
         right = 2,
         up = 3,
-        down = 4
+        down = 4,
+        a_button = 5,
+        b_button = 6,
+        x_button = 7,
+        y_button = 8
     };
 
     template<typename api>

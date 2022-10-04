@@ -9,7 +9,7 @@ int main(){
     
     auto node1 = renderer.createNode<RandysEngine::layer_minitree>(0);
     auto node2 = renderer.createNode<RandysEngine::layer_minitree>(node1);
-    auto node3 = renderer.createNode<RandysEngine::layer_minitree>(node1);
+    auto node3 = renderer.createNode<RandysEngine::layer_minitree>(0);
     auto node4 = renderer.createNode<RandysEngine::layer_minitree>(1);
 
     auto nodeCamera = renderer.createNode<RandysEngine::layer_minitree>(node1);
@@ -19,7 +19,7 @@ int main(){
     renderer.addModel<RandysEngine::layer_minitree>(node3);
     renderer.addModel<RandysEngine::layer_minitree>(node4);
 
-    renderer.addCamera<RandysEngine::layer_minitree>(nodeCamera);
+    renderer.addCamera<RandysEngine::layer_minitree>(nodeCamera,45.0f,400.0f,240.0f,0.01f,10000.0f);
     renderer.setActiveCamera<RandysEngine::layer_minitree>(nodeCamera);
 
     renderer.addCamera<RandysEngine::layer_minitree>(nodeCamera2);
@@ -46,7 +46,7 @@ int main(){
 #endif
     renderer.setTranslateNode(node2, 0.0f,0.0f,-5.0f);
     renderer.setTranslateNode(node3, 1.0f,0.0f,-10.0f);
-    renderer.setTranslateNode(node4, 0.0f,0.0f, 0.0f);
+    renderer.setTranslateNode(node4, 0.8f,0.0f, -15.0f);
 
     while(renderer.isAppRunning()){
         if(renderer.readKeyPressed(RandysEngine::KeyInput::exit)){
@@ -64,6 +64,7 @@ int main(){
         if(renderer.readKeyPressed(RandysEngine::KeyInput::down)){
             renderer.TranslateNode(node2,0.0f,0.0f,0.1f);
         }
+
 
         renderer.runFrame();
     }
