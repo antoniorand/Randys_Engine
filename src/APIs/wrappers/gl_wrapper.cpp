@@ -202,7 +202,7 @@ namespace RandysEngine{
     }
 
     void gl_shader::setMat4(const std::string &name, gl_matrix& mat) const{
-        unsigned int location = glGetUniformLocation(shaderProgram, name.c_str());
+        GLint location = glGetUniformLocation(shaderProgram, name.c_str());
         auto value = glm::value_ptr(mat.getTransformationMatrix());
         glUniformMatrix4fv(location, 1, GL_FALSE, value);
     }
@@ -258,7 +258,7 @@ namespace RandysEngine{
                 GL_LINEAR);
 
             glTexImage2D(
-                GL_TEXTURE_2D, 0, format, 
+                GL_TEXTURE_2D, 0, (GLint)format, 
                 width,height,
                 0,format,GL_UNSIGNED_BYTE, image
             );
@@ -371,7 +371,7 @@ namespace RandysEngine{
         glBindVertexArray(VAO);
 
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
-        glBufferData(GL_ARRAY_BUFFER, size_loadedVertices,&vertexData[0], GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)size_loadedVertices,&vertexData[0], GL_STATIC_DRAW);
 
         //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         //glBufferData(GL_ELEMENT_ARRAY_BUFFER, size_loadedIndices, &vertexData.second[0], GL_STATIC_DRAW);
@@ -449,6 +449,14 @@ namespace RandysEngine{
         devolver.transform = glm::inverse(this->getTransformationMatrix());
 
         return(devolver);
+    }
+
+    void gl_skybox_helper::reverseCull() const noexcept{
+        glCullFace(GL_FRONT);
+    }
+
+    void gl_skybox_helper::restoreCull() const noexcept{
+        glCullFace(GL_BACK);
     }
 
 }

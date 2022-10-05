@@ -423,7 +423,7 @@ namespace RandysEngine{
                 //If this is the right resource type
                 if(input.type_id == typeid(Resource_Stored).hash_code()){
                     //get the list
-                    auto& SlotMapList = getSlotMapList<Resource_Stored>();
+                    auto& SlotMapList = getSlotMapList<Resource_Stored>().list;
                     indexSlotmap counter = 0;
                     //look for the slotmap it's stored
                     for(auto& certainSlotmap : SlotMapList){

@@ -22,6 +22,12 @@ namespace RandysEngine{
     struct Vertex{
         float x, y, z; //Position
         float coordX, coordY; //Texture position
+
+        Vertex(float input_x, float input_y, float input_z,
+            float input_coordX, float input_coordY)
+            : x{input_x}, y{input_y},z{input_z},coordX{input_coordX},coordY{input_coordY}{
+
+        }
     };
 
     template<typename api>
@@ -133,6 +139,21 @@ namespace RandysEngine{
             static_cast<api*>(this)->prepareDraw();
         }
 
+    };
+
+    template<typename api>
+    class skybox_helper_wrapper{
+
+        public:
+            skybox_helper_wrapper(){};
+
+            void reverseCull() const noexcept{
+                static_cast<api*>(this)->reverseCull();
+            }
+
+            void restoreCull() const noexcept{
+                static_cast<api*>(this)->restoreCull();
+            }
     };
 
 }

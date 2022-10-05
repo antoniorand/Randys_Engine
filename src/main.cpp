@@ -4,6 +4,7 @@ int main(){
 
 	RandysEngine::Rendering_Engine renderer;
 
+    //renderer.addLayerBack<RandysEngine::layer_skybox>();
     renderer.addLayerBack<RandysEngine::layer_minitree>();
     renderer.addLayerBack<RandysEngine::layer_minitree>();
     

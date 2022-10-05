@@ -60,6 +60,26 @@ namespace RandysEngine{
 
     };
 
+    struct Camera_Skybox{
+
+#ifndef __3DS__
+        RandysEngine::gl_matrix viewMatrix;
+        RandysEngine::gl_matrix projectionMatrix;
+#else
+        RandysEngine::citro_matrix viewMatrix;
+        RandysEngine::citro_matrix projectionMatrix;
+#endif
+
+        Camera_Skybox(){
+            projectionMatrix.perspective = true;
+            projectionMatrix.fov = 45.0f;
+            projectionMatrix.aspect = 400.0f/240.0f;
+            projectionMatrix.near = 0.001f;
+            projectionMatrix.far = 1000.0f;
+        }
+
+    };
+
     struct MinitreeNode{
             ////
             static constexpr unsigned int maxChildren {4};

@@ -58,6 +58,8 @@ namespace RandysEngine{
         RandysEngine::SlotMap::SlotMap_Key currentActiveCamera;
         bool isCameraActive; 
 
+        
+        void deleteLinkedNodes(SlotMap::SlotMap_Key);
         void runLinks(RandysEngine::MinitreeNode& node);
         
         void runLinkedMovement();
@@ -71,28 +73,30 @@ namespace RandysEngine{
 
             [[nodiscard]] const RandysEngine::Layer_Node createNode() noexcept;
 
-            [[nodiscard]] const RandysEngine::Layer_Node createNode(const RandysEngine::Layer_Node) noexcept;
+            [[nodiscard]] const RandysEngine::Layer_Node createNode(RandysEngine::Layer_Node&) noexcept;
+
+            [[nodiscard]] bool deleteNode(RandysEngine::Layer_Node&) noexcept;
 
             RandysEngine::MinitreeNode* getNode(const RandysEngine::Layer_Node) const noexcept;
             
-            void addModel(RandysEngine::Layer_Node node) noexcept;
+            void addModel(RandysEngine::Layer_Node& node) noexcept;
            
-            void addCamera(RandysEngine::Layer_Node node, float fov, float aspect, float near, float far) noexcept;
-            bool setActiveCamera(RandysEngine::Layer_Node node) noexcept;
+            void addCamera(RandysEngine::Layer_Node& node, float fov, float aspect, float near, float far) noexcept;
+            bool setActiveCamera(RandysEngine::Layer_Node& node) noexcept;
 
-            RandysEngine::Model_Entity* getModel(RandysEngine::Layer_Node node) const noexcept;
+            RandysEngine::Model_Entity* getModel(RandysEngine::Layer_Node& node) const noexcept;
             
-            bool setTranslationMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept;
-            bool setScalationMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept;
-            bool setRotationMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept;
+            bool setTranslationMatrix(RandysEngine::Layer_Node& node,float x, float y, float z) const noexcept;
+            bool setScalationMatrix(RandysEngine::Layer_Node& node,float x, float y, float z) const noexcept;
+            bool setRotationMatrix(RandysEngine::Layer_Node& node,float x, float y, float z) const noexcept;
 
-            bool TranslateMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept;
-            bool ScaleMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept;
-            bool RotateMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept;
+            bool TranslateMatrix(RandysEngine::Layer_Node& node,float x, float y, float z) const noexcept;
+            bool ScaleMatrix(RandysEngine::Layer_Node& node,float x, float y, float z) const noexcept;
+            bool RotateMatrix(RandysEngine::Layer_Node& node,float x, float y, float z) const noexcept;
 
-            std::array<float,3> getTranslationMatrix(const RandysEngine::Layer_Node node) const noexcept;
-            std::array<float,3> getScalationMatrix(const RandysEngine::Layer_Node node) const noexcept;
-            std::array<float,3> getRotationMatrix(const RandysEngine::Layer_Node node) const noexcept;
+            std::array<float,3> getTranslationMatrix(RandysEngine::Layer_Node& node) const noexcept;
+            std::array<float,3> getScalationMatrix(RandysEngine::Layer_Node& node) const noexcept;
+            std::array<float,3> getRotationMatrix(RandysEngine::Layer_Node& node) const noexcept;
 
             void activate(){
                 activated = true;

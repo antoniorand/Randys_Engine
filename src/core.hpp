@@ -170,7 +170,7 @@ namespace RandysEngine{
 
             //Create a node in a specific layer
             template<typename Layer_type>
-            [[nodiscard]] Layer_Node createNode(const RandysEngine::Layer_Node parentNode){
+            [[nodiscard]] Layer_Node createNode(RandysEngine::Layer_Node& parentNode){
                 Layer_Node devolver;
 
                 if(parentNode.isValid){
@@ -197,9 +197,38 @@ namespace RandysEngine{
                 return devolver;
             }
 
+             //Delete a node in a specific layer
+            template<typename Layer_type>
+            [[nodiscard]] Layer_Node deleteNode(RandysEngine::Layer_Node& toDelete){
+                Layer_Node devolver;
+
+                if(toDelete.isValid){
+                  
+                    auto itBegin = layers.begin();
+                    auto itEnd = layers.end();
+
+                    while(itBegin != itEnd){
+                        if(std::holds_alternative<Layer_type>(*itBegin)){
+
+                            Layer_type* layer = &std::get<Layer_type>(*itBegin);
+
+                            if(layer->getInstance() == toDelete.layerId){
+                            
+                                devolver = layer->deleteNode(toDelete);
+                                break;
+                            
+                            }
+                        
+                        }
+                        itBegin++;
+                    }         
+                }       
+                return devolver;
+            }
+            
             //Create a node in a specific layer
             template<typename Layer_type>
-            void addModel(const RandysEngine::Layer_Node node){
+            void addModel(RandysEngine::Layer_Node& node){
                 if(node.isValid){
 
                     auto itBegin = layers.begin();
@@ -220,7 +249,7 @@ namespace RandysEngine{
 
             //Create a node in a specific layer
             template<typename Layer_type>
-            void addCamera(const RandysEngine::Layer_Node node, 
+            void addCamera(RandysEngine::Layer_Node& node, 
                 float fov = 45.0f, float height = 400.0f, float width = 240.0f, float near = 0.1f, float far = 1000.0f){
                 
                 if(node.isValid){
@@ -243,7 +272,7 @@ namespace RandysEngine{
 
             //Create a node in a specific layer
             template<typename Layer_type>
-            void setActiveCamera(const RandysEngine::Layer_Node node){
+            void setActiveCamera(RandysEngine::Layer_Node& node){
                 
                 if(node.isValid){
 
@@ -265,7 +294,7 @@ namespace RandysEngine{
 
             //Create a node in a specific layer
             template<typename Layer_type>
-            unsigned int addMesh(const RandysEngine::Layer_Node node, std::string file){
+            unsigned int addMesh(RandysEngine::Layer_Node& node, std::string file){
                 
                 unsigned int devolver = RandysEngine::Model_Entity::MAXMESHES;
 
@@ -315,22 +344,22 @@ namespace RandysEngine{
             }
 
             //
-            void setTranslateNode(RandysEngine::Layer_Node node, float x, float y, float z) noexcept;
-            void setScaleNode(RandysEngine::Layer_Node node, float x, float y, float z) noexcept;
-            void setRotateNode(RandysEngine::Layer_Node node, float x, float y, float z) noexcept;
+            void setTranslateNode(RandysEngine::Layer_Node& node, float x, float y, float z) noexcept;
+            void setScaleNode(RandysEngine::Layer_Node& node, float x, float y, float z) noexcept;
+            void setRotateNode(RandysEngine::Layer_Node& node, float x, float y, float z) noexcept;
 
-            void TranslateNode(RandysEngine::Layer_Node node, float x, float y, float z) noexcept;
-            void ScaleNode(RandysEngine::Layer_Node node, float x, float y, float z) noexcept;
-            void RotateNode(RandysEngine::Layer_Node node, float x, float y, float z) noexcept;
+            void TranslateNode(RandysEngine::Layer_Node& node, float x, float y, float z) noexcept;
+            void ScaleNode(RandysEngine::Layer_Node& node, float x, float y, float z) noexcept;
+            void RotateNode(RandysEngine::Layer_Node& node, float x, float y, float z) noexcept;
 
-            std::array<float,3> getTranslationNode(RandysEngine::Layer_Node node) noexcept;
-            std::array<float,3> getScalationNode(RandysEngine::Layer_Node node) noexcept;
-            std::array<float,3> getRotationNode(RandysEngine::Layer_Node node) noexcept;
+            std::array<float,3> getTranslationNode(RandysEngine::Layer_Node& node) noexcept;
+            std::array<float,3> getScalationNode(RandysEngine::Layer_Node& node) noexcept;
+            std::array<float,3> getRotationNode(RandysEngine::Layer_Node& node) noexcept;
 
 
             //Create a node in a specific layer
             template<typename Layer_type>
-            void addTexture(const RandysEngine::Layer_Node node, unsigned int meshNumber, std::string file){
+            void addTexture(RandysEngine::Layer_Node& node, unsigned int meshNumber, std::string file){
                 
                 if(node.isValid && meshNumber != RandysEngine::Model_Entity::MAXMESHES){
                     Layer_type* layer;

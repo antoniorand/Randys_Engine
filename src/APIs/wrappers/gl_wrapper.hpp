@@ -106,5 +106,16 @@ namespace RandysEngine{
 
     };
 
+    
+    class gl_skybox_helper : skybox_helper_wrapper<gl_skybox_helper>{
+
+        public:
+            gl_skybox_helper(){};
+
+            void reverseCull() const noexcept;
+
+            void restoreCull() const noexcept;
+    };
+
 }
 

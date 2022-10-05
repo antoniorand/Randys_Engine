@@ -121,41 +121,92 @@ namespace RandysEngine{
     }
 
     [[nodiscard]] const RandysEngine::Layer_Node 
-        layer_minitree::createNode(RandysEngine::Layer_Node input) noexcept{
+        layer_minitree::createNode(RandysEngine::Layer_Node& input) noexcept{
 
         RandysEngine::Layer_Node devolver;
         
         if(input.layerId == this->instance && input.isValid){
 
-            auto& oldNode = *nodes.atPosition(input.reference); 
+            auto oldNode = nodes.atPosition(input.reference); 
             
-            for(unsigned int i = 0; i < RandysEngine::MinitreeNode::maxChildren;i++){
-                if(!oldNode.hasChildren[i]){
+            if(!oldNode){
+                input.isValid = false;
+            }
+            else{
+                for(unsigned int i = 0; i < RandysEngine::MinitreeNode::maxChildren;i++){
+                    if(!oldNode->hasChildren[i]){
 
-                    RandysEngine::MinitreeNode node;
+                        RandysEngine::MinitreeNode node;
 
 #ifndef __3DS__
-                    node.matrixKey = matrixes.push_back(gl_matrix{});
+                        node.matrixKey = matrixes.push_back(gl_matrix{});
 #else
-                    node.matrixKey = matrixes.push_back(citro_matrix{});
+                        node.matrixKey = matrixes.push_back(citro_matrix{});
 #endif
 
-                    node.hasParent = true;
-                    node.parentNode = input.reference;
+                        node.hasParent = true;
+                        node.parentNode = input.reference;
 
-                    node.type_entity = RandysEngine::entityType_enum::none;
+                        node.type_entity = RandysEngine::entityType_enum::none;
 
-                    oldNode.childrenNodes[i] = nodes.push_back(node);
-                    oldNode.hasChildren[i] = true;
+                        oldNode->childrenNodes[i] = nodes.push_back(node);
+                        oldNode->hasChildren[i] = true;
 
-                    devolver.layerId = this->instance;
-                    devolver.isValid = true;
-                    devolver.reference = oldNode.childrenNodes[i];
-                    break;
+                        devolver.layerId = this->instance;
+                        devolver.isValid = true;
+                        devolver.reference = oldNode->childrenNodes[i];
+                        break;
+                    }
                 }
             }
+
+
         } 
         return devolver;
+    }
+
+    void layer_minitree::deleteLinkedNodes(const SlotMap::SlotMap_Key node){
+        //copy the node
+        MinitreeNode nodeToDelete = *nodes.atPosition(node);
+
+        for(unsigned int i = 0; i < MinitreeNode::maxChildren;i++){
+            
+            if(nodeToDelete.hasChildren[i]){
+                deleteLinkedNodes(nodeToDelete.childrenNodes[i]);
+            }
+
+        }
+        nodes.erase(node);
+    }
+
+    [[nodiscard]] bool layer_minitree::deleteNode(RandysEngine::Layer_Node& input) noexcept{
+
+        bool devolver =  false;
+
+        if(input.layerId == this->instance && input.isValid){
+            
+            //copy the node
+            MinitreeNode node = *nodes.atPosition(input.reference);
+
+            if(node.hasParent){
+
+                auto& parentNode = *nodes.atPosition(node.parentNode);
+                
+                for(unsigned int i = 0; i < MinitreeNode::maxChildren;i++){
+                    if(input.reference == parentNode.childrenNodes[i] && parentNode.hasChildren[i]){
+                        parentNode.hasChildren[i] = false;
+                    }
+                }
+
+            }
+
+            deleteLinkedNodes(input.reference);
+            input.isValid = false;
+
+        }
+
+        return devolver;
+
     }
 
     void layer_minitree::deleteEntity(RandysEngine::MinitreeNode& node){
@@ -175,71 +226,89 @@ namespace RandysEngine{
 
     }
 
-    void layer_minitree::addModel(const RandysEngine::Layer_Node input) noexcept{
+    void layer_minitree::addModel(RandysEngine::Layer_Node& input) noexcept{
         
         if(input.layerId == this->instance && input.isValid && models.current_size() != models.max_capacity()){
 
-            auto& oldNode = *nodes.atPosition(input.reference);
+            auto oldNode = nodes.atPosition(input.reference);
 
-            RandysEngine::Model_Entity newModel;
+            if(!oldNode){
+                input.isValid = false;
+            }
+            else{
 
-            newModel.matrixKey = oldNode.matrixKey;
+                RandysEngine::Model_Entity newModel;
 
-            deleteEntity(oldNode);
+                newModel.matrixKey = oldNode->matrixKey;
 
-            oldNode.type_entity = RandysEngine::entityType_enum::model;
+                deleteEntity(*oldNode);
 
-            oldNode.entity = models.push_back(newModel);
+                oldNode->type_entity = RandysEngine::entityType_enum::model;
+
+                oldNode->entity = models.push_back(newModel);
+
+            }
         }
 
     }
 
-    void layer_minitree::addCamera(const RandysEngine::Layer_Node input, 
+    void layer_minitree::addCamera(RandysEngine::Layer_Node& input, 
         float fov, float aspect, float near, float far) noexcept{
         
         if(input.layerId == this->instance && input.isValid && cameras.current_size() != cameras.max_capacity()){
 
-            auto& oldNode = *nodes.atPosition(input.reference);
+            auto oldNode = nodes.atPosition(input.reference);
 
-            RandysEngine::Camera_Entity newCamera;
+            if(!oldNode){
+                input.isValid = false;
+            }
+            else{
+
+                RandysEngine::Camera_Entity newCamera;
 
 #ifndef __3DS__
-            gl_matrix newProjection{};
+                gl_matrix newProjection{};
 #else
-            citro_matrix newProjection{};
+                citro_matrix newProjection{};
 #endif
 
-            newProjection.perspective = true;
-            newProjection.fov = fov;
-            newProjection.aspect = aspect;
-            newProjection.near = near;
-            newProjection.far = far;
+                newProjection.perspective = true;
+                newProjection.fov = fov;
+                newProjection.aspect = aspect;
+                newProjection.near = near;
+                newProjection.far = far;
 
-            newCamera.projectionMatrix = matrixes.push_back(newProjection);
+                newCamera.projectionMatrix = matrixes.push_back(newProjection);
 
-            newCamera.matrixKey = oldNode.matrixKey;
+                newCamera.matrixKey = oldNode->matrixKey;
 
-            deleteEntity(oldNode);
+                deleteEntity(*oldNode);
 
-            oldNode.type_entity = RandysEngine::entityType_enum::camera;
+                oldNode->type_entity = RandysEngine::entityType_enum::camera;
 
-            oldNode.entity = cameras.push_back(newCamera);
+                oldNode->entity = cameras.push_back(newCamera);
+            }
         }
 
     }
 
-    bool layer_minitree::setActiveCamera(RandysEngine::Layer_Node node) noexcept{
+    bool layer_minitree::setActiveCamera(RandysEngine::Layer_Node& node) noexcept{
         
         bool devolver = false;
         
         if(node.isValid && node.layerId == this->instance){
 
-            auto& oldNode = *nodes.atPosition(node.reference);
+            auto oldNode = nodes.atPosition(node.reference);
 
-            if(oldNode.type_entity == RandysEngine::entityType_enum::camera){
-                devolver = true;
-                this->isCameraActive = true;
-                this->currentActiveCamera = oldNode.entity;
+            if(!oldNode){
+                node.isValid = false;
+            }
+            else{
+                if(oldNode->type_entity == RandysEngine::entityType_enum::camera){
+                    devolver = true;
+                    this->isCameraActive = true;
+                    this->currentActiveCamera = oldNode->entity;
+                }
             }
 
         }
@@ -248,165 +317,229 @@ namespace RandysEngine{
     }
 
     RandysEngine::Model_Entity* 
-        layer_minitree::getModel(const RandysEngine::Layer_Node input) const noexcept{
+        layer_minitree::getModel(RandysEngine::Layer_Node& input) const noexcept{
 
         RandysEngine::Model_Entity* devolver = nullptr;
 
         if(input.layerId == this->instance && input.isValid){
 
-            auto& oldNode = *nodes.atPosition(input.reference);
+            auto oldNode = nodes.atPosition(input.reference);
 
-            if(oldNode.type_entity == RandysEngine::entityType_enum::model){
-
-                devolver = models.atPosition(oldNode.entity);
-
+            if(!oldNode){
+                input.isValid = false;
             }
+            else{
+                if(oldNode->type_entity == RandysEngine::entityType_enum::model){
+                    devolver = models.atPosition(oldNode->entity);
+                }
+            }
+
         }
 
         return devolver;
 
     }
 
-    bool layer_minitree::setTranslationMatrix(const RandysEngine::Layer_Node input,float x, float y, float z) const noexcept{
+    bool layer_minitree::setTranslationMatrix(RandysEngine::Layer_Node& input,float x, float y, float z) const noexcept{
         bool devolver = false;
         if(input.layerId == this->instance && input.isValid){
 
-            auto& oldNode = *nodes.atPosition(input.reference);
-            auto& matrix_to_translate = *matrixes.atPosition(oldNode.matrixKey);
+            auto oldNode = nodes.atPosition(input.reference);
+            if(!oldNode){
+                input.isValid = false;
+            }
+            else{
+                auto& matrix_to_translate = *matrixes.atPosition(oldNode->matrixKey);
 
-            matrix_to_translate.translation[0] = x;
-            matrix_to_translate.translation[1] = y;
-            matrix_to_translate.translation[2] = z;
-            matrix_to_translate.changed = true;
+                matrix_to_translate.translation[0] = x;
+                matrix_to_translate.translation[1] = y;
+                matrix_to_translate.translation[2] = z;
+                matrix_to_translate.changed = true;
 
-            devolver = true;
+                devolver = true;
+            }
+
         }
         return devolver;
     }
 
-    bool layer_minitree::setScalationMatrix(const RandysEngine::Layer_Node input,float x, float y, float z) const noexcept{
+    bool layer_minitree::setScalationMatrix(RandysEngine::Layer_Node& input,float x, float y, float z) const noexcept{
         bool devolver = false;
         if(input.layerId == this->instance && input.isValid){
 
-            auto& oldNode = *nodes.atPosition(input.reference);
-            auto& matrix_to_translate = *matrixes.atPosition(oldNode.matrixKey);
+            auto oldNode = nodes.atPosition(input.reference);
+            if(!oldNode){
+                input.isValid = false;
+            }
+            else{
+                auto& matrix_to_translate = *matrixes.atPosition(oldNode->matrixKey);
 
-            matrix_to_translate.scalation[0] = x;
-            matrix_to_translate.scalation[1] = y;
-            matrix_to_translate.scalation[2] = z;
-            matrix_to_translate.changed = true;
+                matrix_to_translate.scalation[0] = x;
+                matrix_to_translate.scalation[1] = y;
+                matrix_to_translate.scalation[2] = z;
+                matrix_to_translate.changed = true;
 
-            devolver = true;
+                devolver = true;
+            }
+
         }
         return devolver;
     }
 
-    bool layer_minitree::setRotationMatrix(const RandysEngine::Layer_Node input,float x, float y, float z) const noexcept{
+    bool layer_minitree::setRotationMatrix(RandysEngine::Layer_Node& input,float x, float y, float z) const noexcept{
         bool devolver = false;
         if(input.layerId == this->instance && input.isValid){
 
-            auto& oldNode = *nodes.atPosition(input.reference);
-            auto& matrix_to_translate = *matrixes.atPosition(oldNode.matrixKey);
+            auto oldNode = nodes.atPosition(input.reference);
+            if(!oldNode){
+                input.isValid = false;
+            }
+            else{
+                auto& matrix_to_translate = *matrixes.atPosition(oldNode->matrixKey);
 
-            matrix_to_translate.rotation[0] = x;
-            matrix_to_translate.rotation[1] = y;
-            matrix_to_translate.rotation[2] = z;
-            matrix_to_translate.changed = true;
+                matrix_to_translate.rotation[0] = x;
+                matrix_to_translate.rotation[1] = y;
+                matrix_to_translate.rotation[2] = z;
+                matrix_to_translate.changed = true;
 
-            devolver = true;
+                devolver = true;
+            }
+
         }
         return devolver;
     }
 
-    bool layer_minitree::TranslateMatrix(const RandysEngine::Layer_Node input,float x, float y, float z) const noexcept{
+    bool layer_minitree::TranslateMatrix(RandysEngine::Layer_Node& input,float x, float y, float z) const noexcept{
         bool devolver = false;
         if(input.layerId == this->instance && input.isValid){
 
-            auto& oldNode = *nodes.atPosition(input.reference);
-            auto& matrix_to_translate = *matrixes.atPosition(oldNode.matrixKey);
+            auto oldNode = nodes.atPosition(input.reference);
 
-            matrix_to_translate.translation[0] += x;
-            matrix_to_translate.translation[1] += y;
-            matrix_to_translate.translation[2] += z;
-            matrix_to_translate.changed = true;
+            if(!oldNode){
+                input.isValid = false;
+            }
+            else{
+                auto& matrix_to_translate = *matrixes.atPosition(oldNode->matrixKey);
 
-            devolver = true;
+                matrix_to_translate.translation[0] += x;
+                matrix_to_translate.translation[1] += y;
+                matrix_to_translate.translation[2] += z;
+                matrix_to_translate.changed = true;
+
+                devolver = true;
+            }
+
+
         }
         return devolver;
     }
 
-    bool layer_minitree::ScaleMatrix(const RandysEngine::Layer_Node input,float x, float y, float z) const noexcept{
+    bool layer_minitree::ScaleMatrix(RandysEngine::Layer_Node& input,float x, float y, float z) const noexcept{
         bool devolver = false;
         if(input.layerId == this->instance && input.isValid){
 
-            auto& oldNode = *nodes.atPosition(input.reference);
-            auto& matrix_to_translate = *matrixes.atPosition(oldNode.matrixKey);
+            auto oldNode = nodes.atPosition(input.reference);
 
-            matrix_to_translate.scalation[0] += x;
-            matrix_to_translate.scalation[1] += y;
-            matrix_to_translate.scalation[2] += z;
-            matrix_to_translate.changed = true;
+            if(!oldNode){
+                input.isValid = false;
+            }
+            else{
+                auto& matrix_to_translate = *matrixes.atPosition(oldNode->matrixKey);
 
-            devolver = true;
+                matrix_to_translate.scalation[0] += x;
+                matrix_to_translate.scalation[1] += y;
+                matrix_to_translate.scalation[2] += z;
+                matrix_to_translate.changed = true;
+
+                devolver = true;
+            }
+
+
         }
         return devolver;
     }
 
-    bool layer_minitree::RotateMatrix(const RandysEngine::Layer_Node input,float x, float y, float z) const noexcept{
+    bool layer_minitree::RotateMatrix(RandysEngine::Layer_Node& input,float x, float y, float z) const noexcept{
         bool devolver = false;
         if(input.layerId == this->instance && input.isValid){
 
-            auto& oldNode = *nodes.atPosition(input.reference);
-            auto& matrix_to_translate = *matrixes.atPosition(oldNode.matrixKey);
+            auto oldNode = nodes.atPosition(input.reference);
 
-            matrix_to_translate.rotation[0] += x;
-            matrix_to_translate.rotation[1] += y;
-            matrix_to_translate.rotation[2] += z;
-            matrix_to_translate.changed = true;
+            if(!oldNode){
+                input.isValid = false;
+            }
+            else{
+                auto& matrix_to_translate = *matrixes.atPosition(oldNode->matrixKey);
 
-            devolver = true;
+                matrix_to_translate.rotation[0] += x;
+                matrix_to_translate.rotation[1] += y;
+                matrix_to_translate.rotation[2] += z;
+                matrix_to_translate.changed = true;
+
+                devolver = true;
+            }
+
+
         }
         return devolver;
     }
 
-    std::array<float,3> layer_minitree::getTranslationMatrix(const RandysEngine::Layer_Node input) const noexcept{
+    std::array<float,3> layer_minitree::getTranslationMatrix(RandysEngine::Layer_Node& input) const noexcept{
         std::array<float,3> devolver = {0.0f,0.0f,0.0f};
         if(input.layerId == this->instance && input.isValid){
 
-            auto& oldNode = *nodes.atPosition(input.reference);
-            const auto& matrix_to_translate = *matrixes.atPosition(oldNode.matrixKey);
+            auto oldNode = nodes.atPosition(input.reference);
+            if(!oldNode){
+                input.isValid = false;
+            }
+            else{
+                const auto& matrix_to_translate = *matrixes.atPosition(oldNode->matrixKey);
 
-            devolver[0] = matrix_to_translate.translation[0];
-            devolver[1] = matrix_to_translate.translation[1];
-            devolver[2] = matrix_to_translate.translation[2];
+                devolver[0] = matrix_to_translate.translation[0];
+                devolver[1] = matrix_to_translate.translation[1];
+                devolver[2] = matrix_to_translate.translation[2];
+            }
+
         }
         return devolver;
     }
 
-    std::array<float,3> layer_minitree::getScalationMatrix(const RandysEngine::Layer_Node input) const noexcept{
+    std::array<float,3> layer_minitree::getScalationMatrix(RandysEngine::Layer_Node& input) const noexcept{
         std::array<float,3> devolver = {0.0f,0.0f,0.0f};
         if(input.layerId == this->instance && input.isValid){
 
-            auto& oldNode = *nodes.atPosition(input.reference);
-            const auto& matrix_to_translate = *matrixes.atPosition(oldNode.matrixKey);
+            auto oldNode = nodes.atPosition(input.reference);
+            if(!oldNode){
+                input.isValid = false;
+            }
+            else{
+                const auto& matrix_to_translate = *matrixes.atPosition(oldNode->matrixKey);
 
-            devolver[0] = matrix_to_translate.scalation[0];
-            devolver[1] = matrix_to_translate.scalation[1];
-            devolver[2] = matrix_to_translate.scalation[2];
+                devolver[0] = matrix_to_translate.scalation[0];
+                devolver[1] = matrix_to_translate.scalation[1];
+                devolver[2] = matrix_to_translate.scalation[2];
+            }
+
         }
         return devolver;
     }
 
-    std::array<float,3> layer_minitree::getRotationMatrix(const RandysEngine::Layer_Node input) const noexcept{
+    std::array<float,3> layer_minitree::getRotationMatrix(RandysEngine::Layer_Node& input) const noexcept{
         std::array<float,3> devolver = {0.0f,0.0f,0.0f};
         if(input.layerId == this->instance && input.isValid){
 
-            auto& oldNode = *nodes.atPosition(input.reference);
-            const auto& matrix_to_translate = *matrixes.atPosition(oldNode.matrixKey);
+            auto oldNode = nodes.atPosition(input.reference);
+            if(!oldNode){
+                input.isValid = false;
+            }
+            else{
+                const auto& matrix_to_translate = *matrixes.atPosition(oldNode->matrixKey);
 
-            devolver[0] = matrix_to_translate.rotation[0];
-            devolver[1] = matrix_to_translate.rotation[1];
-            devolver[2] = matrix_to_translate.rotation[2];
+                devolver[0] = matrix_to_translate.rotation[0];
+                devolver[1] = matrix_to_translate.rotation[1];
+                devolver[2] = matrix_to_translate.rotation[2];
+            }
+
         }
         return devolver;
     }

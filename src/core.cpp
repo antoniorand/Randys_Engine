@@ -134,12 +134,12 @@ namespace RandysEngine{
 
     struct Visitor_setTranslationMatrix{
     
-        RandysEngine::Layer_Node node;
+        RandysEngine::Layer_Node& node;
         float x;
         float y;
         float z;
 
-        Visitor_setTranslationMatrix(RandysEngine::Layer_Node e_node, float e_x, float e_y, float e_z)
+        Visitor_setTranslationMatrix(RandysEngine::Layer_Node& e_node, float e_x, float e_y, float e_z)
             :node{e_node},x{e_x},y{e_y},z{e_z}{}
 
         template< typename T >
@@ -148,7 +148,7 @@ namespace RandysEngine{
         }  
     };
 
-    void Rendering_Engine::setTranslateNode(RandysEngine::Layer_Node node, float x, float y, float z) noexcept{
+    void Rendering_Engine::setTranslateNode(RandysEngine::Layer_Node& node, float x, float y, float z) noexcept{
         if(node.isValid){
             auto iterator = layers.begin();
             auto itEnd = layers.end();
@@ -165,12 +165,12 @@ namespace RandysEngine{
 
     struct Visitor_setScalationMatrix{
     
-        RandysEngine::Layer_Node node;
+        RandysEngine::Layer_Node& node;
         float x;
         float y;
         float z;
 
-        Visitor_setScalationMatrix(RandysEngine::Layer_Node e_node, float e_x, float e_y, float e_z)
+        Visitor_setScalationMatrix(RandysEngine::Layer_Node& e_node, float e_x, float e_y, float e_z)
             :node{e_node},x{e_x},y{e_y},z{e_z}{}
 
         template< typename T >
@@ -179,7 +179,7 @@ namespace RandysEngine{
         }  
     };
 
-    void Rendering_Engine::setScaleNode(RandysEngine::Layer_Node node, float x, float y, float z) noexcept{
+    void Rendering_Engine::setScaleNode(RandysEngine::Layer_Node& node, float x, float y, float z) noexcept{
         if(node.isValid){
             auto iterator = layers.begin();
             auto itEnd = layers.end();
@@ -195,12 +195,12 @@ namespace RandysEngine{
 
     struct Visitor_setRotationMatrix{
     
-        RandysEngine::Layer_Node node;
+        RandysEngine::Layer_Node& node;
         float x;
         float y;
         float z;
 
-        Visitor_setRotationMatrix(RandysEngine::Layer_Node e_node, float e_x, float e_y, float e_z)
+        Visitor_setRotationMatrix(RandysEngine::Layer_Node& e_node, float e_x, float e_y, float e_z)
             :node{e_node},x{e_x},y{e_y},z{e_z}{}
 
         template< typename T >
@@ -209,7 +209,7 @@ namespace RandysEngine{
         }  
     };
 
-    void Rendering_Engine::setRotateNode(RandysEngine::Layer_Node node, float x, float y, float z) noexcept{
+    void Rendering_Engine::setRotateNode(RandysEngine::Layer_Node& node, float x, float y, float z) noexcept{
         if(node.isValid){
             auto iterator = layers.begin();
             auto itEnd = layers.end();
@@ -225,12 +225,12 @@ namespace RandysEngine{
 
     struct Visitor_TranslateMatrix{
     
-        RandysEngine::Layer_Node node;
+        RandysEngine::Layer_Node& node;
         float x;
         float y;
         float z;
 
-        Visitor_TranslateMatrix(RandysEngine::Layer_Node e_node, float e_x, float e_y, float e_z)
+        Visitor_TranslateMatrix(RandysEngine::Layer_Node& e_node, float e_x, float e_y, float e_z)
             :node{e_node},x{e_x},y{e_y},z{e_z}{}
 
         template< typename T >
@@ -239,7 +239,7 @@ namespace RandysEngine{
         }  
     };
 
-    void Rendering_Engine::TranslateNode(RandysEngine::Layer_Node node, float x, float y, float z) noexcept{
+    void Rendering_Engine::TranslateNode(RandysEngine::Layer_Node& node, float x, float y, float z) noexcept{
         if(node.isValid){
             auto iterator = layers.begin();
             auto itEnd = layers.end();
@@ -255,12 +255,12 @@ namespace RandysEngine{
 
     struct Visitor_ScaleMatrix{
     
-        RandysEngine::Layer_Node node;
+        RandysEngine::Layer_Node& node;
         float x;
         float y;
         float z;
 
-        Visitor_ScaleMatrix(RandysEngine::Layer_Node e_node, float e_x, float e_y, float e_z)
+        Visitor_ScaleMatrix(RandysEngine::Layer_Node& e_node, float e_x, float e_y, float e_z)
             :node{e_node},x{e_x},y{e_y},z{e_z}{}
 
         template< typename T >
@@ -269,7 +269,7 @@ namespace RandysEngine{
         }  
     };
 
-    void Rendering_Engine::ScaleNode(RandysEngine::Layer_Node node, float x, float y, float z) noexcept{
+    void Rendering_Engine::ScaleNode(RandysEngine::Layer_Node& node, float x, float y, float z) noexcept{
         if(node.isValid){
             auto iterator = layers.begin();
             auto itEnd = layers.end();
@@ -285,12 +285,12 @@ namespace RandysEngine{
     
     struct Visitor_RotateMatrix{
     
-        RandysEngine::Layer_Node node;
+        RandysEngine::Layer_Node& node;
         float x;
         float y;
         float z;
 
-        Visitor_RotateMatrix(RandysEngine::Layer_Node e_node, float e_x, float e_y, float e_z)
+        Visitor_RotateMatrix(RandysEngine::Layer_Node& e_node, float e_x, float e_y, float e_z)
             :node{e_node},x{e_x},y{e_y},z{e_z}{}
 
         template< typename T >
@@ -299,7 +299,7 @@ namespace RandysEngine{
         }  
     };
 
-    void Rendering_Engine::RotateNode(RandysEngine::Layer_Node node, float x, float y, float z) noexcept{
+    void Rendering_Engine::RotateNode(RandysEngine::Layer_Node& node, float x, float y, float z) noexcept{
         if(node.isValid){
             auto iterator = layers.begin();
             auto itEnd = layers.end();
@@ -323,9 +323,9 @@ namespace RandysEngine{
 
     struct Visitor_getTranslationMatrix{
     
-        RandysEngine::Layer_Node node;
+        RandysEngine::Layer_Node& node;
 
-        Visitor_getTranslationMatrix(RandysEngine::Layer_Node e_node)
+        Visitor_getTranslationMatrix(RandysEngine::Layer_Node& e_node)
             :node{e_node}{}
 
         template< typename T >
@@ -334,7 +334,7 @@ namespace RandysEngine{
         }  
     };
 
-    std::array<float,3> Rendering_Engine::getTranslationNode(RandysEngine::Layer_Node node) noexcept{
+    std::array<float,3> Rendering_Engine::getTranslationNode(RandysEngine::Layer_Node& node) noexcept{
         std::array<float,3> devolver;
         if(node.isValid){
             auto iterator = layers.begin();
@@ -354,9 +354,9 @@ namespace RandysEngine{
 
     struct Visitor_getRotationMatrix{
     
-        RandysEngine::Layer_Node node;
+        RandysEngine::Layer_Node& node;
 
-        Visitor_getRotationMatrix(RandysEngine::Layer_Node e_node)
+        Visitor_getRotationMatrix(RandysEngine::Layer_Node& e_node)
             :node{e_node}{}
 
         template< typename T >
@@ -365,7 +365,7 @@ namespace RandysEngine{
         }  
     };
 
-    std::array<float,3> Rendering_Engine::getRotationNode(RandysEngine::Layer_Node node) noexcept{
+    std::array<float,3> Rendering_Engine::getRotationNode(RandysEngine::Layer_Node& node) noexcept{
         std::array<float,3> devolver;
         if(node.isValid){
             auto iterator = layers.begin();
@@ -385,9 +385,9 @@ namespace RandysEngine{
 
     struct Visitor_getScalationMatrix{
     
-        RandysEngine::Layer_Node node;
+        RandysEngine::Layer_Node& node;
 
-        Visitor_getScalationMatrix(RandysEngine::Layer_Node e_node)
+        Visitor_getScalationMatrix(RandysEngine::Layer_Node& e_node)
             :node{e_node}{}
 
         template< typename T >
@@ -396,7 +396,7 @@ namespace RandysEngine{
         }  
     };
 
-    std::array<float,3> Rendering_Engine::getScalationNode(RandysEngine::Layer_Node node) noexcept{
+    std::array<float,3> Rendering_Engine::getScalationNode(RandysEngine::Layer_Node& node) noexcept{
         std::array<float,3> devolver;
         if(node.isValid){
             auto iterator = layers.begin();

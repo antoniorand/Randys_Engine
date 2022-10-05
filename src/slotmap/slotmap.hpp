@@ -55,6 +55,9 @@ namespace RandysEngine{
         struct SlotMap_Key{
             RandysEngine::SlotMap::SlotMap_Id_Type Id;
             RandysEngine::SlotMap::SlotMap_Gen_Type Gen;
+            bool operator ==(const SlotMap_Key &b) const{
+                return((Id && b.Id) && (Gen && b.Gen));
+            }
         };
 
         //We will be using the std::allocator by default, 

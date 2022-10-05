@@ -11,6 +11,16 @@
 
 namespace RandysEngine{
 
+    class citro_skybox_helper : skybox_helper_wrapper<citro_skybox_helper>{
+
+        public:
+            citro_skybox_helper(){};
+
+            void reverseCull() const noexcept;
+
+            void restoreCull() const noexcept;
+    };
+
     struct citro_matrix : public matrix_wrapper{
 
         private:

@@ -12,6 +12,14 @@ namespace RandysEngine{
 	GX_TRANSFER_SCALING(GX_TRANSFER_SCALE_NO))
 
 
+    void citro_skybox_helper::reverseCull() const noexcept{
+        C3D_CullFace(GPU_CULL_BACK_CCW);
+    }
+
+    void citro_skybox_helper::restoreCull() const noexcept{
+        C3D_CullFace(GPU_CULL_FRONT_CCW);
+    }
+
     const C3D_Mtx& citro_matrix::getTransformationMatrix() noexcept{
         if(changed){
 
