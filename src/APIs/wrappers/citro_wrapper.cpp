@@ -22,8 +22,8 @@ namespace RandysEngine{
                 Mtx_Identity(&transform);
             }
             
-            Mtx_Translate(&transform, -1*translation[0],
-                translation[1],translation[2], true);
+            Mtx_Translate(&transform, translation[0],
+                translation[1],-1*translation[2], true);
             Mtx_RotateX(&transform, rotation[0], true);
             Mtx_RotateY(&transform, rotation[1], true);
             Mtx_RotateZ(&transform, rotation[2], true);
@@ -247,7 +247,7 @@ namespace RandysEngine{
         C3D_RenderTargetSetOutput(
             target, GFX_TOP, GFX_LEFT, DISPLAY_TRANSFER_FLAGS);
         C3D_CullFace(GPU_CULL_FRONT_CCW);
-        C3D_DepthTest(true, GPU_LESS, GPU_WRITE_ALL);
+        C3D_DepthTest(true, GPU_GREATER, GPU_WRITE_ALL);
     };
 
     citro_screen::~citro_screen() noexcept{
@@ -306,18 +306,19 @@ namespace RandysEngine{
     }
 
     constexpr int BACKGROUND_COLOR = 0x334D4DFF;
+    constexpr int DEPTH_VALUE = 0x00000000;
 
     void citro_screen::swapBuffers() const noexcept{
         C3D_FrameEnd(0);
     };
 
     void citro_screen::clearDepth() const noexcept{
-        C3D_RenderTargetClear(target, C3D_CLEAR_DEPTH, 0x00000000, 0x0000000);
+        C3D_RenderTargetClear(target, C3D_CLEAR_DEPTH, 0x00000000, DEPTH_VALUE);
     }
 
     void citro_screen::prepareDraw() const noexcept{
         C3D_FrameBegin(C3D_FRAME_SYNCDRAW);
-		C3D_RenderTargetClear(target, C3D_CLEAR_ALL, BACKGROUND_COLOR, 0x00000000);
+		C3D_RenderTargetClear(target, C3D_CLEAR_ALL, BACKGROUND_COLOR, DEPTH_VALUE);
 		C3D_FrameDrawOn(target);
     }
 
