@@ -36,11 +36,13 @@ namespace RandysEngine{
 
             if(isCameraActive){
                 auto& activeCamera = *cameras.atPosition(currentActiveCamera);
+                
                 auto& projectionM = *matrixes.atPosition(activeCamera.projectionMatrix);
                 auto viewM = matrixes.atPosition(activeCamera.matrixKey)->reverse();
 
                 shader->setMat4("projection",projectionM);
                 shader->setMat4("view", viewM);
+
             }
 
             for(SlotMap::SlotMap_Index_Type i = 0;i < models.current_size();i++){
@@ -177,6 +179,25 @@ namespace RandysEngine{
 
         }
         nodes.erase(node);
+        matrixes.erase(nodeToDelete.matrixKey);
+
+        switch(nodeToDelete.type_entity){
+            case RandysEngine::entityType_enum::model:
+                models.erase(nodeToDelete.entity);
+            break;
+            case RandysEngine::entityType_enum::light:
+                lights.erase(nodeToDelete.entity);
+            break;
+            case RandysEngine::entityType_enum::camera:
+                cameras.erase(nodeToDelete.entity);
+                if(nodeToDelete.entity == this->currentActiveCamera){
+                    this->isCameraActive = false;
+                }
+            break;
+            default: 
+            break;
+        }
+
     }
 
     [[nodiscard]] bool layer_minitree::deleteNode(RandysEngine::Layer_Node& input) noexcept{
@@ -195,6 +216,7 @@ namespace RandysEngine{
                 for(unsigned int i = 0; i < MinitreeNode::maxChildren;i++){
                     if(input.reference == parentNode.childrenNodes[i] && parentNode.hasChildren[i]){
                         parentNode.hasChildren[i] = false;
+                        break;
                     }
                 }
 
@@ -270,6 +292,7 @@ namespace RandysEngine{
                 gl_matrix newProjection{};
 #else
                 citro_matrix newProjection{};
+                newProjection.rotation[1] = 3.14;
 #endif
 
                 newProjection.perspective = true;

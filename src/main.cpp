@@ -10,7 +10,7 @@ int main(){
     
     auto node1 = renderer.createNode<RandysEngine::layer_minitree>(0);
     auto node2 = renderer.createNode<RandysEngine::layer_minitree>(node1);
-    auto node3 = renderer.createNode<RandysEngine::layer_minitree>(0);
+    auto node3 = renderer.createNode<RandysEngine::layer_minitree>(node2);
     auto node4 = renderer.createNode<RandysEngine::layer_minitree>(1);
 
     auto nodeCamera = renderer.createNode<RandysEngine::layer_minitree>(node1);
@@ -64,6 +64,9 @@ int main(){
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::down)){
             renderer.TranslateNode(node2,0.0f,0.0f,0.1f);
+        }
+        if(renderer.readKeyPressed(RandysEngine::KeyInput::a_button)){
+            renderer.deleteNode<RandysEngine::layer_minitree>(node2);
         }
 
 

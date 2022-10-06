@@ -197,35 +197,36 @@ namespace RandysEngine{
                 return devolver;
             }
 
-             //Delete a node in a specific layer
+            //Delete a node in a specific layer
             template<typename Layer_type>
-            [[nodiscard]] Layer_Node deleteNode(RandysEngine::Layer_Node& toDelete){
-                Layer_Node devolver;
+            bool deleteNode(RandysEngine::Layer_Node& toDestroy){
+                bool devolver = false;
 
-                if(toDelete.isValid){
-                  
+                if(toDestroy.isValid){
+
                     auto itBegin = layers.begin();
                     auto itEnd = layers.end();
 
                     while(itBegin != itEnd){
                         if(std::holds_alternative<Layer_type>(*itBegin)){
-
                             Layer_type* layer = &std::get<Layer_type>(*itBegin);
 
-                            if(layer->getInstance() == toDelete.layerId){
+                            if(layer->getInstance() == toDestroy.layerId){
                             
-                                devolver = layer->deleteNode(toDelete);
+                                devolver = layer->deleteNode(toDestroy);
                                 break;
                             
                             }
-                        
                         }
                         itBegin++;
                     }         
-                }       
+
+                }
+
                 return devolver;
             }
-            
+
+
             //Create a node in a specific layer
             template<typename Layer_type>
             void addModel(RandysEngine::Layer_Node& node){
@@ -269,6 +270,7 @@ namespace RandysEngine{
                     }
                 }
             }
+
 
             //Create a node in a specific layer
             template<typename Layer_type>
