@@ -59,6 +59,10 @@ namespace RandysEngine{
         void unlink() noexcept{
             static_cast<api*>(this)->unlink();
         }
+
+        void setToSkybox() noexcept{
+            static_cast<api*>(this)->setToSkyBox();
+        }
     };
 
     template<typename api>

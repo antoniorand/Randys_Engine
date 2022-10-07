@@ -283,16 +283,22 @@ namespace RandysEngine{
 
     }
 
+    void gl_texture_resource::setToSkybox() noexcept{
+        glBindTexture(GL_TEXTURE_2D,texture);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        glBindTexture(GL_TEXTURE_2D,0);
+    }
+
     void gl_texture_resource::use() const noexcept{
 
-        //TO DO
         glBindTexture(GL_TEXTURE_2D, texture); 
 
     }
 
     void gl_texture_resource::unlink() const noexcept{
 
-        //TO DO
         glBindTexture(GL_TEXTURE_2D, 0); 
 
     }
@@ -433,9 +439,9 @@ namespace RandysEngine{
                 transform = glm::mat4(1.0f);
                 transform =  transform * glm::translate(transform,trans)  
                     * (
-                        glm::rotate(transform,rot.z,{0.0f,0.0f,1.0f})*
+                        glm::rotate(transform,rot.x,{1.0f,0.0f,0.0f})*
                         glm::rotate(transform,rot.y,{0.0f,1.0f,0.0f})*
-                        glm::rotate(transform,rot.x,{1.0f,0.0f,0.0f}))
+                        glm::rotate(transform,rot.z,{0.0f,0.0f,1.0f}))
                     * glm::scale(transform,scale);
             }
 

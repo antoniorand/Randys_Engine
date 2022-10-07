@@ -33,7 +33,7 @@ namespace RandysEngine{
             Mtx_Translate(&transform, -1*translation[0],
                 translation[1],translation[2], true);
             Mtx_RotateX(&transform, rotation[0], true);
-            Mtx_RotateY(&transform, rotation[1], true);
+            Mtx_RotateY(&transform, -1*rotation[1], true);
             Mtx_RotateZ(&transform, rotation[2], true);
             Mtx_Scale(&transform,scalation[0],scalation[1],scalation[2]);
             changed = false;
@@ -46,7 +46,7 @@ namespace RandysEngine{
         auto thisMatrix = this->getTransformationMatrix();
         auto otherMatrix = other.getTransformationMatrix();
 
-        Mtx_Multiply(&transform,&thisMatrix,&otherMatrix);
+        Mtx_Multiply(&transform,&otherMatrix,&thisMatrix);
 
     }
 
@@ -86,6 +86,10 @@ namespace RandysEngine{
 	    	svcBreak(USERBREAK_PANIC);
         C3D_TexSetWrap(&texture, GPU_REPEAT, GPU_REPEAT);
         C3D_TexSetFilter(&texture, GPU_LINEAR, GPU_LINEAR);
+    }
+
+    void citro_texture_resource::setToSkybox() noexcept{
+        C3D_TexSetWrap(&texture, GPU_CLAMP_TO_EDGE, GPU_CLAMP_TO_EDGE);
     }
 
     citro_texture_resource::~citro_texture_resource() noexcept{

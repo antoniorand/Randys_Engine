@@ -92,13 +92,12 @@ namespace RandysEngine{
                 bool devolver = false;
 
                 if(layers.size() != layers.max_size() && position <= layers.size()){
-                    Layer_Type newLayer{ResourceManager,args...};
                     auto itBegin = layers.begin();
                     for(unsigned int i = 0; i < position;i++)
                         itBegin++;
                     devolver = true;
                     //std::cout << "Inserting layer of type " << typeid(Layer_Type).name() << " in the position " << position << std::endl;
-                    layers.insert(itBegin,newLayer);
+                    layers.emplace(itBegin,std::in_place_type<Layer_Type>,ResourceManager,args...);
                 }
                         
                 return devolver;
@@ -434,6 +433,12 @@ namespace RandysEngine{
             bool textureExists(std::string file);
 
             bool reserveTextureResource(std::string file);
+
+            bool addTextureSkybox(std::size_t layerId, std::string file);
+
+            bool setRotationCameraSKybox(std::size_t LayerId, float rotX, float rotY, float rotZ);
+
+            bool rotateCameraSKybox(std::size_t LayerId, float rotX, float rotY, float rotZ);
 
             //Read the input from the key
             bool readKeyPressed(KeyInput input) const{

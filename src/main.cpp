@@ -2,11 +2,12 @@
 
 int main(){
 
-	RandysEngine::Rendering_Engine renderer;
+    RandysEngine::Rendering_Engine renderer;
 
-    //renderer.addLayerBack<RandysEngine::layer_skybox>();
+    
     renderer.addLayerBack<RandysEngine::layer_minitree>();
     renderer.addLayerBack<RandysEngine::layer_minitree>();
+    //renderer.addLayer<RandysEngine::layer_skybox>(0);
     
     auto node1 = renderer.createNode<RandysEngine::layer_minitree>(0);
     auto node2 = renderer.createNode<RandysEngine::layer_minitree>(node1);
@@ -27,10 +28,12 @@ int main(){
     renderer.setActiveCamera<RandysEngine::layer_minitree>(nodeCamera2);
 
 #ifndef __3DS__
+    renderer.addTextureSkybox(2,"resources/CubeExample.png");
     unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node2,"resources/cube.obj");
     unsigned int meshN2 = renderer.addMesh<RandysEngine::layer_minitree>(node3,"resources/rowlet.obj");
     unsigned int meshN3 = renderer.addMesh<RandysEngine::layer_minitree>(node4,"resources/rowlet.obj");
 #else
+    renderer.addTextureSkybox(2,"romfs:/gfx/CubeExample.t3x");
     unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node2,"romfs:/3d_resources/cube.obj");
     unsigned int meshN2 = renderer.addMesh<RandysEngine::layer_minitree>(node3,"romfs:/3d_resources/rowlet.obj");
     unsigned int meshN3 = renderer.addMesh<RandysEngine::layer_minitree>(node4,"romfs:/3d_resources/rowlet.obj");
@@ -45,8 +48,8 @@ int main(){
     renderer.addTexture<RandysEngine::layer_minitree>(node3,meshN2,"romfs:/gfx/rowlet.t3x");
     renderer.addTexture<RandysEngine::layer_minitree>(node4,meshN3,"romfs:/gfx/rowlet.t3x");
 #endif
-    renderer.setTranslateNode(node2, 0.0f,0.0f,-5.0f);
-    renderer.setTranslateNode(node3, 1.0f,0.0f,-10.0f);
+    renderer.setTranslateNode(node2, 0.0f,0.0f,-10.0f);
+    renderer.setTranslateNode(node3, 0.0f,2.0f,-5.0f);
     renderer.setTranslateNode(node4, 0.8f,0.0f, -15.0f);
 
     while(renderer.isAppRunning()){
@@ -54,19 +57,23 @@ int main(){
             renderer.closeApp();
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::left)){
-            renderer.TranslateNode(node2,-0.1f,0.0f,0.0f);
+            renderer.RotateNode(node4,0.0f,0.01f,0.0f);
+            //renderer.rotateCameraSKybox(2,0.0,-0.01,0.0);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::right)){
-            renderer.TranslateNode(node2,0.1f,0.0f,0.0f);
+            renderer.RotateNode(node4,0.0f,-0.01f,0.0f);
+            //renderer.rotateCameraSKybox(2,0.0,0.01,0.0);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::up)){
-            renderer.TranslateNode(node2,0.0f,0.0f,-0.1f);
+            renderer.TranslateNode(node4,0.0f,0.0f,0.1f);
+            //renderer.rotateCameraSKybox(2,-0.01,0.0,0.0);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::down)){
-            renderer.TranslateNode(node2,0.0f,0.0f,0.1f);
+            renderer.TranslateNode(node4,0.0f,0.0f,-0.1f);
+            //renderer.rotateCameraSKybox(2,0.01,0.0,0.0);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::a_button)){
-            renderer.deleteNode<RandysEngine::layer_minitree>(node2);
+            //renderer.deleteNode<RandysEngine::layer_minitree>(node2);
         }
 
 

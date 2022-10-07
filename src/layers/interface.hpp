@@ -18,13 +18,18 @@ namespace RandysEngine{
         bool isValid{false};
     };
 
-    template<typename layer_type>
-    class layer_interface{
-        protected:
-            ResourceManager& resource_manager;
+    class protectedData{
 
+        protected:
             static inline unsigned int nextInstance{0};
             const unsigned int instance{nextInstance++};
+            protectedData(){};
+    };
+
+    template<typename layer_type>
+    class layer_interface : public protectedData{
+        protected:
+            ResourceManager& resource_manager;
 
             bool activated {true};
         public:

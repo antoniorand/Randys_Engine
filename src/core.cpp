@@ -132,6 +132,88 @@ namespace RandysEngine{
 
     }
 
+    bool Rendering_Engine::addTextureSkybox(std::size_t position_of_layer, std::string file){
+
+        bool devolver = false;
+        auto itBegin = layers.begin();
+        auto itEnd = layers.end();
+        while(itBegin != itEnd){
+            if(std::holds_alternative<layer_skybox>(*itBegin)){
+                layer_skybox* layer = &std::get<layer_skybox>(*itBegin);
+                if(position_of_layer == layer->getInstance()){
+
+                    RandysEngine::ResourceManager::KeyId key;
+
+                    if(!textureExists(file)){
+#ifndef __3DS__
+                        key = ResourceManager.createResource<gl_texture_resource>(file);
+#else
+                        key = ResourceManager.createResource<citro_texture_resource>(file);
+#endif
+                        resources.emplace(std::make_pair(file, key));
+                    }
+                    else{
+                        key = resources.find(file)->second;
+                    }
+
+                    layer->changeTexture(key);
+
+                    devolver = true;
+
+                    break;
+                }
+            }
+            itBegin++;
+        }
+        return devolver;
+    }
+
+    bool Rendering_Engine::setRotationCameraSKybox(std::size_t LayerId, float rotX, float rotY, float rotZ){
+
+        bool devolver = false;
+        auto itBegin = layers.begin();
+        auto itEnd = layers.end();
+        while(itBegin != itEnd){
+            if(std::holds_alternative<layer_skybox>(*itBegin)){
+                layer_skybox* layer = &std::get<layer_skybox>(*itBegin);
+                if(LayerId == layer->getInstance()){
+
+                    layer->setRotationCameraSkyBox(rotX,rotY,rotZ);
+
+                    devolver = true;
+
+                    break;
+                }
+            }
+            itBegin++;
+        }
+        return devolver;
+    
+    }
+
+    bool Rendering_Engine::rotateCameraSKybox(std::size_t LayerId, float rotX, float rotY, float rotZ){
+
+        bool devolver = false;
+        auto itBegin = layers.begin();
+        auto itEnd = layers.end();
+        while(itBegin != itEnd){
+            if(std::holds_alternative<layer_skybox>(*itBegin)){
+                layer_skybox* layer = &std::get<layer_skybox>(*itBegin);
+                if(LayerId == layer->getInstance()){
+
+                    layer->rotateCameraSkyBox(rotX,rotY,rotZ);
+
+                    devolver = true;
+
+                    break;
+                }
+            }
+            itBegin++;
+        }
+        return devolver;
+    
+    }
+
     struct Visitor_setTranslationMatrix{
     
         RandysEngine::Layer_Node& node;
@@ -413,5 +495,7 @@ namespace RandysEngine{
         }
         return devolver;
     }
+
+
 
 }

@@ -53,6 +53,7 @@ namespace RandysEngine{
 
         void use() noexcept;
         void unlink() noexcept;
+        void setToSkybox() noexcept;
 
 
     };

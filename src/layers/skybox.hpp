@@ -28,6 +28,7 @@ namespace RandysEngine{
                 skybox.skyboxCube = resource_manager.createResource<gl_mesh_resource>("resources/cube.obj");
 #else
                 skybox.skyboxCube = resource_manager.createResource<citro_mesh_resource>("romfs:/3d_resources/cube.obj");
+                skybox.camera.projectionMatrix.rotation[1] = 3.1416;
 #endif
           
             };
@@ -39,9 +40,7 @@ namespace RandysEngine{
 #endif
             };
 
-            void changeTexture(RandysEngine::ResourceManager::KeyId input){
-                skybox.texture = input;
-            }
+            void changeTexture(RandysEngine::ResourceManager::KeyId input);
             
             void activate(){
                 activated = true;
@@ -55,52 +54,14 @@ namespace RandysEngine{
 #else
                 RandysEngine::citro_shader* shader
 #endif
-            ){
-                bool devolver = true;
-                if(!activated){
-                    //std::cout << "Cannot draw deactivated layer\n";
-                    devolver = false;
-                }
-                else{
-
-#ifndef __3DS__
-                    RandysEngine::gl_skybox_helper helper;
-                    auto& meshDraw = *resource_manager.getResource<gl_mesh_resource>(skybox.skyboxCube);
-                    gl_matrix modelMatrix{};
-                    auto textureDraw = resource_manager.getResource<gl_texture_resource>(skybox.texture);
-#else
-                    RandysEngine::citro_skybox_helper helper;
-                    auto& meshDraw = *resource_manager.getResource<citro_mesh_resource>(skybox.skyboxCube);
-                    citro_matrix modelMatrix{};
-                    auto textureDraw = resource_manager.getResource<citro_texture_resource>(skybox.texture);
-#endif
-                    modelMatrix.scalation[0] = 10;
-                    modelMatrix.scalation[1] = 10;
-                    modelMatrix.scalation[2] = 10;
-                    helper.reverseCull();
-                    shader->setMat4("model",modelMatrix);
-                    shader->setMat4("projection", skybox.camera.projectionMatrix);
-                    shader->setMat4("view", skybox.camera.viewMatrix);
-                    if(skybox.hasTexture && textureDraw){
-                        textureDraw->use();
-                        meshDraw.draw();
-                        textureDraw->unlink();
-                    }
-                    else
-                        meshDraw.draw();
-                    helper.restoreCull();
-
-                }
-                return devolver;
-            };
+            );
             bool interact() const{
                 //std::cout << "Cannot interact with skybox layer\n";
                 return false;
             }
 
-            void rotateCameraSkyBox(float x, float y, float z) noexcept{
-                
-            }
+            void setRotationCameraSkyBox(float x, float y, float z) noexcept;
+            void rotateCameraSkyBox(float x, float y, float z) noexcept;
 
             bool setTranslationMatrix(const RandysEngine::Layer_Node node, float x, float y, float z) const noexcept{
                 return true;

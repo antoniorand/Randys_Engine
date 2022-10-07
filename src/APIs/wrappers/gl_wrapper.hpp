@@ -38,6 +38,7 @@ namespace RandysEngine{
 
         void use() const noexcept;
         void unlink() const noexcept;
+         void setToSkybox() noexcept;
 
     };
 
