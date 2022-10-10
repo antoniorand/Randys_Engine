@@ -64,23 +64,23 @@ namespace RandysEngine{
             void rotateCameraSkyBox(float x, float y, float z) noexcept;
 
             bool setTranslationMatrix(const RandysEngine::Layer_Node node, float x, float y, float z) const noexcept{
-                return true;
+                return false;
             }
             bool setScalationMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept{
-                return true;
+                return false;
             }
             bool setRotationMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept{
-                return true;
+                return false;
             }
 
             bool TranslateMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept{
-                return true;
+                return false;
             }
             bool ScaleMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept{
-                return true;
+                return false;
             }
             bool RotateMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept{
-                return true;
+                return false;
             }
 
             std::array<float,3> getTranslationMatrix(const RandysEngine::Layer_Node node) const noexcept{

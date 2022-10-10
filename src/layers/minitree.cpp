@@ -49,8 +49,6 @@ namespace RandysEngine{
                 auto& model = *models.atPosition(i);
                 auto& matrix = *matrixes.atPosition(model.matrixKey);
 
-                shader->setMat4("model",matrix);
-
                 for(unsigned int i = 0; i < Model_Entity::MAXMESHES; i++){
                     if(model.hasMesh[i]){
 #ifndef __3DS__                                                
@@ -59,6 +57,8 @@ namespace RandysEngine{
                         auto meshResource = resource_manager.getResource<citro_mesh_resource>(model.meshes[i]);
 #endif
                         
+                        shader->setMat4("model",matrix);
+
                         if(!meshResource)
                             model.hasMesh[i] = false;
 

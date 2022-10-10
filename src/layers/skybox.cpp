@@ -31,7 +31,6 @@ namespace RandysEngine{
             modelMatrix.scalation[0] = 100.0;
             modelMatrix.scalation[1] = 100.0;
             modelMatrix.scalation[2] = 100.0;
-
             helper.reverseCull();
             shader->setMat4("model",modelMatrix);
             shader->setMat4("projection", skybox.camera.projectionMatrix);

@@ -19,26 +19,26 @@ int main(){
 
 #ifndef __3DS__
     renderer.addTextureSkybox(0,"resources/CubeExample.png");
-    unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node1,"resources/cube.obj");
-    renderer.addTexture<RandysEngine::layer_minitree>(node1,meshN,"resources/Cube.png");
+    unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node1,"resources/rowlet.obj");
+    renderer.addTexture<RandysEngine::layer_minitree>(node1,meshN,"resources/rowlet.png");
 #else
     renderer.addTextureSkybox(0,"romfs:/gfx/CubeExample.t3x");
     unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node1,"romfs:/3d_resources/cube.obj");
     renderer.addTexture<RandysEngine::layer_minitree>(node1,meshN,"romfs:/gfx/kitten.t3x");
 #endif
 
-    renderer.setTranslateNode(node1, 0.0f,0.0f,-10.0f);
+    renderer.setTranslateNode(node1, 0.0f,0.0f,-5.0f);
 
     while(renderer.isAppRunning()){
         if(renderer.readKeyPressed(RandysEngine::KeyInput::exit)){
             renderer.closeApp();
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::left)){
-            renderer.RotateNode(node1,0.0f,0.01f,0.0f);
+            renderer.TranslateNode(node1,-0.1f,0.0f,0.0f);
             //renderer.rotateCameraSKybox(2,0.0,-0.01,0.0);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::right)){
-            renderer.RotateNode(node1,0.0f,-0.01f,0.0f);
+            renderer.TranslateNode(node1,0.1f,0.0f,0.0f);
             //renderer.rotateCameraSKybox(2,0.0,0.01,0.0);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::up)){

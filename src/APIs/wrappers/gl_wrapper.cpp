@@ -471,10 +471,12 @@ namespace RandysEngine{
 
     void gl_skybox_helper::reverseCull() const noexcept{
         glCullFace(GL_FRONT);
+
     }
 
     void gl_skybox_helper::restoreCull() const noexcept{
         glCullFace(GL_BACK);
+
     }
 
 }
