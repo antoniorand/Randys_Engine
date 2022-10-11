@@ -13,11 +13,11 @@ namespace RandysEngine{
 
 
     void citro_skybox_helper::reverseCull() const noexcept{
-        C3D_CullFace(GPU_CULL_BACK_CCW);
+        C3D_CullFace(GPU_CULL_FRONT_CCW);
     }
 
     void citro_skybox_helper::restoreCull() const noexcept{
-        C3D_CullFace(GPU_CULL_FRONT_CCW);
+        C3D_CullFace(GPU_CULL_BACK_CCW);
     }
 
     const C3D_Mtx& citro_matrix::getTransformationMatrix() noexcept{
@@ -258,7 +258,7 @@ namespace RandysEngine{
             240, 400, GPU_RB_RGBA8, GPU_RB_DEPTH24_STENCIL8);
         C3D_RenderTargetSetOutput(
             target, GFX_TOP, GFX_LEFT, DISPLAY_TRANSFER_FLAGS);
-        C3D_CullFace(GPU_CULL_FRONT_CCW);
+        C3D_CullFace(GPU_CULL_BACK_CCW);
         C3D_DepthTest(true, GPU_GREATER, GPU_WRITE_ALL);
     };
 

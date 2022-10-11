@@ -293,6 +293,7 @@ namespace RandysEngine{
 #else
                 citro_matrix newProjection{};
                 newProjection.rotation[1] = 3.14;
+                newProjection.scalation[0] = -1.0; 
 #endif
 
                 newProjection.perspective = true;

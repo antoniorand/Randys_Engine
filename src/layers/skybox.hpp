@@ -29,6 +29,7 @@ namespace RandysEngine{
 #else
                 skybox.skyboxCube = resource_manager.createResource<citro_mesh_resource>("romfs:/3d_resources/cube.obj");
                 skybox.camera.projectionMatrix.rotation[1] = 3.1416;
+                skybox.camera.projectionMatrix.scalation[0] = -1.0;
 #endif
           
             };
