@@ -36,21 +36,19 @@ int main(){
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::left)){
             
-            renderer.RotateNode(node1,0.0f,-0.1f,0.0f);
+            renderer.TranslateNode(node1,-0.1f,0.0f,0.0f);
             //renderer.rotateCameraSKybox(2,0.0,-0.01,0.0);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::right)){
-            renderer.RotateNode(node1,0.0f,0.1f,0.0f);
+            renderer.TranslateNode(node1,0.1f,0.0f,0.0f);
             //renderer.rotateCameraSKybox(2,0.0,0.01,0.0);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::up)){
-            std::cout << "Get scalation: " << renderer.getScalationNode(node1)[0] << std::endl;
-            renderer.TranslateNode(node1,0.0f,0.0f,0.1f);
+            renderer.RotateNode(node1,0.0f,-0.1f,0.0f);
             //renderer.rotateCameraSKybox(2,-0.01,0.0,0.0);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::down)){
-            std::cout << "Get scalation: " << renderer.getScalationNode(node1)[0] << std::endl;
-            renderer.TranslateNode(node1,0.0f,0.0f,-0.1f);
+            renderer.RotateNode(node1,0.0f,0.1f,0.0f);
             //renderer.rotateCameraSKybox(2,0.01,0.0,0.0);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::a_button)){
