@@ -302,15 +302,19 @@ namespace RandysEngine{
             case KeyInput::a_button:
                 if((kDown & KEY_A))
                     devolver = true;
+            break;
             case KeyInput::b_button:
                 if((kDown & KEY_B))
                     devolver = true;
+            break;
             case KeyInput::x_button:
                 if((kDown & KEY_X))
                     devolver = true;
+            break;
             case KeyInput::y_button:
                 if((kDown & KEY_Y))
                     devolver = true;
+            break;
             default: 
             break;
         }

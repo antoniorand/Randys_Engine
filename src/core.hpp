@@ -429,10 +429,12 @@ namespace RandysEngine{
             bool meshExists(std::string file);
 
             bool reserveMeshResource(std::string file);
+            bool freeMeshResource(std::string file);
 
             bool textureExists(std::string file);
 
             bool reserveTextureResource(std::string file);
+            bool freeTextureResource(std::string file);
 
             bool addTextureSkybox(std::size_t layerId, std::string file);
 

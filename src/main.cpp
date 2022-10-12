@@ -52,7 +52,11 @@ int main(){
             //renderer.rotateCameraSKybox(2,0.01,0.0,0.0);
         }
         if(renderer.readKeyPressed(RandysEngine::KeyInput::a_button)){
-            //renderer.deleteNode<RandysEngine::layer_minitree>(node2);
+            
+            //renderer.freeTextureResource("resources/test.png");
+            renderer.freeMeshResource("resources/test.obj");
+            //renderer.addTexture<RandysEngine::layer_minitree>(node1,meshN,"romfs:/gfx/rowlet.t3x");
+            //std::cout << "A\n";
         }
 
 

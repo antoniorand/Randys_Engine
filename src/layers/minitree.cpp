@@ -59,10 +59,10 @@ namespace RandysEngine{
                         
                         shader->setMat4("model",matrix);
 
-                        if(!meshResource)
+                        if(!meshResource){
                             model.hasMesh[i] = false;
-
-                        if(model.hasTexture[i]){
+                        }
+                        else if(model.hasTexture[i]){
 #ifndef __3DS__
                             auto textureResource = resource_manager.getResource<gl_texture_resource>(model.textures[i]); 
 #else 
@@ -71,10 +71,12 @@ namespace RandysEngine{
                                 
                             if(!textureResource)
                                 model.hasTexture[i] = false;
+                            else{
+                                textureResource->use();
+                                meshResource->draw();
+                                textureResource->unlink();
+                            }
 
-                            textureResource->use();
-                            meshResource->draw();
-                            textureResource->unlink();
                         }
                         else{
                             meshResource->draw();

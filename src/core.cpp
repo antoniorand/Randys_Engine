@@ -102,6 +102,26 @@ namespace RandysEngine{
 
     }
 
+    bool Rendering_Engine::freeMeshResource(std::string file){
+        bool devolver = false;
+
+        if(meshExists(file)){
+
+            auto search = resources.find(file);
+
+            if(search != resources.end()){
+#ifndef __3DS__
+                devolver = ResourceManager.freeResource<gl_mesh_resource>(search->second);
+#else
+                devolver = ResourceManager.freeResource<citro_mesh_resource>(search->second);
+#endif
+            }
+
+        }
+
+        return devolver;
+    }
+
     bool Rendering_Engine::textureExists(std::string file){
 
         bool devolver = false;
@@ -130,8 +150,28 @@ namespace RandysEngine{
         }
 
         return devolver;
-
     }
+
+    bool Rendering_Engine::freeTextureResource(std::string file){
+        bool devolver = false;
+
+        if(textureExists(file)){
+
+            auto search = resources.find(file);
+
+            if(search != resources.end()){
+#ifndef __3DS__
+                devolver = ResourceManager.freeResource<gl_texture_resource>(search->second);
+#else
+                devolver = ResourceManager.freeResource<citro_texture_resource>(search->second);
+#endif
+            }
+
+        }
+
+        return devolver;
+    }
+
 
     bool Rendering_Engine::addTextureSkybox(std::size_t position_of_layer, std::string file){
 

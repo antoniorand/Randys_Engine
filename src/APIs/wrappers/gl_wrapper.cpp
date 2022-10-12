@@ -96,15 +96,19 @@ namespace RandysEngine{
             case KeyInput::down :
                 if(glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
                     devolver = true;
+            break;
             case KeyInput::a_button :
                 if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
                     devolver = true;
+            break;
             case KeyInput::b_button :
                 if(glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
                     devolver = true;
+            break;
             case KeyInput::x_button :
                 if(glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
                     devolver = true;
+            break;
             case KeyInput::y_button :
                 if(glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
                     devolver = true;

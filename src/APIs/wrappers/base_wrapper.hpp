@@ -96,16 +96,16 @@ namespace RandysEngine{
     };
 
     
-    enum class KeyInput : unsigned int{
-        exit = 0,
-        left = 1,
-        right = 2,
-        up = 3,
-        down = 4,
-        a_button = 5,
-        b_button = 6,
-        x_button = 7,
-        y_button = 8
+    enum class KeyInput{
+        exit,
+        left,
+        right,
+        up,
+        down,
+        a_button,
+        b_button,
+        x_button,
+        y_button
     };
 
     template<typename api>
