@@ -102,7 +102,7 @@ namespace RandysEngine{
             }
     };
 
-    struct Sprite_Entity{
+    struct Sprite_Entity : Base_Entity{
 
 #ifndef __3ds__
         gl_mesh_resource mesh;
@@ -113,8 +113,8 @@ namespace RandysEngine{
         ResourceManager::KeyId texture;
         bool hasTexture;
 
-        Sprite_Entity(float x, float y, float width, float height) 
-            : mesh{x,y,width,height}{
+        Sprite_Entity(float width, float height) 
+            : mesh{width,height}{
         }
 
     };

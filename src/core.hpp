@@ -438,7 +438,8 @@ namespace RandysEngine{
 
             bool addTextureSkybox(std::size_t layerId, std::string file);
 
-            bool addSprite(RandysEngine::Layer_Node& node, float x, float y, float width, float height);
+            bool addSprite(RandysEngine::Layer_Node& node, float width, float height);
+            bool addTextureSprite(RandysEngine::Layer_Node& node,std::string file);
 
             bool setRotationCameraSKybox(std::size_t LayerId, float rotX, float rotY, float rotZ);
 

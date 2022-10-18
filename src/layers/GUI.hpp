@@ -54,44 +54,148 @@ namespace RandysEngine{
 #else
                 RandysEngine::citro_shader* shader
 #endif
-            ){
-                bool devolver = true;
-                if(!activated){
-                    std::cout << "Cannot draw deactivated layer\n";
-                    devolver = false;
-                }
-                else{
-                    //std::cout << "Draw " << pictures.size() << " pictures \n";
-                }
-                return devolver;
-            };
+            );
 
             [[nodiscard]] const RandysEngine::Layer_Node createNode() noexcept;
 
             [[nodiscard]] const RandysEngine::Layer_Node createNode(RandysEngine::Layer_Node& node);
 
-            void addSprite(RandysEngine::Layer_Node& input, float x, float y, float width, float height) noexcept;
+            void addSprite(RandysEngine::Layer_Node& input, float width, float height) noexcept;
 
             RandysEngine::Sprite_Entity* getSprite(RandysEngine::Layer_Node&) const noexcept;
 
             bool setTranslationMatrix(RandysEngine::Layer_Node& node, float x, float y, float z) const noexcept{
-                return false;
+                bool devolver = false;
+                if(input.layerId == this->instance && input.isValid){
+
+                    auto oldNode = nodes.atPosition(input.reference);
+                    if(!oldNode){
+                        input.isValid = false;
+                    }
+                    else{
+                        auto& matrix_to_translate = *matrixes.atPosition(oldNode->matrixKey);
+
+                        matrix_to_translate.translation[0] = x;
+                        matrix_to_translate.translation[1] = y;
+                        matrix_to_translate.changed = true;
+
+                        devolver = true;
+                    }
+
+                }
+                return devolver;
             }
             bool setScalationMatrix(RandysEngine::Layer_Node& node,float x, float y, float z) const noexcept{
-                return false;
+                bool devolver = false;
+                if(input.layerId == this->instance && input.isValid){
+
+                    auto oldNode = nodes.atPosition(input.reference);
+                    if(!oldNode){
+                        input.isValid = false;
+                    }
+                    else{
+                        auto& matrix_to_translate = *matrixes.atPosition(oldNode->matrixKey);
+
+                        matrix_to_translate.scalation[0] = x;
+                        matrix_to_translate.scalation[1] = y;
+                        matrix_to_translate.changed = true;
+
+                        devolver = true;
+                    }
+
+                }
+                return devolver;
             }
             bool setRotationMatrix(RandysEngine::Layer_Node& node,float x, float y, float z) const noexcept{
-                return false;
+                bool devolver = false;
+                if(input.layerId == this->instance && input.isValid){
+
+                    auto oldNode = nodes.atPosition(input.reference);
+                    if(!oldNode){
+                        input.isValid = false;
+                    }
+                    else{
+                        auto& matrix_to_translate = *matrixes.atPosition(oldNode->matrixKey);
+
+                        matrix_to_translate.rotation[0] = x;
+                        matrix_to_translate.rotation[1] = y;
+                        matrix_to_translate.changed = true;
+
+                        devolver = true;
+                    }
+
+                }
+                return devolver;
             }
 
             bool TranslateMatrix(RandysEngine::Layer_Node& node,float x, float y, float z) const noexcept{
-                return false;
+                bool devolver = false;
+                if(input.layerId == this->instance && input.isValid){
+
+                    auto oldNode = nodes.atPosition(input.reference);
+
+                    if(!oldNode){
+                        input.isValid = false;
+                    }
+                    else{
+                        auto& matrix_to_translate = *matrixes.atPosition(oldNode->matrixKey);
+
+                        matrix_to_translate.translation[0] += x;
+                        matrix_to_translate.translation[1] += y;
+                        matrix_to_translate.changed = true;
+
+                        devolver = true;
+                    }
+
+
+                }
+                return devolver;
             }
             bool ScaleMatrix(RandysEngine::Layer_Node& node,float x, float y, float z) const noexcept{
-                return false;
+                bool devolver = false;
+                if(input.layerId == this->instance && input.isValid){
+
+                    auto oldNode = nodes.atPosition(input.reference);
+
+                    if(!oldNode){
+                        input.isValid = false;
+                    }
+                    else{
+                        auto& matrix_to_translate = *matrixes.atPosition(oldNode->matrixKey);
+
+                        matrix_to_translate.scalation[0] += x;
+                        matrix_to_translate.scalation[1] += y;
+                        matrix_to_translate.changed = true;
+
+                        devolver = true;
+                    }
+
+
+                }
+                return devolver;
             }
             bool RotateMatrix(RandysEngine::Layer_Node& node,float x, float y, float z) const noexcept{
-                return false;
+                bool devolver = false;
+                if(input.layerId == this->instance && input.isValid){
+
+                    auto oldNode = nodes.atPosition(input.reference);
+
+                    if(!oldNode){
+                        input.isValid = false;
+                    }
+                    else{
+                        auto& matrix_to_translate = *matrixes.atPosition(oldNode->matrixKey);
+
+                        matrix_to_translate.rotation[0] += x;
+                        matrix_to_translate.rotation[1] += y;
+                        matrix_to_translate.changed = true;
+
+                        devolver = true;
+                    }
+
+
+                }
+                return devolver;
             }
 
             std::array<float,3> getTranslationMatrix(RandysEngine::Layer_Node& node) const noexcept{

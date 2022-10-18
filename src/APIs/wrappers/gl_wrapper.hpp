@@ -15,6 +15,14 @@ namespace RandysEngine{
     //forward declaration
     struct gl_shader;
 
+    class gl_ortho{
+
+        public:
+
+            static glm::mat4 getOrtho();
+
+    };
+
     struct gl_matrix : public matrix_wrapper{
         
         void multiply(gl_matrix& other);
@@ -47,7 +55,7 @@ namespace RandysEngine{
 
         unsigned int VBO{0}, VAO{0};
         gl_mesh_resource(std::string file) noexcept;
-        gl_mesh_resource(float x, float y, float width, float height) noexcept;
+        gl_mesh_resource(float width, float height) noexcept;
         gl_mesh_resource(const gl_mesh_resource& other) noexcept{
             VBO = other.VBO;
             VAO = other.VAO;
@@ -77,6 +85,7 @@ namespace RandysEngine{
         void setInt(const std::string &name, int value) const;
         void setFloat(const std::string &name, float value) const;
         void setMat4(const std::string &name, gl_matrix &mat) const;
+        void setOrtho(const std::string &name) const;
     };
 
     struct gl_screen : screen_wrapper<gl_screen>{

@@ -221,8 +221,15 @@ namespace RandysEngine{
         GLint location = glGetUniformLocation(shaderProgram, name.c_str());
         auto value = glm::value_ptr(mat.getTransformationMatrix());
         glUniformMatrix4fv(location, 1, GL_FALSE, value);
+        
     }
 
+    void gl_shader::setOrtho(const std::string &name) const{
+        GLint location = glGetUniformLocation(shaderProgram, name.c_str());
+        glm::mat4 matrix = gl_ortho::getOrtho();
+        auto value = glm::value_ptr(matrix);
+        glUniformMatrix4fv(location, 1, GL_FALSE, value);
+    }
 
     gl_shader::~gl_shader() noexcept{
         
@@ -415,8 +422,11 @@ namespace RandysEngine{
         glBindVertexArray(0);
     }
 
-    gl_mesh_resource::gl_mesh_resource(float x, float y, float width, float height) noexcept{
-        std::array<Vertex,4> vertices = {{{x,y,0.f,0.f,1.f},{x+width,y,0.f,1.f,1.f},{x,y+height,0.f,1.f,0.f},{x+width,y+height,0.f,1.f,0.f}}};
+    gl_mesh_resource::gl_mesh_resource(float width, float height) noexcept{
+        std::array<Vertex,4> vertices = {{{-width/2,-height/2,0.f,0.f,1.f},   //Up left
+                                          { width/2,-height/2,0.f,1.f,1.f},   //Down left
+                                          {-width/2, height/2,0.f,1.f,0.f},   //Down right
+                                          { width/2, height/2,0.f,1.f,0.f}}}; //Up right
 
         size_loadedVertices = sizeof(vertices)*4;
         count_loadedVertices = 4;
@@ -516,6 +526,12 @@ namespace RandysEngine{
 
     void gl_skybox_helper::restoreCull() const noexcept{
         glCullFace(GL_BACK);
+
+    }
+
+    glm::mat4 gl_ortho::getOrtho(){
+
+        return glm::ortho(0.0f,400.0f,0.0f,240.0f);
 
     }
 

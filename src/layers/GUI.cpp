@@ -2,6 +2,53 @@
 
 namespace RandysEngine{
 
+    bool layer_GUI::draw(
+#ifndef __3DS__
+        RandysEngine::gl_shader* shader
+#else
+        RandysEngine::citro_shader* shader
+#endif
+    ){
+        bool devolver = true;
+        if(!activated){
+            std::cout << "Cannot draw deactivated layer\n";
+            devolver = false;
+        }
+        else{
+            auto viewM = gl_matrix();
+            //runLinkedMovement();
+                
+#ifndef __3DS__
+            shader->setOrtho("projection");
+            shader->setMat4("view", viewM);
+#else
+            shader->setOrtho("projection");
+            shader->setMat4("view", citro_matrix());
+#endif
+            for(SlotMap::SlotMap_Index_Type i = 0;i < sprites.current_size();i++){
+                auto& sprite = *sprites.atPosition(i);
+                auto& matrix = *matrixes.atPosition(sprite.matrixKey);
+                shader->setMat4("model",matrix);
+                if(sprite.hasTexture){
+#ifndef __3DS__                                                
+                    auto textureResource = resource_manager.getResource<gl_texture_resource>(sprite.texture);
+#else
+                    auto textureResource = resource_manager.getResource<citro_mesh_resource>(sprite.texture);
+#endif
+                    textureResource->use();
+                    sprite.mesh.draw();
+                    textureResource->unlink();
+
+                }
+                else{
+                    sprite.mesh.draw();
+                }
+            }
+
+        }
+        return devolver;
+    };
+
     layer_GUI::layer_GUI(ResourceManager& resource_Manager) 
         : layer_interface<layer_GUI>(resource_Manager), nodes{maxNodes},
         sprites{maxNodes},matrixes{maxNodes}{
@@ -107,7 +154,7 @@ namespace RandysEngine{
 
     }
 
-    void layer_GUI::addSprite(RandysEngine::Layer_Node& input, float x, float y, float width, float height) noexcept{
+    void layer_GUI::addSprite(RandysEngine::Layer_Node& input, float width, float height) noexcept{
 
         if(input.layerId == this->instance && input.isValid && sprites.current_size() != sprites.max_capacity()){
 
@@ -118,9 +165,9 @@ namespace RandysEngine{
             }
             else{
 
-                RandysEngine::Sprite_Entity newSprite = Sprite_Entity(x,y,width,height);
+                RandysEngine::Sprite_Entity newSprite = Sprite_Entity(width,height);
 
-
+                newSprite.matrixKey = oldNode->matrixKey;
                 oldNode->sprite = sprites.push_back(newSprite);
                 oldNode->hasSprite = true;
 

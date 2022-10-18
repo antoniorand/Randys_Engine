@@ -209,7 +209,51 @@ namespace RandysEngine{
         return devolver;
     }
 
-    bool Rendering_Engine::addSprite(RandysEngine::Layer_Node& node, float x, float y, float height, float width){
+    bool Rendering_Engine::addTextureSprite(RandysEngine::Layer_Node& node,std::string file){
+
+        bool devolver = false;
+        auto itBegin = layers.begin();
+        auto itEnd = layers.end();
+        while(itBegin != itEnd){
+            if(std::holds_alternative<layer_GUI>(*itBegin)){
+                layer_GUI* layer = &std::get<layer_GUI>(*itBegin);
+                if(node.layerId == layer->getInstance()){
+
+                    RandysEngine::ResourceManager::KeyId key;
+
+                    if(!textureExists(file)){
+#ifndef __3DS__
+                        key = ResourceManager.createResource<gl_texture_resource>(file);
+#else
+                        key = ResourceManager.createResource<citro_texture_resource>(file);
+#endif
+                        resources.emplace(std::make_pair(file, key));
+                    }
+                    else{
+                        key = resources.find(file)->second;
+                    }
+
+                    auto sprite = layer->getSprite(node);
+
+                    if(sprite){
+
+                        sprite->hasTexture = true;
+                        sprite->texture = key;
+
+                        devolver = true;
+
+                    }
+
+                    break;
+                }
+            }
+            itBegin++;
+        }
+        return devolver;
+
+    }
+
+    bool Rendering_Engine::addSprite(RandysEngine::Layer_Node& node, float height, float width){
         bool devolver = false;
 
         if(node.isValid){
@@ -220,7 +264,7 @@ namespace RandysEngine{
                 if(std::holds_alternative<layer_GUI>(*itBegin)){
                     layer_GUI* layer = &std::get<layer_GUI>(*itBegin);
                     if(node.layerId == layer->getInstance()){
-                        layer->addSprite(node,x,y,height, width);
+                        layer->addSprite(node,height, width);
                         devolver = true;
                         break;
                     }

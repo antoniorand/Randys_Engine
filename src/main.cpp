@@ -7,8 +7,11 @@ int main(){
     renderer.addLayerBack<RandysEngine::layer_GUI>();
 
     auto node1 = renderer.createNode<RandysEngine::layer_GUI>(0);
-    if(renderer.addSprite(node1,0.0f,0.0f,0.0f,0.0f))
+    if(renderer.addSprite(node1,10.0f,10.0f))
         std::cout << "YATAZO!\n";
+
+    if(renderer.addTextureSprite(node1,"resources/rowlet.png"))
+        std::cout << "YAROUUU!\n";
 
 
     while(renderer.isAppRunning()){
