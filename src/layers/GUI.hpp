@@ -5,42 +5,43 @@
 #include <iostream>
 namespace RandysEngine{
 
-    constexpr std::size_t maxButtons = 10;
-    constexpr std::size_t maxPictures = 10;
 
     class layer_GUI : public layer_interface<layer_GUI>{
 
-        struct ButtonData{
-            std::string ButtonName = "";
-        };
-        struct PictureData{
-            std::string PictureName = "";
-        };
+        
+       constexpr static std::size_t maxNodes = 32;
 
-        using buttonVector = std::vector<
-            ButtonData, RandysEngine::Pool::Static_pool_allocator<ButtonData,maxButtons+1>
+        using SlotMapNodes = RandysEngine::SlotMap::SlotMap<
+                GUINode,
+                RandysEngine::Pool::Static_pool_allocator<GUINode,maxNodes*4>
         >;
 
-        using pictureVector = std::vector<
-            PictureData, RandysEngine::Pool::Static_pool_allocator<PictureData,maxPictures+1>
+        using SlotMapSprites = RandysEngine::SlotMap::SlotMap<
+                Sprite_Entity,
+                RandysEngine::Pool::Static_pool_allocator<Sprite_Entity,maxNodes*4>
+        >;
+
+        using SlotMapMatrixes = RandysEngine::SlotMap::SlotMap<
+#ifndef __3DS__
+            gl_matrix,
+            RandysEngine::Pool::Static_pool_allocator<gl_matrix,maxNodes*4>
+#else
+            citro_matrix,
+            RandysEngine::Pool::Static_pool_allocator<citro_matrix,maxNodes*4>
+#endif
         >;
     
+        SlotMapNodes nodes;
+        SlotMapSprites sprites;
+        SlotMapMatrixes matrixes;
+        SlotMap::SlotMap_Key rootNode;
 
-        buttonVector buttons {};
-        pictureVector pictures{}; 
+        Camera_GUI camera;
 
         public:
-            layer_GUI(ResourceManager& resource_Manager) 
-                : layer_interface<layer_GUI>(resource_Manager){};
+            layer_GUI(ResourceManager& resource_Manager);
             ~layer_GUI(){};
-            bool addButton(){
-                //TODO
-                return true;
-            };
-            bool addPicture(){
-                //TODO
-                return true;
-            }
+
             void activate(){
                 activated = true;
             };
@@ -60,47 +61,46 @@ namespace RandysEngine{
                     devolver = false;
                 }
                 else{
-                    std::cout << "Draw " << buttons.size() << " buttons \n";
-                    std::cout << "Draw " << pictures.size() << " pictures \n";
+                    //std::cout << "Draw " << pictures.size() << " pictures \n";
                 }
                 return devolver;
             };
 
-            [[nodiscard]] const RandysEngine::Layer_Node createNode() noexcept{
-                return RandysEngine::Layer_Node{};
-            }
+            [[nodiscard]] const RandysEngine::Layer_Node createNode() noexcept;
 
-            [[nodiscard]] const RandysEngine::Layer_Node createNode(const RandysEngine::Layer_Node node) noexcept{
-                return RandysEngine::Layer_Node{};
-            }
+            [[nodiscard]] const RandysEngine::Layer_Node createNode(RandysEngine::Layer_Node& node);
 
-            bool setTranslationMatrix(const RandysEngine::Layer_Node node, float x, float y, float z) const noexcept{
-                return false;
-            }
-            bool setScalationMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept{
-                return false;
-            }
-            bool setRotationMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept{
-                return false;
-            }
+            void addSprite(RandysEngine::Layer_Node& input, float x, float y, float width, float height) noexcept;
 
-            bool TranslateMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept{
+            RandysEngine::Sprite_Entity* getSprite(RandysEngine::Layer_Node&) const noexcept;
+
+            bool setTranslationMatrix(RandysEngine::Layer_Node& node, float x, float y, float z) const noexcept{
                 return false;
             }
-            bool ScaleMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept{
+            bool setScalationMatrix(RandysEngine::Layer_Node& node,float x, float y, float z) const noexcept{
                 return false;
             }
-            bool RotateMatrix(const RandysEngine::Layer_Node node,float x, float y, float z) const noexcept{
+            bool setRotationMatrix(RandysEngine::Layer_Node& node,float x, float y, float z) const noexcept{
                 return false;
             }
 
-            std::array<float,3> getTranslationMatrix(const RandysEngine::Layer_Node node) const noexcept{
+            bool TranslateMatrix(RandysEngine::Layer_Node& node,float x, float y, float z) const noexcept{
+                return false;
+            }
+            bool ScaleMatrix(RandysEngine::Layer_Node& node,float x, float y, float z) const noexcept{
+                return false;
+            }
+            bool RotateMatrix(RandysEngine::Layer_Node& node,float x, float y, float z) const noexcept{
+                return false;
+            }
+
+            std::array<float,3> getTranslationMatrix(RandysEngine::Layer_Node& node) const noexcept{
                 return{0.0f,0.0f,0.0f};
             }
-            std::array<float,3> getScalationMatrix(const RandysEngine::Layer_Node node) const noexcept{
+            std::array<float,3> getScalationMatrix(RandysEngine::Layer_Node& node) const noexcept{
                 return{0.0f,0.0f,0.0f};
             }
-            std::array<float,3> getRotationMatrix(const RandysEngine::Layer_Node node) const noexcept{
+            std::array<float,3> getRotationMatrix(RandysEngine::Layer_Node& node) const noexcept{
                 return{0.0f,0.0f,0.0f};
             }
     };

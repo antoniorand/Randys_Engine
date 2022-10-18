@@ -209,6 +209,28 @@ namespace RandysEngine{
         return devolver;
     }
 
+    bool Rendering_Engine::addSprite(RandysEngine::Layer_Node& node, float x, float y, float height, float width){
+        bool devolver = false;
+
+        if(node.isValid){
+            
+            auto itBegin = layers.begin();
+            auto itEnd = layers.end();
+            while(itBegin != itEnd){
+                if(std::holds_alternative<layer_GUI>(*itBegin)){
+                    layer_GUI* layer = &std::get<layer_GUI>(*itBegin);
+                    if(node.layerId == layer->getInstance()){
+                        layer->addSprite(node,x,y,height, width);
+                        devolver = true;
+                        break;
+                    }
+                }
+                itBegin++;
+            }
+        }
+       return devolver;
+    }
+
     bool Rendering_Engine::setRotationCameraSKybox(std::size_t LayerId, float rotX, float rotY, float rotZ){
 
         bool devolver = false;

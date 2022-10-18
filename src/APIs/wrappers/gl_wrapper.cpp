@@ -415,6 +415,42 @@ namespace RandysEngine{
         glBindVertexArray(0);
     }
 
+    gl_mesh_resource::gl_mesh_resource(float x, float y, float width, float height) noexcept{
+        std::array<Vertex,4> vertices = {{{x,y,0.f,0.f,1.f},{x+width,y,0.f,1.f,1.f},{x,y+height,0.f,1.f,0.f},{x+width,y+height,0.f,1.f,0.f}}};
+
+        size_loadedVertices = sizeof(vertices)*4;
+        count_loadedVertices = 4;
+
+        glGenVertexArrays(1, &VAO);
+        glGenBuffers(1, &VBO);
+        //glGenBuffers(1, &EBO);
+        // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+        glBindVertexArray(VAO);
+
+        glBindBuffer(GL_ARRAY_BUFFER, VBO);
+        glBufferData(GL_ARRAY_BUFFER, (GLsizeiptr)size_loadedVertices,&vertices[0], GL_STATIC_DRAW);
+
+        //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+        //glBufferData(GL_ELEMENT_ARRAY_BUFFER, size_loadedIndices, &vertexData.second[0], GL_STATIC_DRAW);
+
+        //vertex position
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 
+            (void*)0);
+        glEnableVertexAttribArray(0);
+        //texture coordinates
+        glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), 
+            (void*)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+
+        // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
+        glBindBuffer(GL_ARRAY_BUFFER, 0); 
+
+        // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
+        // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
+        glBindVertexArray(0);
+
+    }
+
     gl_mesh_resource::~gl_mesh_resource() noexcept{
         glDeleteVertexArrays(1, &VAO);
         glDeleteBuffers(1, &VBO);

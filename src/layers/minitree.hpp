@@ -9,12 +9,12 @@
 
 namespace RandysEngine{
     
-    constexpr std::size_t maxNodesMinitree = 16;
-    constexpr std::size_t maxCamerasMinitree = 2;
-    constexpr std::size_t maxModelsMinitree = 10;
-    constexpr std::size_t maxLightsMinitree = 4;
-
     class layer_minitree : public layer_interface<layer_minitree>{
+
+        constexpr static std::size_t maxNodesMinitree = 16;
+        constexpr static std::size_t maxCamerasMinitree = 2;
+        constexpr static std::size_t maxModelsMinitree = 10;
+        constexpr static std::size_t maxLightsMinitree = 4;
 
         using SlotMapNodes = RandysEngine::SlotMap::SlotMap<
                 MinitreeNode,
@@ -42,7 +42,7 @@ namespace RandysEngine{
                 RandysEngine::Pool::Static_pool_allocator<gl_matrix,32*4 + 10*4>
 #else
                 citro_matrix,
-                RandysEngine::Pool::Static_pool_allocator<citro_matrix,32*4>
+                RandysEngine::Pool::Static_pool_allocator<citro_matrix,32*4 + 10*4>
 #endif
         >;
 
@@ -76,8 +76,6 @@ namespace RandysEngine{
             [[nodiscard]] const RandysEngine::Layer_Node createNode(RandysEngine::Layer_Node&) noexcept;
 
             [[nodiscard]] bool deleteNode(RandysEngine::Layer_Node&) noexcept;
-
-            RandysEngine::MinitreeNode* getNode(const RandysEngine::Layer_Node) const noexcept;
             
             void addModel(RandysEngine::Layer_Node& node) noexcept;
            

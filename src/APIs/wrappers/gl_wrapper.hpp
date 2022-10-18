@@ -1,6 +1,6 @@
 #pragma once
 #include "base_wrapper.hpp"
-#include "../GLAD/glad.h"
+#include <GLAD/glad.h>
 #include <glm/glm.hpp>
 #include "glm/gtc/matrix_transform.hpp"
 #include <glm/gtc/type_ptr.hpp>
@@ -8,6 +8,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+
 
 namespace RandysEngine{
 
@@ -46,6 +47,7 @@ namespace RandysEngine{
 
         unsigned int VBO{0}, VAO{0};
         gl_mesh_resource(std::string file) noexcept;
+        gl_mesh_resource(float x, float y, float width, float height) noexcept;
         gl_mesh_resource(const gl_mesh_resource& other) noexcept{
             VBO = other.VBO;
             VAO = other.VAO;

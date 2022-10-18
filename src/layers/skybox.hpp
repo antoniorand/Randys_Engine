@@ -21,25 +21,8 @@ namespace RandysEngine{
 
         public:
 
-            layer_skybox(ResourceManager& resource_Manager) 
-                : layer_interface<layer_skybox>(resource_Manager){
-
-#ifndef __3DS__
-                skybox.skyboxCube = resource_manager.createResource<gl_mesh_resource>("resources/cube.obj");
-#else
-                skybox.skyboxCube = resource_manager.createResource<citro_mesh_resource>("romfs:/3d_resources/cube.obj");
-                skybox.camera.projectionMatrix.rotation[1] = 3.1416;
-                skybox.camera.projectionMatrix.scalation[0] = -1.0;
-#endif
-          
-            };
-            ~layer_skybox(){
-#ifndef __3DS__
-                resource_manager.freeResource<gl_mesh_resource>(skybox.skyboxCube);
-#else
-                resource_manager.freeResource<citro_mesh_resource>(skybox.skyboxCube);
-#endif
-            };
+            layer_skybox(ResourceManager& resource_Manager);
+            ~layer_skybox();
 
             void changeTexture(RandysEngine::ResourceManager::KeyId input);
             

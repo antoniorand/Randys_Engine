@@ -102,4 +102,55 @@ namespace RandysEngine{
             }
     };
 
+    struct Sprite_Entity{
+
+#ifndef __3ds__
+        gl_mesh_resource mesh;
+#else
+        citro_mesh_resource mesh;
+#endif
+        
+        ResourceManager::KeyId texture;
+        bool hasTexture;
+
+        Sprite_Entity(float x, float y, float width, float height) 
+            : mesh{x,y,width,height}{
+        }
+
+    };
+
+    struct Camera_GUI{
+
+#ifndef __3DS__
+        //RandysEngine::gl_matrix viewMatrix;
+        //RandysEngine::gl_matrix projectionMatrix;
+#else
+        //RandysEngine::citro_matrix viewMatrix;
+        //RandysEngine::citro_matrix projectionMatrix;
+#endif
+
+
+    };
+
+    struct GUINode{
+            static constexpr unsigned int maxChildren {16};
+            SlotMap::SlotMap_Key sprite;
+            bool hasSprite{false};
+
+            SlotMap::SlotMap_Key parentNode;
+            bool hasParent{false};
+            ////
+            SlotMap::SlotMap_Key matrixKey;
+            ////
+            std::array<SlotMap::SlotMap_Key,maxChildren> childrenNodes{};
+            std::array<bool,maxChildren> hasChildren{};
+
+            GUINode(){
+                for(unsigned int i = 0; i < maxChildren;i++){
+                    hasChildren[i] = false;
+                }
+            }
+
+    };
+
 }
