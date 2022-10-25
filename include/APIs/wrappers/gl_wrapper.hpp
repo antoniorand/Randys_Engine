@@ -1,10 +1,10 @@
 #pragma once
 #include "base_wrapper.hpp"
-#include <GLAD/glad.h>
-#include <glm/glm.hpp>
-#include "glm/gtc/matrix_transform.hpp"
-#include <glm/gtc/type_ptr.hpp>
-#include <GLFW/glfw3.h>
+#include <dependencies/GLAD/glad.h>
+#include <dependencies/glm/glm.hpp>
+#include <dependencies/glm/gtc/matrix_transform.hpp>
+#include <dependencies/glm/gtc/type_ptr.hpp>
+#include <dependencies/GLFW/glfw3.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>

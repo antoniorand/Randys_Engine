@@ -29,7 +29,7 @@ elif int(nintendo3dsClean):
     env.Execute('make clean')
     Exit(1)
 else:
-    env.Append(CPPPATH= './src/dependencies')
+    env.Append(CPPPATH= './include')
     #env.Replace(CXX = 'mingw-w64-gcc')
     optimize = ARGUMENTS.get('optimize',0)
     if int(optimize):
@@ -47,5 +47,5 @@ else:
         env.Append(CCFLAGS='-fsanitize=address', LINKFLAGS='-fsanitize=address -fno-omit-frame-pointer')
     if(env['PLATFORM'] == 'msys'):
         env.Append(LINKFLAGS='-static -static-libgcc -static-libstdc++')
-    app = env.Program(target= 'randysEngine',source = AllSources('./src', '*.cpp*'),LIBS = libraries, LIBPATH=pathToLibraries )
+    app = env.Library(target= 'randysEngine',source = AllSources('./src', '*.cpp*'),LIBS = libraries, LIBPATH=pathToLibraries )
     #Library(target= 'randysEngine',source = src_files)

@@ -1,9 +1,11 @@
 #ifdef __3DS__
 //Source: https://github.com/tinyobjloader/tinyobjloader
 #define TINYOBJLOADER_IMPLEMENTATION // define this in only *one* .cc
-#include "../../dependencies/tiny_obj_loader.h"
+#include <dependencies/tiny_obj_loader.h>
 
-#include "citro_wrapper.hpp"
+#include <APIs/wrappers/citro_wrapper.hpp>
+
+#include "vshader_shbin.h"
 namespace RandysEngine{
 
     #define DISPLAY_TRANSFER_FLAGS \

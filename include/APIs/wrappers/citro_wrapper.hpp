@@ -4,7 +4,6 @@
 #include <citro3d.h>
 #include <citro2d.h>
 #include <vector>
-#include "vshader_shbin.h"
 
 #include <iostream>
 #include <string>

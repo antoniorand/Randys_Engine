@@ -1,13 +1,13 @@
 //If the __3DS__ identifier macro is not defined, it will compile this
 #ifndef __3DS__
 
-#include "../../dependencies/SOIL/SOIL.h"
+#include <dependencies/SOIL/SOIL.h>
 
 //Source: https://github.com/tinyobjloader/tinyobjloader
 #define TINYOBJLOADER_IMPLEMENTATION // define this in only *one* .cc
-#include "../../dependencies/tiny_obj_loader.h"
+#include <dependencies/tiny_obj_loader.h>
 
-#include "gl_wrapper.hpp"
+#include <APIs/wrappers/gl_wrapper.hpp>
 
 namespace RandysEngine{
 

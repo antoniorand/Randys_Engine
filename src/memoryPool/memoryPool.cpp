@@ -1,4 +1,4 @@
-#include "memoryPool.hpp"
+#include <memoryPool/memoryPool.hpp>
 #define CHECK_BIT_REVERSED(var,pos) (((uint8_t)var) & (0x80 >> pos))
 #define SET_BIT_REVERSED  (var,pos) (((uint8_t)var) | (0x80 >> pos))  
 

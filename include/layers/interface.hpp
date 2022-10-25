@@ -4,7 +4,7 @@
 #include "../resourceManager/entities.hpp"
 
 #ifndef __3DS__
-    #include <glm/glm.hpp>
+    #include <dependencies/glm/glm.hpp>
     #include "../APIs/wrappers/gl_wrapper.hpp"
 #else
     #include "../APIs/wrappers/citro_wrapper.hpp"
