@@ -47,5 +47,5 @@ else:
         env.Append(CCFLAGS='-fsanitize=address', LINKFLAGS='-fsanitize=address -fno-omit-frame-pointer')
     if(env['PLATFORM'] == 'msys'):
         env.Append(LINKFLAGS='-static -static-libgcc -static-libstdc++')
-    app = env.Library(target= 'randysEngine',source = AllSources('./src', '*.cpp*'),LIBS = libraries, LIBPATH=pathToLibraries )
+    app = env.SharedLibrary(target= 'randysEngine',source = AllSources('./src', '*.cpp*'),LIBS = libraries, LIBPATH=pathToLibraries )
     #Library(target= 'randysEngine',source = src_files)
