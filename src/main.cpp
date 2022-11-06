@@ -6,29 +6,44 @@ int main(){
 
     renderer.addLayerBack<RandysEngine::layer_skybox>();
     renderer.addLayerBack<RandysEngine::layer_minitree>();
+    renderer.addLayerBack<RandysEngine::layer_minitree>();
     
     auto node0  = renderer.createNode<RandysEngine::layer_minitree>(1);
     auto node1 = renderer.createNode<RandysEngine::layer_minitree>(node0);
+    auto node2 = renderer.createNode<RandysEngine::layer_minitree>(2);
 
-    auto nodeCamera = renderer.createNode<RandysEngine::layer_minitree>(1);
+    auto nodeCamera = renderer.createNode<RandysEngine::layer_minitree>(0);
+    auto nodeCamera2 = renderer.createNode<RandysEngine::layer_minitree>(1);
 
     renderer.addModel<RandysEngine::layer_minitree>(node1);
+    renderer.addModel<RandysEngine::layer_minitree>(node2);
 
     renderer.addCamera<RandysEngine::layer_minitree>(nodeCamera,45.0f,400.0f,240.0f,0.01f,10000.0f);
     renderer.setActiveCamera<RandysEngine::layer_minitree>(nodeCamera);
+    renderer.addCamera<RandysEngine::layer_minitree>(nodeCamera2,45.0f,400.0f,240.0f,0.01f,10000.0f);
+    renderer.setActiveCamera<RandysEngine::layer_minitree>(nodeCamera2);
 
 
 #ifndef __3DS__
     renderer.addTextureSkybox(0,"resources/CubeExample.png");
-    unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node1,"resources/test.obj");
-    renderer.addTexture<RandysEngine::layer_minitree>(node1,meshN,"resources/test.png");
+    unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node1,"resources/Bonney_body.obj");
+    renderer.addTexture<RandysEngine::layer_minitree>(node1,meshN,"resources/BonneyUV.png");
+    unsigned int meshN2 = renderer.addMesh<RandysEngine::layer_minitree>(node1,"resources/Bonney_face.obj");
+    renderer.addTexture<RandysEngine::layer_minitree>(node1,meshN2,"resources/Bonney_Face.png");
+    unsigned int meshN3 = renderer.addMesh<RandysEngine::layer_minitree>(node2,"resources/test.obj");
+    renderer.addTexture<RandysEngine::layer_minitree>(node2,meshN3,"resources/test.png");
 #else
     renderer.addTextureSkybox(0,"romfs:/gfx/CubeExample.t3x");
-    unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node1,"romfs:/3d_resources/test.obj");
-    renderer.addTexture<RandysEngine::layer_minitree>(node1,meshN,"romfs:/gfx/test.t3x");
+    unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node1,"romfs:/3d_resources/Bonney_body.obj");
+    renderer.addTexture<RandysEngine::layer_minitree>(node1,meshN,"romfs:/gfx/BonneyUV.t3x");
+    unsigned int meshN2 = renderer.addMesh<RandysEngine::layer_minitree>(node1,"romfs:/3d_resources/Bonney_face.obj");
+    renderer.addTexture<RandysEngine::layer_minitree>(node1,meshN2,"romfs:/gfx/Bonney_Face.t3x");
+    unsigned int meshN3 = renderer.addMesh<RandysEngine::layer_minitree>(node2,"romfs:/3d_resources/test.obj");
+    renderer.addTexture<RandysEngine::layer_minitree>(node2,meshN3,"romfs:/gfx/test.t3x");
 #endif
 
-    renderer.setTranslateNode(node1, 0.0f,-1.0f,-15.0f);
+    renderer.setTranslateNode(node1, 0.0f,-2.5f,-5.0f);
+    renderer.setTranslateNode(node2, 3.0f,-1.0f,-10.0f);
 
     while(renderer.isAppRunning()){
         if(renderer.readKeyPressed(RandysEngine::KeyInput::exit)){
