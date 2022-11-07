@@ -1,77 +1,88 @@
 #include "core.hpp"
 
+class Demo{
+    RandysEngine::Rendering_Engine renderer;
+    
+    RandysEngine::Layer_Node camera;
+    std::vector<RandysEngine::Layer_Node> nodes;
+
+    public:
+
+    Demo(){
+        nodes.reserve(50);
+        renderer.addLayerBack<RandysEngine::layer_skybox>();
+        renderer.addLayerBack<RandysEngine::layer_minitree>();
+    }
+    ~Demo(){};
+
+    void addElement(std::string objectFile, std::string textureFile,
+    float x, float y, float z){
+        auto node = renderer.createNode<RandysEngine::layer_minitree>(1);
+        renderer.addModel<RandysEngine::layer_minitree>(node);
+        #ifndef __3DS__
+            unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node,"resources/"+ objectFile);
+            renderer.addTexture<RandysEngine::layer_minitree>(node,meshN,"resources/" + textureFile + ".png");
+        #else
+            unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node,"romfs:/3d_resources/"+ objectFile);
+            renderer.addTexture<RandysEngine::layer_minitree>(node,meshN,"romfs:/gfx/" + textureFile + ".t3x");
+        #endif
+        renderer.setTranslateNode(node,x,y,z);
+    }
+
+    void addCamera(float x, float y, float z){
+        camera = renderer.createNode<RandysEngine::layer_minitree>(1);
+        renderer.addCamera<RandysEngine::layer_minitree>(camera,45.0f,400.0f,240.0f,0.01f,10000.0f);
+        renderer.setActiveCamera<RandysEngine::layer_minitree>(camera);
+        renderer.setTranslateNode(camera,x,y,z);
+    }
+
+    void addTextureSKybox(std::string fileName){
+#ifndef __3DS__
+        renderer.addTextureSkybox(0,"resources/" + fileName + ".png");
+#else
+        renderer.addTextureSkybox(0,"romfs:/gfx/" +  fileName + ".t3x");
+#endif
+    }
+
+    void mainLoop(){
+        while(renderer.isAppRunning()){
+            if(renderer.readKeyPressed(RandysEngine::KeyInput::exit)){
+                renderer.closeApp();
+            }
+            if(renderer.readKeyPressed(RandysEngine::KeyInput::left)){
+                
+                //renderer.TranslateNode(node0,-0.1f,0.0f,0.0f);
+                //renderer.rotateCameraSKybox(2,0.0,-0.01,0.0);
+            }
+            if(renderer.readKeyPressed(RandysEngine::KeyInput::right)){
+                //renderer.TranslateNode(node0,0.1f,0.0f,0.0f);
+                //renderer.rotateCameraSKybox(2,0.0,0.01,0.0);
+            }
+            if(renderer.readKeyPressed(RandysEngine::KeyInput::up)){
+                //renderer.RotateNode(node0,0.0f,-0.1f,0.0f);
+                //renderer.rotateCameraSKybox(2,-0.01,0.0,0.0);
+            }
+            if(renderer.readKeyPressed(RandysEngine::KeyInput::down)){
+                //renderer.RotateNode(node0,0.0f,0.1f,0.0f);
+                //renderer.rotateCameraSKybox(2,0.01,0.0,0.0);
+            }
+
+            renderer.runFrame();
+        }
+    }
+};
+
 int main(){
 
-    RandysEngine::Rendering_Engine renderer;
+    Demo demo;
 
-    renderer.addLayerBack<RandysEngine::layer_skybox>();
-    renderer.addLayerBack<RandysEngine::layer_minitree>();
-    renderer.addLayerBack<RandysEngine::layer_minitree>();
-    
-    auto node0  = renderer.createNode<RandysEngine::layer_minitree>(1);
-    auto node1 = renderer.createNode<RandysEngine::layer_minitree>(node0);
-    auto node2 = renderer.createNode<RandysEngine::layer_minitree>(2);
+    demo.addElement("road.obj","Pavimento_text",0.0f,0.0f,0.0f);
 
-    auto nodeCamera = renderer.createNode<RandysEngine::layer_minitree>(1);
-    auto nodeCamera2 = renderer.createNode<RandysEngine::layer_minitree>(2);
+    demo.addCamera(0.0f,0.0f,0.0f);
 
-    renderer.addModel<RandysEngine::layer_minitree>(node1);
-    renderer.addModel<RandysEngine::layer_minitree>(node2);
+    demo.addTextureSKybox("CubeExample");
 
-    renderer.addCamera<RandysEngine::layer_minitree>(nodeCamera,45.0f,400.0f,240.0f,0.01f,10000.0f);
-    renderer.setActiveCamera<RandysEngine::layer_minitree>(nodeCamera);
-    renderer.addCamera<RandysEngine::layer_minitree>(nodeCamera2,45.0f,400.0f,240.0f,0.01f,10000.0f);
-    renderer.setActiveCamera<RandysEngine::layer_minitree>(nodeCamera2);
-
-#ifndef __3DS__
-    renderer.addTextureSkybox(0,"resources/CubeExample.png");
-    unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node1,"resources/test.obj");
-    renderer.addTexture<RandysEngine::layer_minitree>(node1,meshN,"resources/test.png");
-    unsigned int meshN2 = renderer.addMesh<RandysEngine::layer_minitree>(node2,"resources/rowlet.obj");
-    renderer.addTexture<RandysEngine::layer_minitree>(node2,meshN2,"resources/rowlet.png");
-#else
-    renderer.addTextureSkybox(0,"romfs:/gfx/CubeExample.t3x");
-    unsigned int meshN = renderer.addMesh<RandysEngine::layer_minitree>(node1,"romfs:/3d_resources/test.obj");
-    renderer.addTexture<RandysEngine::layer_minitree>(node1,meshN,"romfs:/gfx/test.t3x");
-    unsigned int meshN2 = renderer.addMesh<RandysEngine::layer_minitree>(node2,"romfs:/3d_resources/rowlet.obj");
-    renderer.addTexture<RandysEngine::layer_minitree>(node2,meshN2,"romfs:/gfx/rowlet.t3x");
-#endif
-
-    renderer.setTranslateNode(node1, 0.0f,-1.0f,-5.0f);
-    renderer.setTranslateNode(node2, 3.0f,-1.0f,-10.0f);
-
-    while(renderer.isAppRunning()){
-        if(renderer.readKeyPressed(RandysEngine::KeyInput::exit)){
-            renderer.closeApp();
-        }
-        if(renderer.readKeyPressed(RandysEngine::KeyInput::left)){
-            
-            renderer.TranslateNode(node1,-0.1f,0.0f,0.0f);
-            //renderer.rotateCameraSKybox(2,0.0,-0.01,0.0);
-        }
-        if(renderer.readKeyPressed(RandysEngine::KeyInput::right)){
-            renderer.TranslateNode(node1,0.1f,0.0f,0.0f);
-            //renderer.rotateCameraSKybox(2,0.0,0.01,0.0);
-        }
-        if(renderer.readKeyPressed(RandysEngine::KeyInput::up)){
-            renderer.RotateNode(node1,0.0f,-0.1f,0.0f);
-            //renderer.rotateCameraSKybox(2,-0.01,0.0,0.0);
-        }
-        if(renderer.readKeyPressed(RandysEngine::KeyInput::down)){
-            renderer.RotateNode(node1,0.0f,0.1f,0.0f);
-            //renderer.rotateCameraSKybox(2,0.01,0.0,0.0);
-        }
-        if(renderer.readKeyPressed(RandysEngine::KeyInput::a_button)){
-            
-            //renderer.freeTextureResource("resources/test.png");
-            renderer.freeMeshResource("resources/test.obj");
-            //renderer.addTexture<RandysEngine::layer_minitree>(node1,meshN,"romfs:/gfx/rowlet.t3x");
-            //std::cout << "A\n";
-        }
-
-
-        renderer.runFrame();
-    }
+    demo.mainLoop();    
 
     return 0;
 

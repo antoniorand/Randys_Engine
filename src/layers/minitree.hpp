@@ -9,10 +9,10 @@
 
 namespace RandysEngine{
     
-    constexpr std::size_t maxNodesMinitree = 16;
-    constexpr std::size_t maxCamerasMinitree = 2;
-    constexpr std::size_t maxModelsMinitree = 10;
-    constexpr std::size_t maxLightsMinitree = 4;
+    constexpr std::size_t maxNodesMinitree = 16*5;
+    constexpr std::size_t maxCamerasMinitree = 2*5;
+    constexpr std::size_t maxModelsMinitree = 10*5;
+    constexpr std::size_t maxLightsMinitree = 4*5;
 
     class layer_minitree : public layer_interface<layer_minitree>{
 
