@@ -82,7 +82,7 @@ namespace RandysEngine{
 
     struct MinitreeNode{
             ////
-            static constexpr unsigned int maxChildren {4};
+            static constexpr unsigned int maxChildren {50};
             ////
             SlotMap::SlotMap_Key entity;
             entityType_enum type_entity{entityType_enum::none};

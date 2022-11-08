@@ -429,8 +429,10 @@ namespace RandysEngine{
 
             while(iterator != itEnd){
                 bool result = std::visit(Visitor_RotateMatrix{node,x,y,z},*iterator);
-                if(result)
+                if(result){
                     break;
+                }
+                    
                 iterator++;
             }
         }

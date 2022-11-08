@@ -1,4 +1,5 @@
 #include "core.hpp"
+#include <math.h>
 
 class Demo{
     RandysEngine::Rendering_Engine renderer;
@@ -16,7 +17,7 @@ class Demo{
     ~Demo(){};
 
     void addElement(std::string objectFile, std::string textureFile,
-    float x, float y, float z){
+    float x, float y, float z, float rotx, float roty, float rotz){
         auto node = renderer.createNode<RandysEngine::layer_minitree>(1);
         renderer.addModel<RandysEngine::layer_minitree>(node);
         #ifndef __3DS__
@@ -27,11 +28,12 @@ class Demo{
             renderer.addTexture<RandysEngine::layer_minitree>(node,meshN,"romfs:/gfx/" + textureFile + ".t3x");
         #endif
         renderer.setTranslateNode(node,x,y,z);
+        renderer.setRotateNode(node,rotx,roty,rotz);
     }
 
     void addCamera(float x, float y, float z){
         camera = renderer.createNode<RandysEngine::layer_minitree>(1);
-        renderer.addCamera<RandysEngine::layer_minitree>(camera,45.0f,400.0f,240.0f,0.01f,10000.0f);
+        renderer.addCamera<RandysEngine::layer_minitree>(camera,45.0f,400.0f,240.0f,0.01f,30000.0f);
         renderer.setActiveCamera<RandysEngine::layer_minitree>(camera);
         renderer.setTranslateNode(camera,x,y,z);
     }
@@ -50,13 +52,14 @@ class Demo{
                 renderer.closeApp();
             }
             if(renderer.readKeyPressed(RandysEngine::KeyInput::left)){
-                
-                //renderer.TranslateNode(node0,-0.1f,0.0f,0.0f);
-                //renderer.rotateCameraSKybox(2,0.0,-0.01,0.0);
+                renderer.RotateNode(camera,0.0f,0.1f,0.0f);
+                renderer.rotateCameraSKybox(0,0.0f,-0.1f,0.0f);
+                std::cout << "left\n";
             }
             if(renderer.readKeyPressed(RandysEngine::KeyInput::right)){
-                //renderer.TranslateNode(node0,0.1f,0.0f,0.0f);
-                //renderer.rotateCameraSKybox(2,0.0,0.01,0.0);
+                renderer.RotateNode(camera,0.0f,-0.1f,0.0f);
+                renderer.rotateCameraSKybox(0,0.0f,0.1f,0.0f);
+                std::cout<< "right\n";
             }
             if(renderer.readKeyPressed(RandysEngine::KeyInput::up)){
                 //renderer.RotateNode(node0,0.0f,-0.1f,0.0f);
@@ -65,6 +68,18 @@ class Demo{
             if(renderer.readKeyPressed(RandysEngine::KeyInput::down)){
                 //renderer.RotateNode(node0,0.0f,0.1f,0.0f);
                 //renderer.rotateCameraSKybox(2,0.01,0.0,0.0);
+            }
+            if(renderer.readKeyPressed(RandysEngine::KeyInput::x_button)){
+                //renderer.TranslateNode(camera,0.01f,0.01f,0.01f);
+            }
+            if(renderer.readKeyPressed(RandysEngine::KeyInput::y_button)){
+                
+            }
+            if(renderer.readKeyPressed(RandysEngine::KeyInput::a_button)){
+                
+            }
+            if(renderer.readKeyPressed(RandysEngine::KeyInput::b_button)){
+                
             }
 
             renderer.runFrame();
@@ -76,7 +91,20 @@ int main(){
 
     Demo demo;
 
-    demo.addElement("road.obj","Pavimento_text",0.0f,0.0f,0.0f);
+    demo.addElement("road.obj","Pavimento_text",0.0f,0.0f,0.0f,0.0f,0.0f,0.0f);
+    /*demo.addElement("edificio.obj","Casa_text",14.0f,4.9f,36.0f,0.0f,0.0f,0.0f);
+    demo.addElement("edificio.obj","Casa_text",23.0f,4.9f,36.0f,0.0f,0.0f,0.0f);
+    demo.addElement("edificio.obj","Casa_text",33.0f,4.9f,36.0f,0.0f,0.0f,0.0f);
+    demo.addElement("edificio.obj","Casa_text",42.0f,4.9f,36.0f,0.0f,0.0f,0.0f);
+    demo.addElement("edificio.obj","Casa_text",52.0f,4.9f,36.0f,0.0f,0.0f,0.0f);
+    demo.addElement("edificio.obj","Casa_text",61.0f,4.9f,36.0f,0.0f,0.0f,0.0f);
+    demo.addElement("farola.obj","Farola_text",19.0f,0.0f,31.0f,0.0f,0.0f,0.0f);
+    demo.addElement("farola.obj","Farola_text",30.0f,0.0f,31.0f,0.0f,0.0f,0.0f);
+    demo.addElement("farola.obj","Farola_text",47.4f,0.0f,31.0f,0.0f,0.0f,0.0f);
+    demo.addElement("farola.obj","Farola_text",66.8f,0.0f,31.0f,0.0f,0.0f,0.0f);
+    demo.addElement("farola.obj","Farola_text",-7.8f,0.0f,28.0f,0.0f,0.0f,0.0f);
+    demo.addElement("farola.obj","Farola_text",-15.18f,0.0f,10.35f,0.0f,0.0f,0.0f);
+    demo.addElement("farola.obj","Farola_text",-15.18f,0.0f,0.0f,0.0f,0.0f,0.0f);*/
 
     demo.addCamera(0.0f,0.0f,0.0f);
 
