@@ -25,6 +25,7 @@ namespace RandysEngine{
 
             if(perspective){
                 Mtx_PerspTilt(&transform, C3D_AngleFromDegrees(fov), C3D_AspectRatioTop, near, far, true);
+
             }
             else{
                 Mtx_Identity(&transform);
@@ -53,7 +54,7 @@ namespace RandysEngine{
     citro_matrix citro_matrix::reverse() noexcept{
         citro_matrix devolver;
         devolver.changed = false;
-        devolver.transform = this->transform;
+        devolver.transform = this->getTransformationMatrix();
         Mtx_Inverse(&devolver.transform);
 
         return(devolver);

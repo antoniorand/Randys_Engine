@@ -592,7 +592,6 @@ namespace RandysEngine{
             auto& matrix = *matrixes.atPosition(node.matrixKey);
 
             if(matrix.changed){
-                std::cout << "Changed\n";
                 runLinks(node);
             }
         }
