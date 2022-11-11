@@ -60,12 +60,12 @@ class Demo{
                 renderer.rotateCameraSKybox(0,0.0f,0.1f,0.0f);
             }
             if(renderer.readKeyPressed(RandysEngine::KeyInput::up)){
-                //renderer.RotateNode(node0,0.0f,-0.1f,0.0f);
-                //renderer.rotateCameraSKybox(2,-0.01,0.0,0.0);
+                renderer.RotateNode(camera,0.1f,0.0f,0.0f);
+                renderer.rotateCameraSKybox(0,-0.1f,0.0f,0.0f);
             }
             if(renderer.readKeyPressed(RandysEngine::KeyInput::down)){
-                //renderer.RotateNode(node0,0.0f,0.1f,0.0f);
-                //renderer.rotateCameraSKybox(2,0.01,0.0,0.0);
+                renderer.RotateNode(camera,-0.1f,0.0f,0.0f);
+                renderer.rotateCameraSKybox(0,0.1f,0.0f,0.0f);
             }
             if(renderer.readKeyPressed(RandysEngine::KeyInput::x_button)){
                 //renderer.TranslateNode(camera,0.01f,0.01f,0.01f);

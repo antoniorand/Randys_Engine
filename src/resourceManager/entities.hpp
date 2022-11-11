@@ -63,10 +63,10 @@ namespace RandysEngine{
     struct Camera_Skybox{
 
 #ifndef __3DS__
-        RandysEngine::gl_matrix viewMatrix;
+        RandysEngine::gl_viewmatrix_skybox viewMatrix;
         RandysEngine::gl_matrix projectionMatrix;
 #else
-        RandysEngine::citro_matrix viewMatrix;
+        RandysEngine::citro_viewmatrix_skybox viewMatrix;
         RandysEngine::citro_matrix projectionMatrix;
 #endif
 
