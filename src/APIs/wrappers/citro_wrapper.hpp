@@ -21,6 +21,27 @@ namespace RandysEngine{
             void restoreCull() const noexcept;
     };
 
+    struct citro_viewmatrix_skybox : public viewmatrix_skybox_wrapper{
+
+        private:
+
+            C3D_Mtx transform;
+
+        protected:
+
+            friend struct citro_shader;
+            const C3D_Mtx& getTransformationMatrix() noexcept;
+
+        public:
+
+            citro_viewmatrix_skybox(){
+                Mtx_Identity(&transform);
+            }
+            
+            void multiply(citro_viewmatrix_skybox& other);
+            citro_viewmatrix_skybox reverse() noexcept;
+    };  
+
     struct citro_matrix : public matrix_wrapper{
 
         private:
@@ -91,6 +112,7 @@ namespace RandysEngine{
         void setInt(const std::string &name, int value) const;
         void setFloat(const std::string &name, float value) const;
         void setMat4(const std::string &name, citro_matrix &mat);
+        void setMat4(const std::string &name, citro_viewmatrix_skybox &mat);
     };
 
     struct citro_screen : screen_wrapper<citro_screen>{

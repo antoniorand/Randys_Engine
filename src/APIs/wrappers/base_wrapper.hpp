@@ -7,6 +7,18 @@
 
 namespace RandysEngine{
 
+    struct viewmatrix_skybox_wrapper{
+
+        std::array<float,3> translation{0.0f,0.0f,0.0f};
+        std::array<float,3> rotation{0.0f,0.0f,0.0f};
+        std::array<float,3> scalation{1.0f,1.0f,1.0f};
+
+        float fov{0.0f}, aspect{0.0f}, near{0.0f}, far{0.0f};
+        
+        bool changed{true},perspective{false};
+
+    };
+
     struct matrix_wrapper{
 
         std::array<float,3> translation{0.0f,0.0f,0.0f};

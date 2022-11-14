@@ -25,6 +25,7 @@ namespace RandysEngine{
 
             if(perspective){
                 Mtx_PerspTilt(&transform, C3D_AngleFromDegrees(fov), C3D_AspectRatioTop, near, far, true);
+
             }
             else{
                 Mtx_Identity(&transform);
@@ -32,9 +33,9 @@ namespace RandysEngine{
             
             Mtx_Translate(&transform, translation[0],
                 translation[1],translation[2], true);
-            Mtx_RotateX(&transform, rotation[0], true);
-            Mtx_RotateY(&transform, rotation[1], true);
             Mtx_RotateZ(&transform, rotation[2], true);
+            Mtx_RotateY(&transform, rotation[1], true);
+            Mtx_RotateX(&transform, rotation[0], true);
             Mtx_Scale(&transform,scalation[0],scalation[1],scalation[2]);
             changed = false;
         }
@@ -53,7 +54,47 @@ namespace RandysEngine{
     citro_matrix citro_matrix::reverse() noexcept{
         citro_matrix devolver;
         devolver.changed = false;
-        devolver.transform = this->transform;
+        devolver.transform = this->getTransformationMatrix();
+        Mtx_Inverse(&devolver.transform);
+
+        return(devolver);
+    }
+
+    const C3D_Mtx& citro_viewmatrix_skybox::getTransformationMatrix() noexcept{
+        if(changed){
+
+            if(perspective){
+                Mtx_PerspTilt(&transform, C3D_AngleFromDegrees(fov), C3D_AspectRatioTop, near, far, true);
+
+            }
+            else{
+                Mtx_Identity(&transform);
+            }
+            
+            Mtx_Translate(&transform, translation[0],
+                translation[1],translation[2], true);
+            Mtx_RotateX(&transform, rotation[0], true);
+            Mtx_RotateY(&transform, rotation[1], true);
+            Mtx_RotateZ(&transform, rotation[2], true);
+            Mtx_Scale(&transform,scalation[0],scalation[1],scalation[2]);
+            changed = false;
+        }
+        return transform;
+    }
+    
+    void citro_viewmatrix_skybox::multiply(citro_viewmatrix_skybox& other){
+        this->changed = true;
+        auto thisMatrix = this->getTransformationMatrix();
+        auto otherMatrix = other.getTransformationMatrix();
+
+        Mtx_Multiply(&transform,&otherMatrix,&thisMatrix);
+
+    }
+
+    citro_viewmatrix_skybox citro_viewmatrix_skybox::reverse() noexcept{
+        citro_viewmatrix_skybox devolver;
+        devolver.changed = false;
+        devolver.transform = this->getTransformationMatrix();
         Mtx_Inverse(&devolver.transform);
 
         return(devolver);
@@ -246,6 +287,11 @@ namespace RandysEngine{
     }
 
     void citro_shader::setMat4(const std::string &name, citro_matrix &mat){
+        int uLocation = 
+            shaderInstanceGetUniformLocation(shaderProgram.vertexShader, name.c_str());
+        C3D_FVUnifMtx4x4(GPU_VERTEX_SHADER, uLocation,  &mat.getTransformationMatrix());
+    }
+    void citro_shader::setMat4(const std::string &name, citro_viewmatrix_skybox &mat){
         int uLocation = 
             shaderInstanceGetUniformLocation(shaderProgram.vertexShader, name.c_str());
         C3D_FVUnifMtx4x4(GPU_VERTEX_SHADER, uLocation,  &mat.getTransformationMatrix());

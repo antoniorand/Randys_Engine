@@ -63,10 +63,10 @@ namespace RandysEngine{
     struct Camera_Skybox{
 
 #ifndef __3DS__
-        RandysEngine::gl_matrix viewMatrix;
+        RandysEngine::gl_viewmatrix_skybox viewMatrix;
         RandysEngine::gl_matrix projectionMatrix;
 #else
-        RandysEngine::citro_matrix viewMatrix;
+        RandysEngine::citro_viewmatrix_skybox viewMatrix;
         RandysEngine::citro_matrix projectionMatrix;
 #endif
 
@@ -82,7 +82,7 @@ namespace RandysEngine{
 
     struct MinitreeNode{
             ////
-            static constexpr unsigned int maxChildren {4};
+            static constexpr unsigned int maxChildren {50};
             ////
             SlotMap::SlotMap_Key entity;
             entityType_enum type_entity{entityType_enum::none};
