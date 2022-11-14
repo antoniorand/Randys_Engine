@@ -369,7 +369,7 @@ namespace RandysEngine{
     bool layer_minitree::setTranslationMatrix(RandysEngine::Layer_Node& input,float x, float y, float z) const noexcept{
         bool devolver = false;
         if(input.layerId == this->instance && input.isValid){
-
+            
             auto oldNode = nodes.atPosition(input.reference);
             if(!oldNode){
                 input.isValid = false;
@@ -591,8 +591,9 @@ namespace RandysEngine{
             auto& node = *nodes.atPosition(i);
             auto& matrix = *matrixes.atPosition(node.matrixKey);
 
-            if(matrix.changed)
+            if(matrix.changed){
                 runLinks(node);
+            }
         }
     }
 

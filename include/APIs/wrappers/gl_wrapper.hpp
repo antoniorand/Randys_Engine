@@ -14,6 +14,22 @@ namespace RandysEngine{
     //forward declaration
     struct gl_shader;
 
+    struct gl_viewmatrix_skybox : public viewmatrix_skybox_wrapper{
+        
+        void multiply(gl_viewmatrix_skybox& other);
+        gl_viewmatrix_skybox reverse() noexcept;
+    
+        private:
+            glm::mat4 transform;
+
+        protected: 
+
+            friend struct gl_shader;
+            const glm::mat4& getTransformationMatrix() noexcept;
+
+            
+    };  
+
     struct gl_matrix : public matrix_wrapper{
         
         void multiply(gl_matrix& other);
@@ -75,6 +91,7 @@ namespace RandysEngine{
         void setInt(const std::string &name, int value) const;
         void setFloat(const std::string &name, float value) const;
         void setMat4(const std::string &name, gl_matrix &mat) const;
+        void setMat4(const std::string &name, gl_viewmatrix_skybox &mat) const;
     };
 
     struct gl_screen : screen_wrapper<gl_screen>{

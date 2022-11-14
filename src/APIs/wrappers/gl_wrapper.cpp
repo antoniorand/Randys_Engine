@@ -98,19 +98,19 @@ namespace RandysEngine{
                     devolver = true;
             break;
             case KeyInput::a_button :
-                if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+                if(glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
                     devolver = true;
             break;
             case KeyInput::b_button :
-                if(glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
+                if(glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
                     devolver = true;
             break;
             case KeyInput::x_button :
-                if(glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+                if(glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
                     devolver = true;
             break;
             case KeyInput::y_button :
-                if(glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
+                if(glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
                     devolver = true;
             break;
             default: 
@@ -223,6 +223,11 @@ namespace RandysEngine{
         glUniformMatrix4fv(location, 1, GL_FALSE, value);
     }
 
+    void gl_shader::setMat4(const std::string &name, gl_viewmatrix_skybox& mat) const{
+        GLint location = glGetUniformLocation(shaderProgram, name.c_str());
+        auto value = glm::value_ptr(mat.getTransformationMatrix());
+        glUniformMatrix4fv(location, 1, GL_FALSE, value);
+    }
 
     gl_shader::~gl_shader() noexcept{
         
@@ -443,9 +448,9 @@ namespace RandysEngine{
                 transform = glm::mat4(1.0f);
                 transform =  transform * glm::translate(transform,trans)  
                     * (
-                        glm::rotate(transform,rot.x,{1.0f,0.0f,0.0f})*
+                        glm::rotate(transform,rot.z,{0.0f,0.0f,1.0f})*
                         glm::rotate(transform,rot.y,{0.0f,1.0f,0.0f})*
-                        glm::rotate(transform,rot.z,{0.0f,0.0f,1.0f}))
+                        glm::rotate(transform,rot.x,{1.0f,0.0f,0.0f}))
                     * glm::scale(transform,scale);
             }
 
@@ -467,6 +472,50 @@ namespace RandysEngine{
     gl_matrix gl_matrix::reverse() noexcept{
 
         gl_matrix devolver;
+        devolver.changed = false;
+        devolver.transform = glm::inverse(this->getTransformationMatrix());
+
+        return(devolver);
+    }
+
+    const glm::mat4& gl_viewmatrix_skybox::getTransformationMatrix() noexcept{
+        if(changed){
+            glm::vec3 
+                trans{glm::vec3(translation[0],translation[1],translation[2])},
+                rot{glm::vec3(rotation[0],rotation[1],rotation[2])},
+                scale{glm::vec3(scalation[0],scalation[1],scalation[2])};
+
+            if(perspective){
+                transform = glm::perspective(glm::radians(fov), aspect, near,far);
+            }
+            else{
+                transform = glm::mat4(1.0f);
+                transform =  transform * glm::translate(transform,trans)  
+                    * (
+                        glm::rotate(transform,rot.x,{1.0f,0.0f,0.0f})*
+                        glm::rotate(transform,rot.y,{0.0f,1.0f,0.0f})*
+                        glm::rotate(transform,rot.z,{0.0f,0.0f,1.0f}))
+                    * glm::scale(transform,scale);
+            }
+
+            changed = false;
+        }
+        return transform;
+    }
+
+    void gl_viewmatrix_skybox::multiply(gl_viewmatrix_skybox& other){
+
+        this->changed = true;
+
+        auto& thisMatrix = this->getTransformationMatrix();
+        auto& otherMatrix = other.getTransformationMatrix();
+
+        transform = otherMatrix*thisMatrix;
+    }
+
+    gl_viewmatrix_skybox gl_viewmatrix_skybox::reverse() noexcept{
+
+        gl_viewmatrix_skybox devolver;
         devolver.changed = false;
         devolver.transform = glm::inverse(this->getTransformationMatrix());
 
